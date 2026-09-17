@@ -2,21 +2,23 @@
 
 This is a manual validation guide — it proves the feature works end-to-end against the spec's
 Success Criteria and Definition of Done. It is not a test suite; automated coverage for the pure
-logic pieces is tracked separately (see [research.md §7](./research.md#7-test-target)).
+logic pieces is tracked separately (see [research.md §7](./research.md#7-test-assembly)).
 
 ## Prerequisites
 
-- Xcode with iOS 26 SDK installed (constitution platform constraint).
-- A physical iPhone 17 (the team's standardized baseline device for this iOS 26 cycle)
-  connected and trusted, for the fps checks (SC-002) — the Simulator cannot substitute for this
-  step.
-- The `v2` scheme building and running with no other feature branches merged ahead of
+- Unity 6000.6.1f1 (or the editor version pinned in `ProjectSettings/ProjectVersion.txt`) with
+  the iOS build module installed.
+- A physical iPhone 17 (the team's standardized baseline device for this iOS 26 cycle) connected
+  and trusted, for the fps checks (SC-002) — the Unity Editor's Game view cannot substitute for
+  this step.
+- The project building to iOS with no other feature branches merged ahead of
   `001-core-prototype`.
 
 ## Setup
 
-1. Open `v2.xcodeproj`, select the `v2` scheme, and choose the connected iPhone as the run
-   destination (not a simulator) for performance-sensitive checks below.
+1. Open the project in Unity, open `Assets/Scenes/TestRoom.unity`, and build to the connected
+   iPhone (File → Build Settings → iOS → Build and Run) for the performance-sensitive checks
+   below — not Play mode in the Editor.
 2. Build & run. The app should launch directly into the test room (no menu required this phase).
 
 ## Validation scenarios
@@ -31,9 +33,9 @@ Each scenario maps to one or more spec Acceptance Scenarios / Success Criteria �
   button needed.
 - Walk to each wall of the room → camera stops panning at the boundary; no empty space beyond
   the level is ever visible.
-- **On the physical iPhone 17**: move continuously for at least 30 seconds while watching
-  Xcode's FPS debug gauge (or Instruments' Core Animation/SceneKit instrument) → sustained
-  ≥60 fps. This is the go/no-go check for the phase's core technical risk.
+- **On the physical iPhone 17**: move continuously for at least 30 seconds while watching the
+  Unity Profiler connected to the device build (Window → Analysis → Profiler, Autoconnect Profile)
+  → sustained ≥60 fps. This is the go/no-go check for the phase's on-device performance target.
 
 ### 2. Flashlight drain & light states (User Story 2, SC-003, SC-004)
 
@@ -58,7 +60,7 @@ Each scenario maps to one or more spec Acceptance Scenarios / Success Criteria �
   used to be → confirm it does not reappear (FR-016 — no respawn).
 - With both slots full (installed + spare), attempt to interact with the (already collected)
   spot — not applicable since it's gone; instead verify by code review or a debug spawn that a
-  second pickup attempt while `spareBattery != nil` is rejected with visible feedback, per
+  second pickup attempt while `spareBattery != null` is rejected with visible feedback, per
   [contracts/action-button-states.md](./contracts/action-button-states.md).
 - While carrying a spare battery, check the HUD's spare-slot indicator shows "occupied"; after
   installing it, confirm it switches back to "empty" (FR-017).
@@ -70,8 +72,8 @@ Each scenario maps to one or more spec Acceptance Scenarios / Success Criteria �
 
 ### 5. Config & full loop (FR-015, SC-005, SC-006)
 
-- Open `Game/GameConfig.swift`, change `walkSpeed`, rebuild → movement speed changes with no
-  other file touched (SC-005).
+- Select `Assets/Config/GameConfig.asset` in the Unity Inspector, change `walkSpeed`, rebuild →
+  movement speed changes with no other file touched (SC-005).
 - Time a first-time player (or yourself, cold) going from spawn → battery pickup → swap → door
   open → under 2 minutes without being given instructions (SC-006).
 

@@ -7,18 +7,19 @@ scenarios still pass unmodified (001 SC-001–SC-009) — this guide only adds w
 
 ## Prerequisites
 
-- Same as [001's quickstart](../001-core-prototype/quickstart.md): Xcode with iOS 26 SDK, a
-  physical iPhone 17 for fps checks (SC-1.1-002), the `v2` scheme.
-- Before starting: confirm 001's existing `v2Tests` suite (`GameConfigTests`,
-  `BatteryControllerTests`, `LightStateTests`) still builds and passes green — this is SC-1.1-009's
+- Same as [001's quickstart](../001-core-prototype/quickstart.md): Unity 6000.6.1f1 (or the
+  pinned editor version) with the iOS build module, a physical iPhone 17 for fps checks
+  (SC-1.1-002).
+- Before starting: confirm 001's existing `Assets/Tests/EditMode` suite (`GameConfigTests`,
+  `BatteryControllerTests`, `LightStateTests`) still passes green — this is SC-1.1-009's
   regression gate and should be checked before spending time on manual visual checks.
 
 ## Setup
 
-1. Open `v2.xcodeproj`, select the `v2` scheme, choose the connected iPhone as the run
-   destination.
-2. Build & run. The app launches directly into the test room, now rendered as one SceneKit
-   scene instead of a SpriteKit scene with a composited 3D character.
+1. Open the project in Unity, open `Assets/Scenes/TestRoom.unity`, and build to the connected
+   iPhone.
+2. Build & run. The app launches directly into the test room — the same single Unity scene as
+   001, now with shadows, eased lighting, highlights, sliding collision and a floating joystick.
 
 ## Validation scenarios
 
@@ -34,8 +35,8 @@ scenarios still pass unmodified (001 SC-001–SC-009) — this guide only adds w
 
 ### 2. Light states read as one light (User Story 2, SC-1.1-004)
 
-- Set a short `batteryDuration` in `GameConfig` for faster iteration, then let charge run down
-  uninterrupted from 100%.
+- Set a short `batteryDuration` in `GameConfig.asset` for faster iteration, then let charge run
+  down uninterrupted from 100%.
 - **Normal**: steady, no flicker, no size change.
 - **Flickering**: watch for distinct dip-and-recover events with steady light between them — not
   continuous shimmer. Ask 2 people outside the dev team what they see; both should say
@@ -69,37 +70,37 @@ scenarios still pass unmodified (001 SC-001–SC-009) — this guide only adds w
 
 ### 5. Side-by-side feel check (SC-1.1-003, SC-1.1-005)
 
-- Build 001's commit (`c982b79`) and this feature's build on two devices, or record short clips
-  of each. Show both, unlabeled, to at least 3 people outside the dev team and ask which "looks
-  and feels more like a horror game" → at least 2 of 3 pick the 001-1 build (SC-1.1-003).
+- Build 001's commit and this feature's build on two devices, or record short clips of each.
+  Show both, unlabeled, to at least 3 people outside the dev team and ask which "looks and feels
+  more like a horror game" → at least 2 of 3 pick the 001-1 build (SC-1.1-003).
 - During the Compact Darkness scenario above, ask observers if anything on screen looks brighter
   than the floor around it → none should say yes (SC-1.1-005).
 
 ### 6. Performance with shadows (SC-1.1-002)
 
 - On the physical iPhone 17, move continuously for at least 30 seconds with shadows enabled and
-  the placeholder monster figure on screen, watching Xcode's FPS gauge or Instruments →
-  sustained ≥60 fps. If this fails, reduce `shadowMapSize`/`shadowSampleCount` while keeping
-  shadows enabled and re-measure. Setting `GameConfig.shadowsEnabled = false` is a separate
-  FR-022 playability fallback and does not satisfy SC-1.1-002's shadows-on measurement.
+  the placeholder monster figure on screen, watching the Unity Profiler (connected to the device
+  build) → sustained ≥60 fps. If this fails, reduce `shadowMapSize`/`shadowSampleCount` while
+  keeping shadows enabled and re-measure. Setting `GameConfig.shadowsEnabled = false` is a
+  separate FR-022 playability fallback and does not satisfy SC-1.1-002's shadows-on measurement.
 
 ### 7. Config-only tuning (SC-1.1-008)
 
 - Change `flashlightNormalRadius`, `lightRadiusEaseRate`, `wallHeight`, and
-  `joystickControlZoneWidthFraction` one at a time in `GameConfig.swift`, rebuilding after each
+  `joystickControlZoneWidthFraction` one at a time on `GameConfig.asset`, rebuilding after each
   → each visibly changes behavior with no other file touched (SC-1.1-008).
 
 ### 8. Regression (SC-1.1-009)
 
-- Run the full `v2Tests` target → 001's pre-existing tests plus this feature's new tests
-  (`LightRadiusEasingTests`, `FlickerEventTests`, `CollisionResolverTests`) all pass.
+- Run the full `Assets/Tests/EditMode` suite → 001's pre-existing tests plus this feature's new
+  tests (`LightRadiusEasingTests`, `FlickerEventTests`, `CollisionResolverTests`) all pass.
 - Re-run 001's own quickstart scenarios 3 (battery pickup/swap) and 4 (door) verbatim → still
   pass exactly as before; only the *look* of the room and the *floating* joystick behaviour
   should differ, not the gameplay rules.
 
 ## Expected end state
 
-Every scenario above passes on a physical iPhone 17 running iOS 26, `v2Tests` is fully green
-(001's tests unmodified, 001-1's new tests passing), and 001's own quickstart still passes
-end-to-end. Any scenario that fails should be filed as a gap against the relevant FR/SC before
-`/speckit-tasks` work in that area is marked done.
+Every scenario above passes on a physical iPhone 17 running iOS 26, `Assets/Tests/EditMode` is
+fully green (001's tests unmodified, 001-1's new tests passing), and 001's own quickstart still
+passes end-to-end. Any scenario that fails should be filed as a gap against the relevant FR/SC
+before `/speckit-tasks` work in that area is marked done.

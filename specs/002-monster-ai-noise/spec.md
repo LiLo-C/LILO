@@ -149,7 +149,7 @@ The same monster behaves more aggressively on Floor 50 than on Floor 51 — fast
 
 **Test arena**
 
-- **FR-020**: A debug-only test arena MUST exist: one small fixed map with walls, at least one obstacle loop the player can circle, a patrol route of at least 4 waypoints, at least 2 monster spawn presets, a door, a battery, and a placeholder 3D monster rendered through the same 3D-over-2D pipeline as the player.
+- **FR-020**: A debug-only test arena MUST exist: one small fixed map with walls, at least one obstacle loop the player can circle, a patrol route of at least 4 waypoints, at least 2 monster spawn presets, a door, a battery, and a placeholder 3D monster rendered in the same Unity URP 3D scene as the player.
 
 ### Key Entities
 
@@ -184,7 +184,7 @@ The same monster behaves more aggressively on Floor 50 than on Floor 51 — fast
 
 ## Dependencies
 
-- **Requires**: 001-core-prototype (movement states, interaction events, battery install event, hybrid rendering, GameConfig).
+- **Requires**: 001-core-prototype (movement states, interaction events, battery install event, the unified Unity 3D scene, GameConfig).
 - **Consumed by**: 003 (hiding), 007 (catch → death), 009/010 (floors), 013 (audio mix), 014 (haptics).
 - **Floor data format**: spec 004 defines where patrol routes and spawn presets live. The test arena may hardcode its own until 004 exists, but MUST migrate to 004's format when 004 lands.
 

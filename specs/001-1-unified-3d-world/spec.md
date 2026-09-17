@@ -8,40 +8,54 @@
 
 **Amends**: [[001-core-prototype/spec|001 — Core Movement & Light System Prototype]]
 
-**Input**: User description: "The current v2 build looks dumb compared to the LILO spike (~/Documents/Apple/LILO). Switch to the LILO approach — render the whole world in one 3D scene so the flashlight really lights the room and walls cast shadows — and write it as 001-1. Write all the spec requirements first."
+**Input**: User description (original, pre-migration): "The current v2 build looks dumb compared to the LILO spike (~/Documents/Apple/LILO). Switch to the LILO approach — render the whole world in one 3D scene so the flashlight really lights the room and walls cast shadows — and write it as 001-1. Write all the spec requirements first."
+
+*Engine migration note (2026-09-17): this spec originally existed to fix a rendering-architecture*
+*defect specific to the project's earlier native-iOS engine (a 2D SpriteKit environment with 3D*
+*SceneKit characters composited on top, which structurally could not light 2D surfaces with a 3D*
+*light). Under Unity, 001 itself already renders one URP 3D scene from the start — that defect*
+*cannot occur, so it is not this spec's reason to exist anymore. What still has value here, and*
+*is kept, is the feel/quality bar this spec set: a flashlight whose radius eases instead of*
+*jumping, discrete flicker events instead of per-frame noise, real shadows, a readability fill*
+*so the dark isn't unreadable, halo highlights for interactables, sliding collision, and a*
+*floating joystick. Those are polish requirements 001's bare-bones prototype does not yet meet,*
+*and this spec now exists to add them on top of 001's Unity implementation. The "Why This Spec*
+*Exists" and "Relationship to 001" sections below are rewritten accordingly; the Requirements are*
+*re-worded for Unity APIs but are largely the same observable outcomes.*
 
 ## Why This Spec Exists
 
-The 001 build meets its checklist but does not read as a horror game. A side-by-side review against
-the LILO spike found five causes:
+001's bare-bones Unity implementation (a single `Light` whose range jumps directly between the
+four light-state radii, no shadows, no readability fill, no interactable highlight, a fixed-position
+joystick, and no collision against the desk) meets its own checklist but does not read as a horror
+game yet. Four gaps separate it from the feel bar GDD Ch. 11–13 sets:
 
-1. **No visible darkness.** In the Normal state the lit area is larger than the landscape screen, so the whole room is bright.
-2. **The flashlight lights nothing.** The light exists only around the character. The floor, walls and furniture are flat images it cannot reach, so it casts no shadows.
-3. **Mismatched viewpoints.** The room is seen from above, but the character is seen from the front. The character looks pasted on the floor plan.
-4. **Harsh light-state changes.**
-   - Flicker is per-frame noise.
-   - Critical jumps to a smaller radius instantly.
-   - The darkness edge is hard.
-5. **An empty, bright world.** Walls are thin outlines, the floor is mid-grey, and the desk has no collision.
+1. **No shadows.** Nothing occludes the flashlight, so the room reads as evenly lit rather than
+   a light source moving through a dark space.
+2. **Harsh light-state changes.** Radius jumps directly to each state's target instead of easing;
+   flicker (if added naively) would be per-frame noise instead of discrete events.
+3. **Nothing marks batteries or the door once they're outside the flashlight's small radius** —
+   in a genuinely dark room a first-time player has no way to find them.
+4. **Controls and collision feel provisional.** A fixed joystick position and no desk collision
+   are fine for a walking skeleton but not for something meant to feel physical.
 
-Causes 2 and 3 come from the render architecture in GDD Ch. 11.1 and 12: a 2D environment with 3D characters composited on top. A 3D light in that setup cannot light 2D surfaces. The LILO spike renders everything in one 3D scene and does not have these problems.
-
-This spec changes the render approach and sets the look-and-feel bar Phase 1 must meet. **The gameplay rules of 001 are not changed.**
+This spec is the feel/polish pass that closes those four gaps on top of 001's existing Unity
+scene and gameplay logic. **The gameplay rules of 001 are not changed.**
 
 ## Relationship to 001
 
 | 001 item | Status under 001-1 |
 |---|---|
 | FR-001–FR-012, FR-015–FR-020 | **Kept as-is.** Gameplay, controls, battery, interaction and camera rules are unchanged except where FR-013 and FR-014 below add to them. |
-| FR-013 (character grounding across two renderers) | **Superseded** by FR-009 below. |
-| FR-014 (2D element occludes 3D character) | **Superseded** by FR-010 below. |
-| FR-021 (3D characters darken with the 2D environment) | **Superseded** by FR-008 below. |
-| SC-002 (60 fps, 2 characters) | **Superseded** by SC-1.1-002 below (adds shadows). |
+| FR-013 (character grounding/consistency) | **Already true by construction** in 001's single Unity scene (there is no second renderer to drift out of sync with). FR-009 below restates it as an explicit regression guard, not a fix. |
+| FR-014 (environment geometry occludes character) | **Already true by construction** via Unity's real depth buffer. FR-010 below restates it as an explicit regression guard, not a fix. |
+| FR-021 (characters darken with the environment) | **Already true by construction** — one `Light` lights both. FR-008 below restates it as an explicit regression guard, not a fix. |
+| SC-002 (60 fps, 2 characters) | **Superseded** by SC-1.1-002 below (adds real-time shadows, a materially harder bar than 001's unshadowed light). |
 | FR-018 (color highlight on interactable objects) | **Extended** by FR-013 below: the highlight is drawn around the object and also marks it outside the lit area. |
 | SC-001, SC-003–SC-008 | **Kept as-is in 001.** They retain their 001 identifiers and remain authoritative for the original gameplay checks. |
 | SC-009 (no brightly lit character in a dark screen) | **Kept in 001.** The related 001-1 visual check is SC-1.1-005 below. |
 | New 001-1 outcomes | Use the `SC-1.1-###` namespace below to avoid colliding with 001's criteria. |
-| Assumption "environment in 2D, character in 3D" | **Replaced** by the render decision in Assumptions below. |
+| Assumption "single Unity URP 3D scene" (001, unchanged) | **Confirmed, not replaced** — see the Render decision in Assumptions below, which now records what this spec adds on top of that scene rather than a change to it. |
 
 ## Clarifications
 
@@ -223,15 +237,18 @@ A player moves the character through a room with solid walls and a solid desk. T
 
 ## Assumptions
 
-- **Render decision.** The whole playable world is rendered as one real-time 3D scene with dynamic lighting and shadows, following the approach proven in the LILO spike (`~/Documents/Apple/LILO`, `Spike3D.swift`). This deliberately amends GDD Ch. 11.1 (hybrid 2D environment + 3D characters) and Ch. 12 (fake 2D vignette plus separate 3D spotlight). The GDD's own goals for those chapters still apply:
+- **Render baseline (unchanged from 001, confirmed here).** The whole playable world is already
+  one real-time Unity URP 3D scene with dynamic lighting, per 001's Assumptions. This spec adds
+  shadows, eased/flicker light behavior, a readability fill, interactable highlights, sliding
+  collision and a floating joystick on top of that scene — it does not change the render
+  architecture, because there is no hybrid architecture left to change (see the engine
+  migration note at the top of this spec). The GDD's own goals for Ch. 11/12 still apply:
   - characters readable in every facing
   - one visually unified light
   - Inside-like single-light mood
-
-  Only the technique changes. Record the change in the GDD's Ch. 21 open items.
-- The 2D HUD and on-screen controls remain a flat overlay above the world. Only the playable world changes renderer.
-- GDD Ch. 13 camera rules are unchanged; the LILO spike's look-ahead is intentionally not adopted.
-- The LILO spike's tuning (portrait, 70° pitch, lit radius 185, wall height 112) is evidence the approach works, not a set of final values. Landscape and the GDD's 45° tilt need fresh on-device tuning.
+- The HUD and on-screen controls remain a flat `Canvas` overlay above the world. Only the
+  playable world's lighting/collision/feel changes in this spec.
+- GDD Ch. 13 camera rules are unchanged; no look-ahead is adopted (FR-012).
 - Baseline device (iPhone 17), minimum iOS (26) and landscape-only are unchanged from 001.
 - Haptics, audio, real monster AI, final art and multiple rooms remain out of scope, exactly as in 001.
 - The placeholder primitives (capsule character, box furniture, box batteries, slab door) stay placeholders. This spec sets the lighting and material baseline they sit in, not final art.
@@ -240,14 +257,21 @@ A player moves the character through a room with solid walls and a solid desk. T
 
 These are not changed by this spec. They need a follow-up alignment pass once 001-1 is clarified:
 
-- **015 Art, Models & Lighting Pass.** This spec is most affected.
-  - FR-004 (`characterRenderMode` 2D sprite fallback, cut #4) needs rethinking. A sprite fallback would now be a flat character inside the 3D world rather than instead of it.
-  - FR-005 ("final 2D office environment art / tileset") would become office art applied to 3D floor, wall and furniture shapes. Eileen's environment-art lane changes from sprite tiles to textures and low-poly props.
-  - FR-009 and FR-010 ("2D darkness mask radius and 3D character light range must match") are automatically satisfied and can be simplified.
-- **004 Floor & Level Framework.** The Assumptions line naming SpriteKit scene files and tilemaps as an authoring option should allow 3D level data instead.
+- **015 Art, Models & Lighting Pass.**
+  - FR-009 and FR-010 ("darkness-mask radius and character light range must match") are
+    automatically satisfied in Unity's single-scene lighting and can be simplified when 015 is
+    planned.
+  - A `characterRenderMode` fallback (cut #4, low-poly → flat billboard) remains a legitimate
+    performance lever if final 3D models prove too expensive on device — reframed for Unity
+    rather than removed.
+- **004 Floor & Level Framework.** Its Assumptions line on authoring tools should name Unity
+  scene/Tilemap/ScriptableObject data options (tracked separately in the specs 002–017 scan
+  pass), not this spec's concern to edit directly.
 - **ROADMAP.md.** Section 1 needs a row for 001-1. The build order puts 001-1 before 002. The contracts table is unaffected.
-- **Constitution.** No principle changes. Its iOS 26 rationale mentions SpriteKit/Sprite3D APIs. This is a wording refresh only (PATCH), not required to proceed.
-- **001 plan.md, research.md and tasks.md.** The rendering tasks and research §5 (camera sync between renderers) become obsolete. The logic-layer tasks and tests stay.
+- **Constitution.** Superseded by the Unity-native constitution now in place
+  (`.specify/memory/constitution.md`, v3.0.0) — no further action needed from this spec.
+- **001 plan.md, research.md and tasks.md.** Already rewritten for Unity; this spec's plan/tasks
+  build directly on top of them (see this feature's own plan.md).
 
 ## Related
 

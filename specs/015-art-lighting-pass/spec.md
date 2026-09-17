@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**GDD Phase**: Fase 6 — Art & Audio Pass (GDD 19.2) · **Proposed owners**: Fathia (3D models), Eileen (environment art 2D, office tileset), Salwa (UI art), Eca (HUD integration), Calzy (SK3DNode integration)
+**GDD Phase**: Fase 6 — Art & Audio Pass (GDD 19.2) · **Proposed owners**: Fathia (3D models), Eileen (environment art 2D, office tileset), Salwa (UI art), Eca (HUD integration), Calzy (Unity URP integration)
 
 **GDD Sources**: Ch. 1.3, 4.2, 5.2, 8.2, 11.1, 11.2, 11.3, 12, 12.1, 13, 18.3 (cut candidate #4), 19.4
 
@@ -49,9 +49,9 @@ A player explores office floors drawn as a consistent 2D environment — desks, 
 
 ### User Story 3 - Light That Belongs to the World (Priority: P1)
 
-A player's light looks like one light: the 2D darkness circle and the light on the 3D characters shrink, flicker, and fade together, and characters cast real shadows.
+A player's light looks like one light: the readability fill outside the flashlight and the light on the 3D characters shrink, flicker, and fade together (001-1's eased radius, unchanged here), and characters cast real shadows.
 
-**Why this priority**: GDD 12.1 warns that a mismatch makes characters look pasted on. It is the central visual risk of the hybrid pipeline.
+**Why this priority**: GDD 12.1 warns that a mismatch makes characters look pasted on. 001-1 already makes this true by construction with placeholder art (one Unity light drives everything); this story exists so final art and materials don't accidentally reintroduce the mismatch (e.g. an emissive material that ignores the shared light).
 
 **Independent Test**: Step through all four light states in the arena with both characters in and near the light circle.
 

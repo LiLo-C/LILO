@@ -14,12 +14,24 @@
 
 - Q: Device iPhone spesifik mana yang jadi baseline minimum buat validasi 60fps di SC-002? → A: iPhone 17 — superseded from the initial iPhone SE (3rd gen) recommendation once the iOS 26 minimum was set: the team is standardizing on iPhone 17 as everyone's development/testing baseline for this iOS 26 cycle, not the lowest-end device in the abstract.
 - Q: Should the battery/flashlight charge have a persistent HUD indicator, beyond the diegetic light itself? → A: Yes — a simple bar is sufficient (per GDD Ch. 15.1's "indikator battery + slot cadangan"); see FR-017.
-- Q: Minimum iOS deployment target buat project ini? → A: iOS 26, chosen to allow use of newer SpriteKit/Sprite3D and Core Haptics APIs. (Experimenting with iOS 27 preview APIs was also raised — tracked separately; not required for this feature's scope.)
+- Q: Minimum iOS deployment target buat project ini? → A: iOS 26. *(Amended 2026-09-17 — engine migration: the project now ships from a Unity/URP build rather than a native SpriteKit/SceneKit one; iOS 26 remains the deployment floor for the exported Xcode project, chosen for device-support parity with the iPhone 17 baseline below, not for any specific native API.)*
 - Q: Battery satu-satunya di test room itu respawn setelah diambil, atau statis (sekali diambil hilang)? → A: Static — it does not respawn once picked up.
 
 ### GDD Alignment Pass 2026-09-17
 
 A re-read of this spec against LILO GDD v2 Production Lock (Ch. 4.2, 5.2, 13, 15.3, 20.2, 20.3) found requirements the GDD states for Phase 1 that this spec had missed or contradicted. They are folded in below. Because `tasks.md` was generated before this pass, run `/speckit-analyze` then `/speckit-converge` on this feature to turn the delta into tasks.
+
+### Engine Migration Pass 2026-09-17
+
+The project's engine changed from native iOS (Swift + SpriteKit + SceneKit + SwiftUI) to Unity
+(C#, URP). This is a technology-layer change only — every functional requirement, success
+criterion, and numeric value below is unchanged. Two places that named the old architecture as a
+locked assumption are updated: the rendering line in Assumptions, and FR-014's wording (see
+below). FR-013, FR-014 and FR-021 were already marked superseded by
+[[001-1-unified-3d-world/spec|001-1]] before this pass; that relationship is unchanged — 001-1's
+"unified 3D world" decision is now simply what Unity does by default from the start, rather than
+a later fix to a hybrid renderer. See `plan.md`/`research.md` for this feature's now-current
+Unity technical decisions.
 
 - Install-battery gating → GDD 4.2 ("Senter < 10% / kosong → Pasang battery dari slot") and 5.2 ("10–0%: Tombol aksi mulai menampilkan opsi pasang battery"): the install action is only offered once charge is at or below the Critical threshold. Replaces the previous "available at any charge" behavior. See FR-009, FR-011, US3.
 - Interactable highlight → GDD 4.2 ("Feedback interactable: highlight warna pada objek… Tidak pakai ikon prompt melayang"). See FR-018.
@@ -126,7 +138,7 @@ A player locates the room's single door and opens it using the same action butto
 - **FR-011**: System MUST update the action button's label/icon to match the currently available interaction (pick up battery, install battery, open door) and MUST show no prompt when no interaction is available. The install option counts as available only under FR-009's charge condition.
 - **FR-012**: System MUST keep the camera centered on the player with smooth, non-instant follow motion, and MUST stop the camera from panning past the test room's boundaries. The view MUST use a fixed-zoom, orthographic (no perspective distortion) north-facing framing tilted roughly 45°, per GDD Ch. 13; no dynamic zoom exists.
 - **FR-013**: System MUST keep the player character's apparent position, scale, and grounding on the environment visually consistent while the player moves and the camera follows (no drifting, scaling, or floating artifacts).
-- **FR-014**: System MUST let 2D environment elements (e.g., a piece of furniture) visually occlude the player character when that element is positioned in front of the character from the camera's viewpoint.
+- **FR-014**: System MUST let solid environment geometry (e.g., a piece of furniture) visually occlude the player character when that geometry is positioned in front of the character from the camera's viewpoint, based on actual scene depth rather than a manually-authored draw order.
 - **FR-015**: Every tunable numeric value used by this feature's systems (including but not limited to walk speed, sprint multiplier, battery duration, light-state thresholds, and the on-screen control layout values from GDD 15.3 — joystick diameter, dead zone, opacity and position; action button size, position and touch radius — see `contracts/game-config.md` for the authoritative full list) MUST be defined in exactly one configuration source, with no such value hardcoded elsewhere.
 - **FR-016**: The test room MUST contain exactly two loose batteries at fixed positions. System MUST NOT respawn either battery once it has been picked up — each remains removed from the world for the rest of the session.
 - **FR-017**: System MUST display the installed flashlight's current charge as a persistent bar-style indicator in the HUD, and MUST show whether the spare battery slot is empty or occupied, so the player has an at-a-glance view of both without any menu (per GDD Ch. 15.1's HUD spec; decided in Clarifications above).
@@ -160,9 +172,9 @@ A player locates the room's single door and opens it using the same action butto
 
 ## Assumptions
 
-- Per the project's already-locked technical direction (GDD v2 Ch. 11 and the project constitution's platform constraints), the test room's environment is rendered in 2D and the player character in 3D layered above it; this spec's rendering-related requirements (FR-013, FR-014) describe the observable outcome that approach must produce, not a mandated implementation.
-- Performance validation (SC-002) is measured on physical iPhone hardware — specifically an iPhone 17, the team's standardized baseline device for this iOS 26 cycle — not the iOS Simulator, per the GDD's own Phase 1 test plan.
-- Minimum iOS deployment target is iOS 26, to allow use of newer SpriteKit/Sprite3D and Core Haptics APIs. This resolves the constitution's previously open `TODO(IOS_DEPLOYMENT_TARGET)`.
+- Per the project's technical direction (GDD v2.1 Ch. 11 and the constitution's Technology Stack), the test room's environment, the player character, and every other scene object are rendered together in one Unity URP 3D scene — there is no separate 2D environment layer. This spec's rendering-related requirements (FR-013, FR-014) describe the observable outcome that setup must produce (consistent grounding, correct occlusion), not a mandated implementation; both are automatically satisfied by ordinary 3D depth rather than requiring extra work, since Unity has no hybrid renderer to reconcile.
+- Performance validation (SC-002) is measured on physical iPhone hardware — specifically an iPhone 17, the team's standardized baseline device for this iOS 26 cycle — not the Unity Editor's Game view or a simulator, per the GDD's own Phase 1 test plan.
+- Minimum iOS deployment target is iOS 26, matching the iPhone 17 baseline device. This resolves the constitution's previously open `TODO(IOS_DEPLOYMENT_TARGET)`.
 - All room geometry, the player character, the placeholder monster figure, and the battery/door objects are placeholder primitive shapes for this feature — no final art is in scope.
 - Haptics are not required in this phase (GDD assigns them to Phase 6, spec 014). Hooks may exist, but no FR here depends on them.
 - No audio assets are in scope for this feature; any sound-trigger points needed later are not required to produce actual sound yet.

@@ -10,10 +10,11 @@ Lights In, Lights Out
 Tim: Calzy (Tech Lead) · Radit · Fathia (Design Lead) · Eca · Eileen ·
 Salwa
 
-Platform: iOS (iPhone, landscape) · Engine: SpriteKit + SceneKit
-(SK3DNode) · Bahasa: Swift
+Platform: iOS (iPhone, landscape) · Engine: Unity (URP, 3D) · Bahasa: C#
 
-Versi: 2.0 --- 16 September 2026
+Versi: 2.1 --- 17 September 2026 (v2.1: engine migration ke Unity/C#.
+Semua isi desain --- angka tuning, narrative, level design --- tidak berubah
+dari v2.0. Lihat Bab 11, 12, 17, 19, 20 untuk detail teknis yang diamandemen.)
 
 # Daftar Isi
 
@@ -49,9 +50,9 @@ Fase 1) adalah dua bab yang paling langsung dipakai minggu ini.*
   **10**    Narrative & Endings        Eddie, prologue, foreshadowing,
                                        ending
 
-  **11**    Visual & Art Pipeline      Hybrid 2D + 3D lewat SK3DNode
+  **11**    Visual & Art Pipeline      Satu dunia 3D (Unity/URP)
 
-  **12**    Lighting System            Vignette 2D + SCNLight 3D
+  **12**    Lighting System            Satu senter, real-time shadow
 
   **13**    Camera Specification       Orthographic, smooth follow, clamping
 
@@ -682,22 +683,30 @@ Bad ending selesai dan stabil.**
 
 # 11. Visual & Art Pipeline
 
-## 11.1 Arsitektur render: hybrid 2D + 3D
+## 11.1 Arsitektur render: satu dunia 3D (Unity, amended v2.1)
 
-LILO memakai dua renderer sekaligus, dan ini keputusan yang disengaja:
+*Amandemen v2.1: v2.0 mengunci arsitektur hybrid 2D (SpriteKit) + 3D (SceneKit via SK3DNode).
+Keputusan itu digantikan sepenuhnya saat engine berpindah ke Unity --- Unity/URP tidak punya,
+dan tidak butuh, pemisahan render 2D/3D semacam itu. Tujuan desain awal bab ini (karakter
+harus bisa dikenali arah hadapnya tanpa sprite per-arah, dan dunia terasa menyatu, bukan
+"tempelan di atas background") tetap berlaku --- hanya tekniknya yang berubah.*
+
+Seluruh dunia yang bisa dimainkan --- lantai, dinding, furniture, battery, pintu, karakter,
+monster --- adalah satu scene 3D Unity (URP), dirender dan dicahayai bersama oleh satu
+flashlight. Tidak ada compositing dua renderer, tidak ada masalah sinkronisasi kamera/skala
+antar layer, dan occlusion (objek dekat kamera menutupi objek di belakangnya) otomatis benar
+karena semuanya punya depth 3D sungguhan.
 
   -----------------------------------------------------------------------
   **Elemen**         **Teknologi**        **Alasan**
   ------------------ -------------------- -------------------------------
-  **Background &     SpriteKit 2D         Murah, cepat dibuat oleh tim
-  environment**      (SKSpriteNode /      illustrator, gampang
-                     tilemap)             di-iterate.
-
-  **Karakter &       SceneKit 3D via      Player harus bisa tahu
-  monster**          SK3DNode             karakternya menghadap ke arah
-                                          mana. Model 3D menyelesaikan
-                                          ini tanpa perlu membuat sprite
-                                          untuk banyak arah.
+  **Environment,     Satu scene 3D Unity  Karakter menghadap ke arah mana
+  karakter &         (URP), GameObject    pun terlihat benar tanpa sprite
+  monster**          primitif/mesh        per-arah, dan environment bisa
+                     low-poly             memantulkan cahaya senter yang
+                                          sama dengan karakter (satu
+                                          sumber cahaya yang benar-benar
+                                          menyatu).
   -----------------------------------------------------------------------
 
 **Penanggung jawab model 3D: Fathia.**
@@ -706,26 +715,29 @@ Referensi visual: Playdead's Inside (gelap, vignette, satu sumber
 cahaya) untuk mood; Sneaky Sasquatch untuk gaya kamera dan gerak
 karakter.
 
-## 11.2 Risiko teknis yang harus diuji di Fase 1
+## 11.2 Risiko teknis yang harus diuji di Fase 1 (amended v2.1)
 
-SK3DNode me-render scene SceneKit penuh setiap frame lalu
-meng-compositing hasilnya ke SpriteKit. Ini bukan hal yang gratis, dan
-ada dua hal yang secara historis merepotkan:
+*Amandemen v2.1: risiko historis 2D/3D compositing (sinkronisasi kamera, zPosition/layering)
+tidak lagi berlaku --- itu spesifik ke pipeline SpriteKit+SK3DNode yang sudah diganti. Risiko
+teknis Fase 1 di Unity bergeser ke performa shadow map real-time dan menyatunya vignette/fill
+readability dengan cahaya 3D:
 
-- Overhead performa di device target --- harus diukur langsung di
-  iPhone, bukan di simulator.
+- Overhead performa real-time shadow (URP) di device target --- harus diukur langsung di
+  iPhone, bukan di Editor/simulator.
 
-- Sinkronisasi kamera 3D dan kamera 2D --- posisi, sudut, dan skala
-  harus dijaga cocok secara manual supaya karakter tidak 'melayang' di
-  atas background.
+- Menyatunya radius senter (light range, eased per light state) dengan bayangan dinding/desk
+  yang harus ikut menyempit --- keduanya WAJIB dibaca dari `GameConfig`, tidak boleh drift satu
+  sama lain.
 
-- zPosition / layering --- mengatur sprite 2D supaya bisa tampil di
-  depan konten SK3DNode butuh perhatian khusus.
+- Ukuran shadow map / kualitas bayangan pada light omnidirectional --- nilai terlalu besar
+  historically membuat frame over-expose (lihat catatan tuning Bab 17); ini WAJIB bisa
+  diturunkan lewat config sebagai fallback performa, bukan lewat kode.
 
-**Fallback yang sudah disepakati kalau SK3DNode ternyata terlalu mahal:
-turun ke sprite 2D dengan jumlah arah paling sedikit yang masih bisa
-mengkomunikasikan facing --- mulai dari 4 arah, atau bahkan 1 sprite
-dengan rotate/flip.**
+**Fallback yang sudah disepakati kalau real-time shadow/lighting penuh ternyata terlalu mahal:
+matikan shadow (`shadowsEnabled = false` di config) sambil tetap menjaga keempat Light State
+tetap bisa dibedakan tanpa bayangan. Fallback karakter 3D → sprite 2D per GDD v2.0 sudah tidak
+relevan di Unity dan digantikan oleh cut switch `characterRenderMode` di Bab 15 (015 --- lihat
+juga catatan di Bab 21).**
 
 ## 11.3 Aturan asset
 
@@ -738,37 +750,39 @@ dengan rotate/flip.**
 - Asset CC0 dari luar boleh dipakai untuk audio, dengan pencatatan
   lisensi (lihat Bab 16).
 
-# 12. Lighting System
+# 12. Lighting System (amended v2.1: satu sistem pencahayaan 3D)
 
-Karena game ini punya dua renderer, sistem pencahayaannya juga dua
-pendekatan berbeda --- dan ini disengaja, bukan kelupaan.
+*Amandemen v2.1: v2.0 mendeskripsikan dua layer pencahayaan terpisah (vignette 2D palsu +
+SCNLight 3D sungguhan) karena arsitektur render-nya hybrid. Di Unity, environment dan karakter
+berbagi satu scene 3D, jadi tidak ada lagi "layer" terpisah --- satu sistem lighting real-time
+menangani semuanya sekaligus, dan itu justru menyelesaikan masalah "karakter terlihat seperti
+tempelan di atas background" yang jadi risiko utama di v2.0.*
 
-  ---------------------------------------------------------------------------
-  **Layer**         **Teknik**             **Detail**
-  ----------------- ---------------------- ----------------------------------
-  **2D              Fake vignette mask     SKCropNode + hole texture. Statis,
-  (environment)**                          murah, predictable. Tidak ada
-                                           perhitungan lighting sungguhan.
-
-  **3D (karakter &  Lighting engine        SCNLight tipe spot + shadow map
-  monster)**        sungguhan              dinamis. Memberi bayangan asli
-                                           pada karakter dan monster.
-  ---------------------------------------------------------------------------
+Senter Eddie adalah satu Unity `Light` (point/omnidirectional --- radius memancar rata ke
+segala arah dari posisi player, meniru referensi "listrik mati ala Among Us" di 12.1, bukan
+beam terarah) yang menyinari lantai, dinding, furniture, battery, pintu, player, dan monster
+sekaligus. Dinding dan furniture solid melempar real-time shadow (URP shadow map) yang ikut
+bergerak saat player bergerak. Di luar radius senter, satu light fill (intensitas dari config,
+`0` = gelap total) menjaga bentuk ruangan tetap samar terlihat supaya player tidak tersesat
+total (lihat 001-1 User Story 3) --- ini menggantikan kebutuhan vignette 2D yang dulu murni
+kosmetik.
 
 ## 12.1 Hal yang harus dijaga
 
-- Radius vignette 2D dan jangkauan spotlight 3D harus terlihat menyatu.
-  Kalau tidak dijaga, karakter akan terlihat seperti tempelan di atas
-  background.
+- Radius senter harus berubah dengan easing (menyusut/membesar halus,
+  tidak lompat sekaligus) supaya lantai, dinding, dan karakter selalu
+  gelap-terang secara konsisten dari satu sumber cahaya --- tidak ada lagi
+  dua layer terpisah yang bisa desync.
 
-- Radius vignette berubah mengikuti Light State (lihat Bab 5.2).
-  Spotlight 3D harus ikut menyusut bersamaan.
+- Radius senter berubah mengikuti Light State (lihat Bab 5.2), dieased
+  per frame, bukan diset langsung.
 
-- Efek flicker HANYA muncul di state Flickering (30--10%). Jangan
-  dipakai terus-menerus --- flicker konstan berubah jadi noise visual
-  yang bikin lelah, bukan sinyal.
+- Efek flicker HANYA muncul di state Flickering (30--10%), sebagai event
+  diskrit (turun sebentar lalu stabil), bukan nilai random tiap frame.
+  Jangan dipakai terus-menerus --- flicker konstan berubah jadi noise
+  visual yang bikin lelah, bukan sinyal.
 
-- Pada state Compact Darkness (0%), vignette menyusut ke sekitar 10%
+- Pada state Compact Darkness (0%), radius senter menyusut ke sekitar 10%
   ukuran normal --- acuan visualnya: Among Us saat listrik mati.
 
 # 13. Camera Specification
@@ -858,9 +872,9 @@ designer. Setiap asset CC0 wajib dicatat (lihat Bab 16).
                  slot cadangan        minimap.
   ------------------------------------------------------------------------
 
-**Keputusan: pakai virtual joystick, bukan Core Motion tilt. Tilt
-ditolak karena kurang presisi untuk gerakan halus dan sprint mendadak
-yang dibutuhkan game ini.**
+**Keputusan: pakai virtual joystick, bukan tilt/gyroscope perangkat.
+Tilt ditolak karena kurang presisi untuk gerakan halus dan sprint
+mendadak yang dibutuhkan game ini.**
 
 ## 15.2 Haptic feedback
 
@@ -985,10 +999,10 @@ yang belum pernah main
 
 # 17. GameConfig --- Master Tuning Table
 
-**Keputusan tim: SEMUA angka di bawah ini wajib berada di satu file
-config (GameConfig.swift atau .plist), tidak boleh hardcoded tersebar di
-banyak file. Balancing dilakukan dengan mengubah file ini, bukan dengan
-mencari-cari angka di seluruh codebase.**
+**Keputusan tim: SEMUA angka di bawah ini wajib berada di satu sumber
+config (satu `GameConfig` ScriptableObject asset di Unity), tidak boleh
+hardcoded tersebar di banyak file. Balancing dilakukan dengan mengubah
+asset ini, bukan dengan mencari-cari angka di seluruh codebase.**
 
 ## 17.1 Player
 
@@ -1184,9 +1198,9 @@ kedua ending.**
   -----------------------------------------------------------------------
   **Nama**       **Role**           **Ownership sistem (usulan)**
   -------------- ------------------ -------------------------------------
-  **Calzy**      Tech Lead ---      Arsitektur, GameConfig, integrasi
-                 Coding             SK3DNode + SpriteKit, state
-                                    management
+  **Calzy**      Tech Lead ---      Arsitektur, GameConfig
+                 Coding             (ScriptableObject), Unity/URP scene
+                                    & lighting setup, state management
 
   **Radit**      Coding             Monster AI state machine, noise
                                     detection
@@ -1215,8 +1229,9 @@ pastikan setiap baris punya satu nama.*
   **Fase 1 ---    Movement, kamera, senter, Player bisa berjalan di satu
   Core            battery, interaksi,       ruangan, senter menyala dan
   Prototype**     collision. Semua visual   habis, battery bisa diambil
-                  boleh placeholder         dan dipasang. SK3DNode sudah
-                  (kotak/kapsul).           diuji di iPhone asli.
+                  boleh placeholder         dan dipasang. Scene 3D Unity
+                  (kotak/kapsul).           (URP) dengan shadow real-time
+                                            sudah diuji di iPhone asli.
 
   **Fase 2 ---    State machine lengkap +   Monster bisa patrol, mendengar
   Monster         noise detection di satu   sprint, investigate, chase,
@@ -1290,24 +1305,25 @@ satu pintu. Tidak ada monster, tidak ada art, tidak ada audio.
   ------------------------------------------------------------------------
   **Pertanyaan teknis**  **Cara mengujinya**       **Lolos kalau...**
   ---------------------- ------------------------- -----------------------
-  **Apakah SK3DNode      Taruh 1 karakter 3D + 1   Stabil di 60 FPS tanpa
-  cukup cepat di iPhone  monster 3D di scene,      frame drop saat
-  asli?**                jalankan di device (BUKAN bergerak.
-                         simulator), pantau FPS.   
+  **Apakah scene 3D Unity Taruh 1 karakter 3D + 1   Stabil di 60 FPS tanpa
+  (URP) dengan shadow    monster 3D di scene,      frame drop saat
+  real-time cukup cepat  jalankan di device (BUKAN bergerak.
+  di iPhone asli?**      simulator/Editor), pantau 
+                         FPS lewat Unity Profiler. 
 
-  **Apakah kamera 3D dan Gerakkan player keliling  Karakter tidak
-  kamera 2D bisa         ruangan, perhatikan       melayang, tidak geser,
-  disinkronkan?**        apakah karakter tetap     tidak berubah skala
-                         'menempel' pada lantai    saat bergerak.
-                         background.               
+  **Apakah karakter      Gerakkan player keliling  Karakter tidak
+  tetap 'menempel' pada  ruangan, perhatikan       melayang, tidak geser,
+  lantai saat kamera     apakah karakter tetap     tidak berubah skala
+  mengikuti?**           menempel pada lantai.     saat bergerak.
 
-  **Apakah layering 2D   Taruh satu sprite 2D      Sprite bisa menutupi
-  di atas SK3DNode bisa  (misal meja) yang harus   karakter dengan benar
-  diatur?**              tampil di DEPAN karakter. lewat pengaturan
-                                                   zPosition.
+  **Apakah depth/        Taruh satu objek solid    Objek menutupi
+  occlusion 3D bekerja   (misal meja) yang harus   karakter dengan benar
+  otomatis?**            tampil di DEPAN karakter. lewat depth 3D asli,
+                                                   tanpa pengaturan layer
+                                                   manual.
 
-  **Apakah vignette 2D   Kecilkan radius vignette  Tidak ada karakter yang
-  dan spotlight 3D       sampai state Compact      tetap terang di tengah
+  **Apakah radius senter Kecilkan radius senter    Tidak ada karakter yang
+  dan bayangan dinding   sampai state Compact      tetap terang di tengah
   terlihat menyatu?**    Darkness, lihat apakah    layar yang sudah gelap.
                          karakter ikut gelap.      
 
@@ -1325,8 +1341,8 @@ satu pintu. Tidak ada monster, tidak ada art, tidak ada audio.
 
 ☐ Player bisa berjalan dan sprint dengan joystick di iPhone asli
 
-☐ Karakter 3D tampil di atas background 2D dengan benar (posisi, skala,
-layering)
+☐ Karakter 3D tampil di scene 3D dengan benar (posisi, skala, depth/
+occlusion otomatis)
 
 ☐ Senter menyala dan berkurang 180 detik secara real-time
 

@@ -144,7 +144,7 @@ A level designer runs the test suite and gets an automatic report of every Chapt
 ## Assumptions
 
 - Regular (unlocked) doors, once opened, stay open until a floor reset. The monster's navigation passes through regular doors (open or closed) but never through locked doors or the Final Door. If playtests show the monster "walking through" closed doors looks wrong, spec 015 can add an opening animation — behavior stays the same.
-- The authoring tool is whatever is simplest for the team (e.g., SpriteKit scene files or tilemaps with marker nodes, or plain data files). The plan picks one. The GDD rule that every floor is drawn on paper first is a process step owned by the floor specs.
+- The authoring tool is whatever is simplest for the team (e.g., Unity scenes/Tilemap with marker GameObjects, ScriptableObject data assets, or plain data files). The plan picks one. The GDD rule that every floor is drawn on paper first is a process step owned by the floor specs.
 - The safe area is a design region (no patrol waypoints or monster spawn presets inside it). Validation checks that, but nothing prevents a chasing monster from following the player into it.
 - Splash text is plain "Floor NN". Final typography comes from spec 015.
 

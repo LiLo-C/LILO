@@ -2,7 +2,7 @@
 
 ## Governance
 
-- [[constitution]] — project principles (spec-driven development, simplicity, SwiftUI architecture, testing, versioning)
+- [[constitution]] — project principles (spec-driven development, simplicity, Unity architecture, testing, versioning)
 
 ## Reference
 
