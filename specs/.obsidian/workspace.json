@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "004-floor-level-framework/spec.md",
+                "file": "scenes/001-bootstrap-scene/tasks.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "spec"
+              "title": "tasks"
             }
           }
         ]
@@ -190,6 +190,9 @@
   },
   "active": "457b1ca51063517e",
   "lastOpenFiles": [
+    "scenes/001-bootstrap-scene/spec.md",
+    "release/001-scope-lock-and-cut-order/spec.md",
+    "release/001-scope-lock-and-cut-order/checklists/requirements.md",
     "004-floor-level-framework/checklists/requirements.md",
     "001-1-unified-3d-world/plan.md",
     "001-1-unified-3d-world/data-model.md",
@@ -222,9 +225,6 @@
     "009-floor-51-pressure/checklists/requirements.md",
     "008-floor-52-onboarding/checklists/requirements.md",
     "007-lives-checkpoint-fail-state/checklists/requirements.md",
-    "006-battery-spawn-system/checklists/requirements.md",
-    "005-keys-locked-doors/checklists/requirements.md",
-    "003-hiding-under-desk/checklists/requirements.md",
-    "002-monster-ai-noise/checklists/requirements.md"
+    "006-battery-spawn-system/checklists/requirements.md"
   ]
 }
