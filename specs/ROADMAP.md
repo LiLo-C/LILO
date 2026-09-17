@@ -1,137 +1,167 @@
-# LILO — Spec Roadmap
+# LILO — Spec Roadmap (Unity, one spec per small feature)
 
-The whole of [[LILO-GDD-v2-Production-Lock]] is split into 17 Spec Kit features. Each one is
-already **specified** (`spec.md` + `checklists/requirements.md`). An implementing agent does
-**not** re-split anything. It picks the next spec, clarifies it if needed, then runs plan → tasks
-→ implement.
+Source of truth for every spec below: [[LILO-GDD-v2-Production-Lock]] (v2.1) and
+[[constitution]] (v3.0.0). This roadmap is itself the shared contract every spec folder is
+written against — fixed names below MUST be reused verbatim, never reinvented per-spec.
 
-## 1. Spec list
+## 0. Shared naming conventions (fixed — do not rename)
 
-| # | Spec | GDD phase | Proposed owner (GDD 19.1) | Must-have (GDD 18.1) | Cut switch (GDD 18.3) | Open clarification |
-|---|---|---|---|---|---|---|
-| 001 | [[001-core-prototype/spec\|Core Movement & Light Prototype]] | Fase 1 | Calzy, Eca | movement, sprint, flashlight, interaction, battery system | — | — (GDD alignment pass added; run analyze + converge) |
-| 001-1 | [[001-1-unified-3d-world/spec\|Unified 3D World & Feel Pass]] | Fase 1 | Calzy, Eca | flashlight (feel), movement (feel) | shadows off (`FR-022`) | — (clarified 2026-09-17) |
-| 002 | [[002-monster-ai-noise/spec\|Monster AI & Noise Detection]] | Fase 2 | Radit | 1 monster, 5 states; noise detection | — | — |
-| 003 | [[003-hiding-under-desk/spec\|Hiding Under Desks]] | Fase 2 | Radit, Eca | limited hiding | **#1** `hidingEnabled` | — |
-| 004 | [[004-floor-level-framework/spec\|Floor & Level Framework]] | Fase 3 prerequisite | Calzy, Fathia | 3 floors, progression | #3 `floorCount` | battery carry-over on descend |
-| 005 | [[005-keys-locked-doors/spec\|Keys, Locked Doors & Final Door]] | Fase 4 | Calzy, Eca | doors + keys | — | — |
-| 006 | [[006-battery-spawn-system/spec\|Battery Placement & Respawn]] | Fase 3 (static) / Fase 4 (respawn) | Eca | battery respawn | **#2** `batteryModeFloorNN` | — |
-| 007 | [[007-lives-checkpoint-fail-state/spec\|Lives, Checkpoint & Fail State]] | Fase 4 | Calzy | checkpoint | — | — |
-| 008 | [[008-floor-52-onboarding/spec\|Floor 52 — Onboarding]] | Fase 3 | Fathia | 3 floors | — | — |
-| 009 | [[009-floor-51-pressure/spec\|Floor 51 — Pressure]] | Fase 4 | Fathia, Radit | 3 floors | — | — |
-| 010 | [[010-floor-50-mastery/spec\|Floor 50 — Mastery & Final Door]] | Fase 4 | Fathia, Radit | 3 floors, Final Door | **#3** `floorCount = 2` | — |
-| 011 | [[011-narrative-prologue-endings/spec\|Prologue & Endings]] | Fase 5 | Salwa, Calzy | prologue, Good + Bad ending | never cut | Final Door explanation (GDD 21) |
-| 012 | [[012-game-shell-ux/spec\|Game Shell UX]] | Fase 5 | Eca, Salwa | pause, restart, audio settings, How To Play | — | meaning of "Restart" |
-| 013 | [[013-audio-system/spec\|Audio System & Dynamic Mixing]] | engine early, assets Fase 6 | *unassigned* | ambience, player/monster/chase SFX | — | directional vs distance-only monster audio |
-| 014 | [[014-haptics/spec\|Haptics]] | Fase 6 | Eca | haptic feedback | — | — |
-| 015 | [[015-art-lighting-pass/spec\|Art, Models & Lighting Pass]] | Fase 6 | Fathia, Eileen, Salwa | — (DoD: no placeholders) | **#4** `characterRenderMode` | — |
-| 016 | [[016-environmental-storytelling/spec\|Environmental Storytelling]] | Fase 6 | Fathia, Eileen, Salwa | — | reduce hint count | — |
-| 017 | [[017-playtest-submission-lock/spec\|Playtest & Submission Lock]] | Fase 7–8 | Calzy + team | — | enforces cut order | — |
+- **Config**: one `GameConfig` `ScriptableObject` class, one asset `Assets/Config/GameConfig.asset`. Every feature spec that needs a tunable adds a field to it — never a second config source (constitution Technology Stack, GDD Ch. 17).
+- **State**: one plain C# `GameState` class, owned by one `GameManager` `MonoBehaviour` that persists across scene loads (lives in the Bootstrap scene, `DontDestroyOnLoad`). Plain-C# game-rule classes (no `MonoBehaviour`/scene dependency) live under `Assets/Scripts/Systems/`; thin Unity-lifecycle adapters live under `Assets/Scripts/MonoBehaviours/`; UI under `Assets/Scripts/UI/` (constitution Principle III).
+- **Testing**: Unity Test Framework, EditMode by default (constitution Principle IV). Every feature spec's `tasks.md` includes explicit EditMode test tasks for its pure-logic pieces.
+- **Scenes**: `Assets/Scenes/Bootstrap.unity`, `MainMenu.unity`, `Prologue.unity`, `Floor52.unity`, `Floor51.unity`, `Floor50.unity`, `GoodEnding.unity`, `BadEnding.unity`.
+- **Player character name in code**: `PlayerCharacter`. **Monster**: `Monster`. **Battery**: `Battery`. **Door**: `Door`. **Key**: `Key`.
+- **Units**: world units are meters (Unity default); light/shadow numeric defaults inherited from the project's earlier native-engine on-device tuning are marked *(carried over — re-tune)* in each spec's config table, matching the precedent set in the prior 001/001-1 Unity specs (now superseded by this vault, but the same carried-over numbers still apply since gameplay math is engine-independent).
+- **Feel-based values (light radius, camera tilt, joystick deadzone, etc.)**: every such FR states the *rule* (e.g. "radius MUST ease toward target, never jump") and requires the value to live in `GameConfig`; it does NOT invent a fake precise final number where none is validated yet. Where a validated starting number exists from prior on-device work, it's given as a default to re-confirm, not as a locked constant — this is a deliberate, honest limit of what a spec can pin down for feel-driven content (see conversation decision 2026-09-17: spec-driven development is scoped to what's actually deterministic/testable; feel is validated by playtesting, not by a fabricated acceptance number).
 
-**Never cut (GDD 18.3):** one complete floor from start to exit, a working monster, and both endings.
-
-## 2. Build order
+## 1. Taxonomy
 
 ```text
-Fase 1  001 ──(analyze + converge the alignment delta) ──► 001-1 (unified 3D world)
-          │
-Fase 2  002 ─────────────► 003
-          │
-Fase 3  004 ──► 006 (static) ──► 008 ◄── 013 engine + placeholder sounds (pull forward)
-          │
-Fase 4  ├──► 005 ─┐
-        ├──► 007 ─┼──► 006 (respawn) ──► 009 ──► 010
-          │
-Fase 5  012 ──► 011
-          │
-Fase 6  013 (final assets) · 014 · 015 · 016     (parallel, by owner)
-          │
-Fase 7–8  017
+specs/
+├── systems/<category>/<NNN>-<feature>/        # reusable engineering, cross-scene
+├── scenes/<NNN>-<scene>/<feature>/             # one Unity Scene's own content specs
+└── release/<NNN>-<feature>/                    # process/QA gates, not runtime code
 ```
 
-Parallel lanes that do not touch each other's files much:
+Every feature folder contains at minimum `spec.md` (user stories, FR, SC — full spec-kit rigor)
+and `tasks.md` (broken into the smallest sensible independently-completable units — prefer many
+single-responsibility tasks over broad ones). `research.md`/`data-model.md`/`contracts/` are
+added where the feature has real technical decisions or a shared data shape to document.
 
-- **Radit**: 002 → 003 → tuning in 009/010
-- **Calzy**: 004 → 007 → 005 → 012 → 011 flow
-- **Eca**: 006 → 012 HUD/menus → 014
-- **Fathia**: paper blueprints for 008/009/010 while 004 is built, then models for 015
-- **Eileen / Salwa**: environment tileset and comic panels can start immediately — they only need the GDD, not code
+## 2. Systems — full list
 
-## 3. Contracts between specs
+| Category | Feature spec | GDD source | Depends on |
+|---|---|---|---|
+| **shared-config-and-state** | 001-game-config-schema | Ch. 17 (all) | — |
+| | 002-shared-game-state-and-manager | (Unity architecture necessity; constitution Principle III) | 001 |
+| **movement-and-camera** | 001-joystick-movement-and-sprint | Ch. 4.1 | shared-config-and-state/002 |
+| | 002-wall-and-furniture-collision | (feel/physicality requirement, sliding not stopping) | 001 |
+| | 003-camera-follow-and-boundary-clamp | Ch. 13 (follow, clamp) | 001 |
+| | 004-camera-projection-and-framing | Ch. 13 (orthographic, tilt, zoom) | 003 |
+| **flashlight-and-battery** | 001-light-state-thresholds-and-radius | Ch. 5.2 | shared-config-and-state/002 |
+| | 002-battery-real-time-drain-timer | Ch. 5.1 | 001 |
+| | 003-eased-radius-transitions | Ch. 12.1 (no jump) | 001 |
+| | 004-flicker-event-system | Ch. 12.1 (flicker only in Flickering) | 001, 003 |
+| | 005-shadow-casting-and-quality-fallback | Ch. 12 (real shadows) | 001 |
+| | 006-readability-fill-light | Ch. 12.1 (room stays legible) | 001 |
+| | 007-battery-pickup-and-spare-slot | Ch. 5.1 (slot capacity) | shared-config-and-state/002 |
+| | 008-battery-install-and-refill | Ch. 4.2, 5.2 (install gate, full refill) | 001, 007 |
+| | 009-battery-hud-indicator | Ch. 15.1 | 002, 007 |
+| **interaction-and-highlight** | 001-nearest-interactable-detection | Ch. 4.2 | shared-config-and-state/002 |
+| | 002-context-sensitive-action-button | Ch. 4.2 | 001 |
+| | 003-interactable-highlight-halo | Ch. 4.2 | 001 |
+| **hiding** | 001-enter-and-exit-hiding | Ch. 4.3 | movement-and-camera/001, interaction-and-highlight/002 |
+| | 002-hiding-detection-immunity-rule | Ch. 4.3 | 001, monster-ai/001 |
+| | 003-hiding-audio-and-light-dampening | Ch. 4.3 | 001, audio/002 |
+| **monster-ai** | 001-state-machine-core-transitions | Ch. 6.1 | noise-and-detection/002 |
+| | 002-per-floor-tuning-profile | Ch. 6.2, 17.4 | 001, shared-config-and-state/001 |
+| | 003-spawn-point-validation-rules | Ch. 6.3 | 001 |
+| | 004-catch-outcome-signal | Ch. 6.1 (CATCH), 9.3 | 001 |
+| **noise-and-detection** | 001-per-action-noise-emission | Ch. 7.1, 17.3 | movement-and-camera/001, flashlight-and-battery/008, hiding/001 |
+| | 002-distance-based-detection-check | Ch. 7.2 | 001 |
+| **keys-and-doors** | 001-key-pickup-and-inventory | Ch. 8.1 | interaction-and-highlight/002 |
+| | 002-locked-door-unlock-logic | Ch. 8.1 | 001, interaction-and-highlight/002 |
+| | 003-final-door-distinct-behavior | Ch. 8.1, 8.2, 21 (open item) | 002 |
+| | 004-door-visual-and-color-feedback | Ch. 8.2 | 002, 003 |
+| **battery-spawn-system** | 001-per-floor-spawn-point-registry | Ch. 3.1 | flashlight-and-battery/007 |
+| | 002-active-battery-count-cap | Ch. 3.1 | 001 |
+| | 003-respawn-timer-and-placement-rule | Ch. 3.1 | 001, 002 |
+| **lives-and-fail-state** | 001-lives-count-and-checkpoint | Ch. 9.1 | shared-config-and-state/002 |
+| | 002-floor-state-reset-on-death | Ch. 9.2 | 001, battery-spawn-system/*, keys-and-doors/* |
+| | 003-death-sequence-and-outcome-branch | Ch. 9.3 | 001, 002, monster-ai/004 |
+| **progression-and-scene-flow** | 001-floor-numbering-and-splash-text | Ch. 2.4, 8.2 | shared-config-and-state/002 |
+| | 002-scene-transition-manager | (Unity architecture: which Scene loads next) | 001 |
+| | 003-full-run-completion-tracking | Ch. 2.3 | 002 |
+| **audio** | 001-sound-event-taxonomy | Ch. 14.1 | — |
+| | 002-dynamic-mix-state-machine | Ch. 14.2 | 001, monster-ai/001 |
+| | 003-audio-asset-sourcing-and-licensing-log | Ch. 14.3, 19.4 | 001 |
+| **haptics** | 001-haptic-trigger-events | Ch. 15.2 | flashlight-and-battery/001, lives-and-fail-state/003, interaction-and-highlight/002 |
+| **game-shell-ui** | 001-pause-menu-and-time-freeze | Ch. 15.1, 18.1 | shared-config-and-state/002 |
+| | 002-settings-menu-audio-controls | Ch. 18.1 | audio/002 |
+| | 003-how-to-play-screen | Ch. 9.1, 15.4 | 001 |
+| | 004-hud-composition-and-layout | Ch. 15.1 | flashlight-and-battery/009, interaction-and-highlight/002, movement-and-camera/001 |
+| **narrative-content** | 001-eddie-character-bible | Ch. 10.1 | — |
+| | 002-foreshadowing-prop-catalog | Ch. 10.3 | 001 |
 
-Names used in several specs. The first spec to implement one owns its shape; later specs extend it rather than duplicating it.
+## 3. Scenes — full list
 
-| Shared thing | Defined in | Used by |
-|---|---|---|
-| Single configuration source (all GDD Ch. 17 keys) | 001 FR-015, `001/contracts/game-config.md` | every spec adds keys here, never a second config |
-| Action button + nearest-object priority | `001/contracts/action-button-states.md` | 003 (Hide/Leave), 005 (Pick up key / Unlock / Final Door) |
-| Interactable highlight | 001 FR-018, extended by 001-1 FR-013 (drawn around the object, two levels) | 003, 005, 006; final look 015 |
-| Floor definition + anchors | 004 FR-002 | 002, 003, 005, 006, 008–010, 016 |
-| Noise event / "player caught" outcome | 002 FR-010, FR-012 | 003, 005, 006, 007 |
-| Floor reset operation | 007 FR-005, FR-007 | 002, 003, 005, 006 participate |
-| "Run completed" outcome | 004 FR-008 / 005 FR-008 | 011 Good Ending |
-| "Lives exhausted" outcome | 007 FR-004 | 011 Bad Ending |
-| Pause freezes gameplay time | 012 FR-004 | 002, 003, 006, 007, 013, 014 |
-| Sound events | 013 FR-001 | 014 reuses the same events |
-| Debug-only tools (floor select, arena, overlays) | 002 FR-020, 004 FR-013 | stripped in 017 FR-008 |
+| Scene | Feature spec | GDD source | Depends on (systems) |
+|---|---|---|---|
+| **001-bootstrap-scene** | (single spec, no sub-split — its job is one thing: stand up persistent systems then load MainMenu) | Unity architecture necessity | shared-config-and-state/* |
+| **002-main-menu-scene** | (single spec — Title screen + navigation wiring to shared How To Play/Settings/Pause systems) | Ch. 15.1 (shell), implied Title screen | game-shell-ui/002, 003 |
+| **003-prologue-scene** | (single spec — one linear comic-panel sequence, beats 1–7) | Ch. 10.2, 10.1 | narrative-content/001 |
+| **004-floor-52-scene** (Learn) | 001-level-layout-and-geometry | Ch. 16.1, 16.2, 16.3 | — |
+| | 002-onboarding-beat-sequencing | Ch. 15.4 | movement-and-camera/001, flashlight-and-battery/*, hiding/001, noise-and-detection/001 |
+| | 003-static-battery-and-hiding-placement | Ch. 3 (Floor 52 column) | battery-spawn-system/001, hiding/001 |
+| | 004-distant-monster-hint-audio | Ch. 3 ("hanya SFX dari kejauhan") | audio/001 |
+| | 005-floor-exit-and-transition | Ch. 8.1, 8.2 | keys-and-doors/004, progression-and-scene-flow/001, 002 |
+| **005-floor-51-scene** (Pressure) | 001-level-layout-and-geometry | Ch. 16.1–16.3 | — |
+| | 002-monster-patrol-route-and-spawn-presets | Ch. 6.3 | monster-ai/003 |
+| | 003-key-and-locked-door-placement | Ch. 8.1 (1 key, 1 door) | keys-and-doors/001, 002 |
+| | 004-battery-spawn-point-placement | Ch. 3.1 (max 2, 30s respawn) | battery-spawn-system/* |
+| | 005-hiding-spot-placement | Ch. 3 (Floor 51 column) | hiding/001 |
+| | 006-floor-exit-and-transition | Ch. 8.2 | progression-and-scene-flow/001, 002 |
+| **006-floor-50-scene** (Mastery + Final Door) | 001-level-layout-and-geometry | Ch. 16.1–16.3 | — |
+| | 002-monster-patrol-route-and-spawn-presets | Ch. 6.3 (aggressive tuning) | monster-ai/003 |
+| | 003-three-keys-and-locked-doors-placement | Ch. 8.1 (3 keys/doors) | keys-and-doors/001, 002 |
+| | 004-final-door-placement-and-trigger | Ch. 8.1, 8.2, 21 | keys-and-doors/003 |
+| | 005-battery-spawn-point-placement | Ch. 3.1 (max 1, 60s respawn) | battery-spawn-system/* |
+| | 006-hiding-spot-placement | Ch. 3 (Floor 50 column, rarer) | hiding/001 |
+| **007-good-ending-scene** | (single spec) | Ch. 10.4 (Good) | narrative-content/001, progression-and-scene-flow/003 |
+| **008-bad-ending-scene** | (single spec) | Ch. 10.4 (Bad) | narrative-content/001, lives-and-fail-state/003 |
 
-## 4. GDD → spec traceability
+## 4. Release
 
-| GDD section | Spec(s) |
+| Feature spec | GDD source |
 |---|---|
-| 1.1 Premis | 011 |
-| 1.3 Design pillars | 002 FR-016, 006, 012 FR-003, 015 FR-013 |
-| 1.4 Target durasi | 008–010 SCs, 017 SC-002 |
-| 2.1–2.2 Loops | 008, 009, 010 |
-| 2.3 Full run | 004, 007, 011 |
-| 2.4 Floor numbering | 004 |
-| 3 Floor table | 008, 009, 010 |
-| 3.1 Battery spawn rules | 006 |
-| 4.1 Movement | 001 |
-| 4.2 Interaction | 001, 003, 005 |
-| 4.3 Hiding | 003 |
-| 5.1–5.2 Battery & light states | 001 (+ 003 drain while hiding) |
-| 5.3 Battery sources | 006, 016 |
-| 6 Monster AI | 002 (+ 008 distant SFX) |
-| 7 Noise & detection | 002 |
-| 8.1 Objectives | 005, 008, 009, 010 |
-| 8.2 Progression feedback | 004, 005, 010, 015 |
-| 9 Lives, checkpoint, fail | 007 |
-| 10.1–10.2, 10.4 Eddie, prologue, endings | 011 |
-| 10.3 Foreshadowing | 016 (+ 013 sounds) |
-| 11 Visual pipeline | 001 (risk validation), 001-1 (amends 11.1: unified 3D world), 015 (final + fallback) |
-| 12 Lighting | 001, 001-1 (amends 12: one real light + shadows), 015 |
-| 13 Camera | 001, 001-1, 004 |
-| 14 Audio | 013 |
-| 15.1 Layout / HUD | 001, 012 |
-| 15.2 Haptics | 014 |
-| 15.3 Control parameters in config | 001, 012 |
-| 15.4 Onboarding | 008, 012 (How To Play) |
-| 16 Level design | 004 (framework + validation), 008–010 (content), 017 (final sign-off) |
-| 17.1–17.2 Player, light & battery config | 001, 006 |
-| 17.3–17.4 Noise, monster config | 002 |
-| 17.5 Progression config | 004, 005, 007 |
-| 18.1 Must have | see Section 1 column |
-| 18.2 Cut list | guard-rail FRs in 002, 003, 004, 005, 011, 012, 017 |
-| 18.3 Cut order | 003, 006, 010, 015 switches; 017 FR-006 |
-| 19.1 Roles | owner column above |
-| 19.2 Phases | phase column above |
-| 19.3 Bug priority | 017 |
-| 19.4 AI & CC0 policy | 013 FR-012, 015 FR-015, 017 FR-010 |
-| 20 Fase 1 test plan | 001 |
-| 21 Open items | joystick params → 001 SC-007 / T038; `noiseBaseRadius` → 002 FR-019; keep hiding? → 003 SC-005; hint count → 016 SC-004; Final Door line → 011 clarification; secret ending → out of scope (011 FR-008) |
+| 001-scope-lock-and-cut-order | Ch. 18.1, 18.2, 18.3 |
+| 002-playtest-and-bug-priority-process | Ch. 19.3 |
+| 003-ai-and-cc0-asset-policy | Ch. 19.4 |
 
-## 5. How an agent picks up the next spec
+Ch. 1 (Vision & Pillars), 19.1 (roles) and 19.2 (phase plan) are project-management context, not
+independently spec-able features — they stay narrative context in the GDD itself; every spec
+above must still read as satisfying the four Design Pillars (Ch. 1.3), but that's a review
+criterion, not its own spec.
 
-Specs 002–017 were written **without** switching branches or touching `.specify/feature.json`,
-so the agent working on 001 was not disturbed. To start one:
+## 5. Dependency-ordered build sequence
 
-1. Create the branch from an up-to-date `main`: `feat/0NN-<slug>` (constitution: one branch per spec).
-2. Point Spec Kit at it: set `.specify/feature.json` → `{"feature_directory": "specs/0NN-<slug>"}`.
-3. If `checklists/requirements.md` has an unchecked "No [NEEDS CLARIFICATION]" item (004, 011, 012, 013): run `/speckit-clarify`.
-4. `/speckit-plan` → `/speckit-tasks` → `/speckit-analyze` → `/speckit-implement`.
-5. Do **not** run `/speckit-specify` for these — it would create a duplicate numbered folder.
+```text
+shared-config-and-state (001→002)
+   │
+   ├─ movement-and-camera (001→002, 003→004)
+   ├─ flashlight-and-battery (001→002→003→004, 001→005, 001→006, 007→008→009)
+   ├─ interaction-and-highlight (001→002→003)
+   │
+   ├─ hiding (needs movement, interaction, monster-ai/001)
+   ├─ noise-and-detection (needs movement, flashlight/008, hiding)
+   ├─ monster-ai (001→002/003/004, needs noise-and-detection/002)
+   ├─ keys-and-doors (needs interaction)
+   ├─ battery-spawn-system (needs flashlight-and-battery/007)
+   ├─ lives-and-fail-state (needs battery-spawn-system, keys-and-doors, monster-ai/004)
+   ├─ progression-and-scene-flow (001→002→003)
+   ├─ audio, haptics (need monster-ai/001, lives-and-fail-state/003, etc. — see table)
+   ├─ game-shell-ui (needs flashlight-and-battery/009, interaction/002, movement/001)
+   └─ narrative-content (no dependencies — can start anytime)
+   │
+   ▼
+scenes/001-bootstrap → 002-main-menu → 003-prologue
+   → 004-floor-52 (all 5 feature specs) → 005-floor-51 (all 6) → 006-floor-50 (all 6)
+   → 007-good-ending / 008-bad-ending
+   │
+   ▼
+release/001–003 (final gate before submission)
+```
 
-For **001**: after the current implementation pass, run `/speckit-analyze` then `/speckit-converge`
-so the GDD alignment delta (install gate ≤10%, highlight, placeholder monster, second battery,
-control layout config, camera framing, furniture collision, new SCs) becomes tasks.
+## 6. How an agent picks up a feature
+
+1. Read this ROADMAP's row for the feature (GDD source, dependencies) and the relevant GDD
+   chapter(s) in full.
+2. Read the constitution for the Unity architecture/testing conventions.
+3. Write `spec.md` with full spec-kit rigor: user stories (priority-ordered, each with an
+   Independent Test), functional requirements, edge cases, key entities, measurable success
+   criteria. For feel-based values, state the rule and the config field, not a fabricated exact
+   number (§0 above).
+4. Write `tasks.md`, broken into the smallest sensible independently-completable units, grouped
+   by user story, each with an exact file path under `Assets/Scripts/...`.
+5. Add `research.md`/`data-model.md`/`contracts/` only where the feature has a real technical
+   decision or shared data shape worth recording — not as boilerplate for its own sake.
