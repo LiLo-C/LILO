@@ -235,7 +235,7 @@ namespace Lilo.MonoBehaviours.Monster
             if (_brain.State != _lastLoggedState)
             {
                 Debug.Log($"[Monster] {_lastLoggedState} -> {_brain.State} (target={_brain.Target})");
-                if (_brain.State == MonsterState.Chase && sfx != null)
+                if ((_brain.State == MonsterState.Chase || _brain.State == MonsterState.Catch) && sfx != null)
                     sfx.PlayHorrorChase();
                 _lastLoggedState = _brain.State;
             }
