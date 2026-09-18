@@ -7,6 +7,7 @@ using Unity.AI.Navigation;
 using Lilo.Config;
 using Lilo.State;
 using Lilo.Systems.Monster;
+using Lilo.MonoBehaviours.Audio;
 using Lilo.MonoBehaviours.Player;
 
 namespace Lilo.MonoBehaviours.Monster
@@ -38,6 +39,9 @@ namespace Lilo.MonoBehaviours.Monster
         [Header("Debug (arena testing only — never enable in release)")]
         public bool debugForceMoveNoise;
         public bool debugForceSprintNoise;
+
+        [Header("Audio")]
+        [SerializeField] private SfxController sfx;
 
         /// <summary>
         /// Instance-level one-shot noise pulses (interact/battery, specs 005/006).
@@ -231,6 +235,8 @@ namespace Lilo.MonoBehaviours.Monster
             if (_brain.State != _lastLoggedState)
             {
                 Debug.Log($"[Monster] {_lastLoggedState} -> {_brain.State} (target={_brain.Target})");
+                if (_brain.State == MonsterState.Chase && sfx != null)
+                    sfx.PlayHorrorChase();
                 _lastLoggedState = _brain.State;
             }
 

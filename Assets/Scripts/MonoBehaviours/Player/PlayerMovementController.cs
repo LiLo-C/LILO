@@ -1,4 +1,5 @@
 using Lilo.Config;
+using Lilo.MonoBehaviours.Audio;
 using Lilo.MonoBehaviours.Input;
 using Lilo.Systems.Movement;
 using UnityEngine;
@@ -14,9 +15,12 @@ namespace Lilo.MonoBehaviours.Player
     {
         [SerializeField] private GameConfig config;
         [SerializeField] private JoystickInputAdapter joystick;
+        [SerializeField] private SfxController sfx;
 
         /// <summary>Read-only for other systems (noise emission, audio mixing) — spec FR-011/US2.4.</summary>
         public bool IsSprinting { get; private set; }
+
+        private bool _hasMoved;
 
         private void Update()
         {
@@ -31,6 +35,12 @@ namespace Lilo.MonoBehaviours.Player
 
             Vector3 delta = new Vector3(result.Velocity.x, 0f, result.Velocity.y) * Time.deltaTime;
             transform.position += delta;
+
+            if (!_hasMoved && delta.sqrMagnitude > 0.0001f)
+            {
+                _hasMoved = true;
+                if (sfx != null) sfx.PlayBehindYou();
+            }
         }
     }
 }
