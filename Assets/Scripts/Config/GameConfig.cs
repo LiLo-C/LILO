@@ -84,6 +84,20 @@ namespace Lilo.Config
         };
         public bool monsterActiveFloor52 = false;
 
+        [Header("002 Monster behavior (FR-018 new keys)")]
+        [Tooltip("Close-range detection that turns INVESTIGATE into CHASE. Feel value — tune on device.")]
+        public float chaseTriggerDistance = 2.5f;
+        [Tooltip("Wander radius around last known position in SEARCH. Feel value — tune on device.")]
+        public float searchRadius = 4f;
+        [Tooltip("Touch distance that fires the catch outcome. Feel value — tune on device.")]
+        public float catchRadius = 0.9f;
+        [Tooltip("Stuck safeguard window (spec 002 edge cases).")]
+        public float monsterStuckTimeout = 2f;
+        [Tooltip("Spawn validity (FR-003); full automated checks land with spec 004 floor data.")]
+        public float monsterSpawnMinDistance = 8f;
+        public float monsterSpawnObjectiveClearance = 3f;
+        public float monsterSpawnSafeSeconds = 5f;
+
         [Header("17.5 Progression")]
         public int lives = 3;
         public int floorCount = 3;
@@ -157,6 +171,22 @@ namespace Lilo.Config
             // 17.4 Monster
             ValidateMonsterProfile(monsterTuningFloor51, nameof(monsterTuningFloor51), failures);
             ValidateMonsterProfile(monsterTuningFloor50, nameof(monsterTuningFloor50), failures);
+
+            // 002 Monster behavior (FR-018)
+            if (chaseTriggerDistance <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(chaseTriggerDistance), chaseTriggerDistance.ToString(), "must be > 0"));
+            if (searchRadius <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(searchRadius), searchRadius.ToString(), "must be > 0"));
+            if (catchRadius <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(catchRadius), catchRadius.ToString(), "must be > 0"));
+            if (monsterStuckTimeout <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(monsterStuckTimeout), monsterStuckTimeout.ToString(), "must be > 0"));
+            if (monsterSpawnMinDistance <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(monsterSpawnMinDistance), monsterSpawnMinDistance.ToString(), "must be > 0"));
+            if (monsterSpawnObjectiveClearance <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(monsterSpawnObjectiveClearance), monsterSpawnObjectiveClearance.ToString(), "must be > 0"));
+            if (monsterSpawnSafeSeconds <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(monsterSpawnSafeSeconds), monsterSpawnSafeSeconds.ToString(), "must be > 0"));
 
             // 17.5 Progression
             if (lives <= 0)

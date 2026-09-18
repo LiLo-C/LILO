@@ -1,0 +1,331 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.SceneManagement;
+using Unity.AI.Navigation;
+using Lilo.Config;
+using Lilo.State;
+using Lilo.Systems.Monster;
+using Lilo.MonoBehaviours.Player;
+
+namespace Lilo.MonoBehaviours.Monster
+{
+    /// <summary>
+    /// Thin per-frame adapter over the pure MonsterBrain (spec 002). Owns movement
+    /// (NavMeshAgent), arrival/stuck sensing, noise gathering, animator wiring, and
+    /// the catch sequence. Dev arena runs the Floor 51 profile until spec 004
+    /// provides per-floor wiring.
+    ///
+    /// Animator mapping (Eggy.controller, all triggers):
+    /// - moving (any state) -&gt; "walk" trigger whenever the animator sits in idle
+    ///   (the pack's walk state auto-returns to idle, so it is re-fired as needed).
+    /// - CATCH -&gt; "attack" trigger once.
+    /// - "damaged"/"death" have no gameplay source yet (reserved for later specs).
+    ///
+    /// FR-017: CurrentState + DistanceToPlayer are read-only for audio (013) /
+    /// haptics (014); those systems must not change monster behavior.
+    /// </summary>
+    [RequireComponent(typeof(NavMeshAgent))]
+    public class MonsterAIController : MonoBehaviour
+    {
+        [SerializeField] private GameConfig config;
+        [Header("Arena wiring (auto-found by name if empty)")]
+        [SerializeField] private Transform patrolRoute;
+        [SerializeField] private Transform spawnPresets;
+        [SerializeField] private Transform player;
+
+        [Header("Debug (arena testing only — never enable in release)")]
+        public bool debugForceMoveNoise;
+        public bool debugForceSprintNoise;
+
+        /// <summary>
+        /// Instance-level one-shot noise pulses (interact/battery, specs 005/006).
+        /// Emitters call this on the scene's single MonsterAIController; until those
+        /// specs land nothing emits and movement noise is the only channel.
+        /// </summary>
+        public void EmitPulse(Vector3 position, float radius, float ttl = 0.25f)
+        {
+            if (radius > 0f)
+                _pulses.Add(new PendingPulse(position, radius, Time.time + ttl));
+        }
+
+        public MonsterState CurrentState => _brain.State;
+        public float DistanceToPlayer => player != null ? MonsterBrain.DistXZ(transform.position, player.position) : -1f;
+
+        private struct PendingPulse
+        {
+            public Vector3 Position;
+            public float Radius;
+            public float Expiry;
+            public PendingPulse(Vector3 position, float radius, float expiry)
+            {
+                Position = position;
+                Radius = radius;
+                Expiry = expiry;
+            }
+        }
+
+        private System.Random _rng;
+
+        private NavMeshAgent _agent;
+        private Animator _animator;
+        private PlayerMovementController _playerMovement;
+        private MonsterTuningProfile _profile;
+        private MonsterBrainState _brain;
+        private Vector3[] _waypoints = System.Array.Empty<Vector3>();
+        private readonly List<PendingPulse> _pulses = new List<PendingPulse>();
+        private Vector3 _lastPlayerPos;
+        private bool _hasLastPlayerPos;
+        private Vector3 _stuckCheckPos;
+        private float _stuckTimer;
+        private bool _forceArrived;
+        private bool _catchRunning;
+        private MonsterState _lastLoggedState = (MonsterState)(-1);
+
+        private void Awake()
+        {
+            _rng = new System.Random(System.Environment.TickCount);
+
+            GameConfig cfg = config != null ? config : GameManager.Instance?.Config;
+            if (cfg == null)
+            {
+                Debug.LogError("[Monster] No GameConfig (field empty and no GameManager) — disabling.");
+                enabled = false;
+                return;
+            }
+            config = cfg;
+            _profile = cfg.monsterTuningFloor51; // dev arena = Floor 51 aggression until spec 004.
+            if (!_profile.monsterActive)
+            {
+                gameObject.SetActive(false); // Floor 52: no monster, no detection (US5).
+                return;
+            }
+
+            if (patrolRoute == null) patrolRoute = GameObject.Find("MonsterPatrolRoute")?.transform;
+            if (spawnPresets == null) spawnPresets = GameObject.Find("MonsterSpawns")?.transform;
+            var playerGo = player != null ? player.gameObject : GameObject.Find("PlayerCharacter");
+            if (playerGo != null)
+            {
+                player = playerGo.transform;
+                _playerMovement = playerGo.GetComponent<PlayerMovementController>();
+            }
+            if (player == null || patrolRoute == null || patrolRoute.childCount == 0)
+            {
+                Debug.LogError("[Monster] Missing player, patrol route, or waypoints — run LILO/Setup Monster Arena.");
+                enabled = false;
+                return;
+            }
+
+            _agent = GetComponent<NavMeshAgent>();
+            _agent.radius = 0.5f;
+            _agent.height = 2f;
+            _agent.baseOffset = 0f;
+            _agent.stoppingDistance = 0.3f;
+            _agent.angularSpeed = 360f;
+            _agent.acceleration = 12f;
+            _agent.autoBraking = true;
+
+            _animator = GetComponentInChildren<Animator>(true);
+            if (_animator == null)
+                Debug.LogError("[Monster] No Animator under monster — run LILO/Setup Eggy Monster.");
+
+            EnsureNavMesh();
+
+            var points = new List<Vector3>();
+            foreach (Transform child in patrolRoute) points.Add(child.position);
+            _waypoints = points.ToArray();
+
+            // FR-002: start at a random preset spawn point, never near the player by authoring.
+            if (spawnPresets != null && spawnPresets.childCount > 0)
+            {
+                Transform spawn = spawnPresets.GetChild(Random.Range(0, spawnPresets.childCount));
+                _agent.Warp(spawn.position);
+            }
+
+            _brain = new MonsterBrainState
+            {
+                State = MonsterState.Patrol,
+                WaypointIndex = NearestWaypoint(transform.position, _waypoints),
+            };
+            _stuckCheckPos = transform.position;
+        }
+
+        private void EnsureNavMesh()
+        {
+            var surfaceGo = GameObject.Find("NavMesh");
+            var surface = surfaceGo != null ? surfaceGo.GetComponent<NavMeshSurface>() : null;
+            if (surface == null)
+            {
+                Debug.LogError("[Monster] No NavMesh surface — run LILO/Setup Monster Arena.");
+                enabled = false;
+                return;
+            }
+            if (surface.navMeshData == null)
+            {
+                surface.BuildNavMesh();
+                Debug.Log("[Monster] NavMesh baked at startup (dev arena).");
+            }
+        }
+
+        private void Update()
+        {
+            if (_catchRunning)
+                return;
+
+            if (_brain.State == MonsterState.Catch && _brain.CatchFired)
+            {
+                StartCoroutine(CatchSequence());
+                return;
+            }
+
+            float dt = Time.deltaTime;
+
+            // Player velocity from position delta (robust to any movement source).
+            Vector3 playerPos = player.position;
+            float playerSpeed = 0f;
+            if (_hasLastPlayerPos && dt > 0f)
+                playerSpeed = MonsterBrain.DistXZ(playerPos, _lastPlayerPos) / dt;
+            _lastPlayerPos = playerPos;
+            _hasLastPlayerPos = true;
+
+            bool moving = playerSpeed > 0.05f || debugForceMoveNoise;
+            bool sprinting = debugForceSprintNoise
+                || (_playerMovement != null ? _playerMovement.IsSprinting
+                    : playerSpeed > config.walkSpeed * config.sprintMultiplier * 0.9f);
+            bool hiding = GameManager.Instance != null && GameManager.Instance.State.IsHiding;
+            float moveRadius = MonsterNoise.MovementRadius(config, hiding, moving, sprinting);
+
+            _pulses.RemoveAll(p => Time.time > p.Expiry);
+            List<NoisePulse> pulses = null;
+            if (_pulses.Count > 0)
+            {
+                pulses = new List<NoisePulse>(_pulses.Count);
+                foreach (var p in _pulses) pulses.Add(new NoisePulse { Position = p.Position, Radius = p.Radius });
+            }
+
+            bool arrived = !(_agent.pathPending)
+                && (_agent.pathStatus == NavMeshPathStatus.PathInvalid
+                    || _agent.remainingDistance <= _agent.stoppingDistance);
+            bool consumedForce = _forceArrived;
+            _forceArrived = false;
+
+            var input = new MonsterBrainInput
+            {
+                DeltaTime = dt,
+                MonsterPosition = transform.position,
+                PlayerPosition = playerPos,
+                MovementNoiseRadius = moveRadius,
+                Pulses = pulses,
+                Profile = _profile,
+                WalkSpeed = config.walkSpeed,
+                ChaseTriggerDistance = config.chaseTriggerDistance,
+                SearchRadius = config.searchRadius,
+                CatchRadius = config.catchRadius,
+                Waypoints = _waypoints,
+                ArrivedAtTarget = arrived || consumedForce,
+                Rng = _rng,
+            };
+            MonsterBrainOutput output = MonsterBrain.Step(ref _brain, input);
+
+            if (_brain.State != _lastLoggedState)
+            {
+                Debug.Log($"[Monster] {_lastLoggedState} -> {_brain.State} (target={_brain.Target})");
+                _lastLoggedState = _brain.State;
+            }
+
+            _agent.isStopped = output.Speed < 0.01f;
+            if (!_agent.isStopped)
+            {
+                _agent.speed = output.Speed;
+                if ((_agent.destination - output.MoveTarget).sqrMagnitude > 0.01f)
+                    _agent.SetDestination(output.MoveTarget);
+            }
+
+            // Stuck safeguard (spec 002 edge cases): never stall forever.
+            if (!_agent.isStopped && !arrived)
+            {
+                if (MonsterBrain.DistXZ(transform.position, _stuckCheckPos) < 0.05f)
+                    _stuckTimer += dt;
+                else
+                {
+                    _stuckTimer = 0f;
+                    _stuckCheckPos = transform.position;
+                }
+                if (_stuckTimer >= config.monsterStuckTimeout)
+                {
+                    _stuckTimer = 0f;
+                    _stuckCheckPos = transform.position;
+                    OnStuck();
+                }
+            }
+            else
+            {
+                _stuckTimer = 0f;
+                _stuckCheckPos = transform.position;
+            }
+
+            DriveAnimator();
+        }
+
+        private void OnStuck()
+        {
+            Debug.LogWarning($"[Monster] Stuck safeguard in {_brain.State} — skipping ahead.");
+            if (_brain.State == MonsterState.Chase)
+                _agent.SetDestination(_brain.Target); // repath, keep pushing last known.
+            else
+                _forceArrived = true; // patrol/investigate/search advance on arrival.
+        }
+
+        private void DriveAnimator()
+        {
+            if (_animator == null || _brain.State == MonsterState.Catch)
+                return;
+            bool moving = _agent.velocity.magnitude > 0.15f;
+            if (!moving || _animator.IsInTransition(0))
+                return;
+            // The pack's walk state auto-returns to idle, so re-fire while moving.
+            if (_animator.GetCurrentAnimatorStateInfo(0).IsName("idle"))
+                _animator.SetTrigger("walk");
+        }
+
+        /// <summary>Reserved: no gameplay source damages the monster yet.</summary>
+        public void TriggerDamaged()
+        {
+            if (_animator != null) _animator.SetTrigger("damaged");
+        }
+
+        /// <summary>Reserved: the monster never dies (spec 007 kills the player, not it).</summary>
+        public void TriggerDeath()
+        {
+            if (_animator != null) _animator.SetTrigger("death");
+        }
+
+        private IEnumerator CatchSequence()
+        {
+            _catchRunning = true;
+            if (_animator != null) _animator.SetTrigger("attack");
+            if (_playerMovement != null) _playerMovement.enabled = false; // input stops (US4).
+            _agent.isStopped = true;
+            Debug.Log("[Monster] Player caught — outcome fires once; arena reloads until spec 007.");
+            yield return new WaitForSeconds(1.6f);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        private static int NearestWaypoint(Vector3 pos, Vector3[] waypoints)
+        {
+            int best = 0;
+            float bestD = MonsterBrain.DistXZ(pos, waypoints[0]);
+            for (int k = 1; k < waypoints.Length; k++)
+            {
+                float d = MonsterBrain.DistXZ(pos, waypoints[k]);
+                if (d < bestD)
+                {
+                    bestD = d;
+                    best = k;
+                }
+            }
+            return best;
+        }
+    }
+}
