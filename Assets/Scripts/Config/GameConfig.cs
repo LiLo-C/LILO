@@ -13,6 +13,8 @@ namespace Lilo.Config
         [Header("17.1 Player")]
         public float walkSpeed = 1.0f;
         public float sprintMultiplier = 1.6f;
+        // Carried-over value from the prior on-device tuning pass; re-confirm for this scene's scale.
+        public float playerRadius = 20f;
         [Tooltip("Feel value — TBD on device, not a fabricated final number.")]
         public float sprintJoystickThreshold = 0.9f;
         [Tooltip("Feel value — TBD on device, not a fabricated final number.")]
@@ -107,6 +109,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(sprintJoystickThreshold), sprintJoystickThreshold.ToString(), "must be in [0, 1]"));
             if (interactionRadius <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(interactionRadius), interactionRadius.ToString(), "must be > 0"));
+            if (playerRadius <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(playerRadius), playerRadius.ToString(), "must be > 0"));
             if (flashlightNormalRadius <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(flashlightNormalRadius), flashlightNormalRadius.ToString(), "must be > 0"));
             if (lightRadiusEaseRate < 0f)

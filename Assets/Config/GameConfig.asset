@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lilo.Config.GameConfig
   walkSpeed: 4
   sprintMultiplier: 1.6
+  playerRadius: 0.5
   sprintJoystickThreshold: 0.9
   interactionRadius: 60
   joystickDeadZone: 0
