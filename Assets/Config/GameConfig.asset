@@ -33,7 +33,7 @@ MonoBehaviour:
   batteryRespawnFloor51: 30
   batteryMaxActiveFloor50: 1
   batteryRespawnFloor50: 60
-  noiseBaseRadius: 1
+  noiseBaseRadius: 4
   noiseWalk: 1
   noiseSprint: 3
   noiseInteract: 2
