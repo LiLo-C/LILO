@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79b305c5320674b3c80bb0e94c24b3da, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: Assembly-CSharp::Lilo.Config.GameConfig
+  walkSpeed: 4
+  sprintMultiplier: 1.6
+  sprintJoystickThreshold: 0.9
+  interactionRadius: 60
+  joystickDeadZone: 0
+  joystickDiameter: 0
+  joystickOpacity: 0
+  joystickCenterOffset: {x: 0, y: 0}
+  cameraFollowLerpFactor: 0.12
+  cameraBoundsInset: 80
+  batteryDuration: 180
+  batterySlots: 1
+  lightStateFlickerStart: 0.3
+  lightStateCriticalStart: 0.1
+  compactDarknessRadius: 0.1
+  batteryCountFloor52Min: 3
+  batteryCountFloor52Max: 5
+  batteryMaxActiveFloor51: 2
+  batteryRespawnFloor51: 30
+  batteryMaxActiveFloor50: 1
+  batteryRespawnFloor50: 60
+  noiseBaseRadius: 1
+  noiseWalk: 1
+  noiseSprint: 3
+  noiseInteract: 2
+  noiseBatterySwap: 1.5
+  noiseHiding: 0
+  monsterTuningFloor51:
+    monsterActive: 1
+    patrolSpeed: 1
+    chaseSpeed: 1.4
+    investigateDuration: 4
+    chaseHoldDuration: 3
+    searchDuration: 6
+  monsterTuningFloor50:
+    monsterActive: 1
+    patrolSpeed: 1.2
+    chaseSpeed: 1.5
+    investigateDuration: 6
+    chaseHoldDuration: 5
+    searchDuration: 8
+  monsterActiveFloor52: 0
+  lives: 3
+  floorCount: 3
+  checkpointPerFloor: 1
+  lockedDoorsFloor52: 0
+  lockedDoorsFloor51: 1
+  lockedDoorsFloor50: 3
+  targetFloorDuration: 300
