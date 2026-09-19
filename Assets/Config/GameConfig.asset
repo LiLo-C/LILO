@@ -16,6 +16,7 @@ MonoBehaviour:
   sprintMultiplier: 1.6
   sprintJoystickThreshold: 0.9
   interactionRadius: 60
+  playerRadius: 0.5
   joystickDeadZone: 0
   joystickDiameter: 0
   joystickOpacity: 0

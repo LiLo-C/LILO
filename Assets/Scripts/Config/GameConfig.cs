@@ -17,6 +17,8 @@ namespace Lilo.Config
         public float sprintJoystickThreshold = 0.9f;
         [Tooltip("Feel value — TBD on device, not a fabricated final number.")]
         public float interactionRadius = 60.0f;
+        [Tooltip("Provisional current-scene world scale value; re-confirm on device before locking.")]
+        public float playerRadius = 0.5f;
 
         [Header("15.3 Joystick presentation (movement-and-camera/001)")]
         [Tooltip("Feel value — no prior tuning, pending on-device pass. 0 is a placeholder, not a locked default.")]
@@ -121,6 +123,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(sprintJoystickThreshold), sprintJoystickThreshold.ToString(), "must be in [0, 1]"));
             if (interactionRadius <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(interactionRadius), interactionRadius.ToString(), "must be > 0"));
+            if (playerRadius <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(playerRadius), playerRadius.ToString(), "must be > 0"));
             if (flashlightNormalRadius <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(flashlightNormalRadius), flashlightNormalRadius.ToString(), "must be > 0"));
             if (lightRadiusEaseRate < 0f)

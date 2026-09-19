@@ -417,6 +417,7 @@ GameObject:
   - component: {fileID: 275317560}
   - component: {fileID: 275317564}
   - component: {fileID: 275317565}
+  - component: {fileID: 275317566}
   m_Layer: 0
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -550,6 +551,25 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: bccb21d47a5db4c259ef1a1369add67a, type: 2}
   flashlightLight: {fileID: 1127416686}
   readabilityFillLight: {fileID: 1572352447}
+--- !u!114 &275317566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 275317559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00304df10d04a4b5a983bca070e8da14, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Player.CharacterCollisionController
+  config: {fileID: 11400000, guid: bccb21d47a5db4c259ef1a1369add67a, type: 2}
+  authoredObstacles:
+  - {fileID: 821129446}
+  - {fileID: 1308722557}
+  - {fileID: 1318788970}
+  - {fileID: 1332130357}
+  - {fileID: 1144934834}
 --- !u!1 &293294392
 GameObject:
   m_ObjectHideFlags: 0
@@ -1151,6 +1171,7 @@ GameObject:
   - component: {fileID: 821129444}
   - component: {fileID: 821129443}
   - component: {fileID: 821129442}
+  - component: {fileID: 821129446}
   m_Layer: 0
   m_Name: Wall_West
   m_TagString: Untagged
@@ -1251,6 +1272,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &821129446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 821129441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d81312da42c06456bad4e67077e6ed89, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Collision.CollisionObstacleAuthoring
 --- !u!21 &881608427
 Material:
   serializedVersion: 8
@@ -1668,6 +1701,7 @@ GameObject:
   - component: {fileID: 1144934833}
   - component: {fileID: 1144934832}
   - component: {fileID: 1144934831}
+  - component: {fileID: 1144934834}
   m_Layer: 0
   m_Name: Desk
   m_TagString: Untagged
@@ -1771,6 +1805,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1144934834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144934830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d81312da42c06456bad4e67077e6ed89, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Collision.CollisionObstacleAuthoring
 --- !u!21 &1265889192
 Material:
   serializedVersion: 8
@@ -1907,6 +1953,7 @@ GameObject:
   - component: {fileID: 1308722555}
   - component: {fileID: 1308722554}
   - component: {fileID: 1308722553}
+  - component: {fileID: 1308722557}
   m_Layer: 0
   m_Name: Wall_North
   m_TagString: Untagged
@@ -2007,6 +2054,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1308722557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308722552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d81312da42c06456bad4e67077e6ed89, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Collision.CollisionObstacleAuthoring
 --- !u!1 &1318788965
 GameObject:
   m_ObjectHideFlags: 0
@@ -2019,6 +2078,7 @@ GameObject:
   - component: {fileID: 1318788968}
   - component: {fileID: 1318788967}
   - component: {fileID: 1318788966}
+  - component: {fileID: 1318788970}
   m_Layer: 0
   m_Name: Wall_South
   m_TagString: Untagged
@@ -2119,6 +2179,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1318788970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318788965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d81312da42c06456bad4e67077e6ed89, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Collision.CollisionObstacleAuthoring
 --- !u!1 &1332130352
 GameObject:
   m_ObjectHideFlags: 0
@@ -2131,6 +2203,7 @@ GameObject:
   - component: {fileID: 1332130355}
   - component: {fileID: 1332130354}
   - component: {fileID: 1332130353}
+  - component: {fileID: 1332130357}
   m_Layer: 0
   m_Name: Wall_East
   m_TagString: Untagged
@@ -2278,6 +2351,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1332130357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332130352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d81312da42c06456bad4e67077e6ed89, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Collision.CollisionObstacleAuthoring
 --- !u!1 &1572352446
 GameObject:
   m_ObjectHideFlags: 0
