@@ -1,2 +1,16 @@
 fileFormatVersion: 2
 guid: ad8cf446845644da4bc5d509a8db318e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - config: {fileID: 11400000, guid: bccb21d47a5db4c259ef1a1369add67a, type: 2}
+  - patrolRoute: {instanceID: 0}
+  - spawnPresets: {instanceID: 0}
+  - player: {instanceID: 0}
+  - sfx: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
