@@ -534,6 +534,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Player.PlayerMovementController
   config: {fileID: 11400000, guid: bccb21d47a5db4c259ef1a1369add67a, type: 2}
   joystick: {fileID: 1604482440}
+  sfx: {fileID: 1510416364}
 --- !u!114 &275317565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -860,6 +861,7 @@ MonoBehaviour:
   player: {fileID: 0}
   debugForceMoveNoise: 0
   debugForceSprintNoise: 0
+  sfx: {fileID: 1510416364}
 --- !u!195 &522996202
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -2307,6 +2309,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1510416363
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1510416365}
+  - component: {fileID: 1510416364}
+  m_Layer: 0
+  m_Name: SfxController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1510416364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1510416363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acb077858498846c8bc98fe7cbdffc62, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Audio.SfxController
+  behindYouClip: {fileID: 8300000, guid: 8caa614fc9fb243458184358e8c7bbd8, type: 3}
+  horrorChaseClip: {fileID: 8300000, guid: 4a5774741176f46f198e80a7ed036ae5, type: 3}
+  volume: 0.8
+--- !u!4 &1510416365
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1510416363}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1572352446
 GameObject:
   m_ObjectHideFlags: 0
@@ -3020,3 +3069,4 @@ SceneRoots:
   - {fileID: 1810967117}
   - {fileID: 151520095}
   - {fileID: 69864297}
+  - {fileID: 1510416365}
