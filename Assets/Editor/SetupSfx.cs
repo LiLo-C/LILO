@@ -14,8 +14,20 @@ namespace Lilo.Editor
     /// </summary>
     public static class SetupSfx
     {
+        private const string DevTestScenePath = "Assets/Scenes/DevTest_Movement.unity";
         private const string BehindYouPath = "Assets/Sfx/behind-you.mp3";
         private const string HorrorChasePath = "Assets/Sfx/horror-chase.mp3";
+
+        /// <summary>
+        /// Batch-mode entry point used to apply the same idempotent setup to the development
+        /// scene and persist it. The regular menu command below remains available for any scene.
+        /// </summary>
+        public static void RunDevTestScene()
+        {
+            var scene = EditorSceneManager.OpenScene(DevTestScenePath, OpenSceneMode.Single);
+            Run();
+            EditorSceneManager.SaveScene(scene);
+        }
 
         [MenuItem("LILO/Setup Sfx")]
         public static void Run()
