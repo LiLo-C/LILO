@@ -86,6 +86,19 @@ namespace Lilo.Config
         };
         public bool monsterActiveFloor52 = false;
 
+        public MonsterTuningProfile GetMonsterProfile(FloorId floor)
+        {
+            switch (floor)
+            {
+                case FloorId.Floor50:
+                    return monsterTuningFloor50;
+                case FloorId.Floor51:
+                    return monsterTuningFloor51;
+                default:
+                    return new MonsterTuningProfile { monsterActive = monsterActiveFloor52 };
+            }
+        }
+
         [Header("002 Monster behavior (FR-018 new keys)")]
         [Tooltip("Close-range detection that turns INVESTIGATE into CHASE. Feel value — tune on device.")]
         public float chaseTriggerDistance = 2.5f;
@@ -214,6 +227,10 @@ namespace Lilo.Config
             if (!profile.monsterActive)
                 return;
 
+            if (profile.patrolSpeed <= 0f)
+                failures.Add(new ConfigValidationFailure($"{label}.patrolSpeed", profile.patrolSpeed.ToString(), "must be > 0"));
+            if (profile.chaseSpeed <= 0f)
+                failures.Add(new ConfigValidationFailure($"{label}.chaseSpeed", profile.chaseSpeed.ToString(), "must be > 0"));
             if (profile.chaseSpeed >= sprintMultiplier)
                 failures.Add(new ConfigValidationFailure($"{label}.chaseSpeed", profile.chaseSpeed.ToString(), "must be < sprintMultiplier (hard rule, GDD 6.2)"));
             if (profile.investigateDuration <= 0f)

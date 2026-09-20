@@ -55,6 +55,13 @@ MonoBehaviour:
     chaseHoldDuration: 5
     searchDuration: 8
   monsterActiveFloor52: 0
+  chaseTriggerDistance: 2.5
+  searchRadius: 4
+  catchRadius: 0.9
+  monsterStuckTimeout: 2
+  monsterSpawnMinDistance: 8
+  monsterSpawnObjectiveClearance: 3
+  monsterSpawnSafeSeconds: 5
   lives: 3
   floorCount: 3
   checkpointPerFloor: 1
