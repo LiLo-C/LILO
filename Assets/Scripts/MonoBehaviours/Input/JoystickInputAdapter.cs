@@ -25,7 +25,8 @@ namespace Lilo.MonoBehaviours.Input
         private Vector2 _rawOffset;
         private bool _active;
 
-        private static Sprite _circleSprite;
+        private static Sprite _bgCircleSprite;
+        private static Sprite _handleCircleSprite;
         private Image _bgImage;
         private Image _handleImage;
         private Canvas _parentCanvas;
@@ -36,10 +37,11 @@ namespace Lilo.MonoBehaviours.Input
         private bool _fading;
 
         private const float MinTouchTargetPt = 44f;
+        private const float ScreenMargin = 16f;
 
         private void Awake()
         {
-            EnsureCircleSprite();
+            EnsureSprites();
             CacheImages();
             ApplyCircleShape();
             ApplyPresentation();
@@ -54,7 +56,7 @@ namespace Lilo.MonoBehaviours.Input
                 if (_bgImage != null)
                 {
                     Color c = _bgImage.color;
-                    c.a = Mathf.Lerp(_pressOpacity * 0.6f, _idleOpacity * 0.6f, t);
+                    c.a = Mathf.Lerp(_pressOpacity * 0.5f, _idleOpacity * 0.5f, t);
                     _bgImage.color = c;
                 }
                 if (_handleImage != null)
@@ -67,14 +69,22 @@ namespace Lilo.MonoBehaviours.Input
             }
         }
 
-        private void EnsureCircleSprite()
+        private static void EnsureSprites()
         {
-            if (_circleSprite != null) return;
+            if (_bgCircleSprite != null && _handleCircleSprite != null) return;
 
-            int size = 64;
+            // High-res anti-aliased circle for background ring
+            _bgCircleSprite = CreateCircleSprite(256, 0.92f, 0.04f);
+            // Solid circle for handle
+            _handleCircleSprite = CreateCircleSprite(128, 1f, 0f);
+        }
+
+        private static Sprite CreateCircleSprite(int resolution, float edgeFade, float ringThickness)
+        {
+            int size = resolution;
             var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
             float center = size * 0.5f;
-            float r = center - 1f;
+            float outerR = center - 1f;
 
             var pixels = new Color[size * size];
             for (int y = 0; y < size; y++)
@@ -83,15 +93,36 @@ namespace Lilo.MonoBehaviours.Input
                 {
                     float dx = x - center + 0.5f;
                     float dy = y - center + 0.5f;
-                    float dist = Mathf.Sqrt(dx * dx + dy * dy);
-                    pixels[y * size + x] = dist <= r ? Color.white : Color.clear;
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy) / outerR;
+
+                    float alpha;
+                    if (ringThickness > 0f)
+                    {
+                        // Ring: smooth inner/outer edge
+                        float innerEdge = edgeFade - ringThickness;
+                        alpha = 1f - Mathf.InverseLerp(innerEdge, edgeFade, dist);
+                        alpha = Mathf.Clamp01(alpha);
+                        // Anti-alias the edges
+                        float aa = 1.5f / outerR;
+                        alpha *= Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(1f + aa, 1f - aa, dist));
+                        alpha *= Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(innerEdge - aa, innerEdge + aa, dist));
+                    }
+                    else
+                    {
+                        // Solid circle with anti-aliased edge
+                        float aa = 1.5f / outerR;
+                        alpha = Mathf.SmoothStep(1f, 0f, Mathf.InverseLerp(1f - aa, 1f + aa, dist));
+                    }
+
+                    pixels[y * size + x] = new Color(1f, 1f, 1f, Mathf.Clamp01(alpha));
                 }
             }
 
             tex.SetPixels(pixels);
             tex.Apply();
             tex.filterMode = FilterMode.Bilinear;
-            _circleSprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
+            tex.wrapMode = TextureWrapMode.Clamp;
+            return Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
         }
 
         private void CacheImages()
@@ -105,12 +136,13 @@ namespace Lilo.MonoBehaviours.Input
         {
             if (_bgImage != null)
             {
-                _bgImage.sprite = _circleSprite;
+                _bgImage.sprite = _bgCircleSprite;
                 _bgImage.type = Image.Type.Simple;
+                _bgImage.raycastTarget = true;
             }
             if (_handleImage != null)
             {
-                _handleImage.sprite = _circleSprite;
+                _handleImage.sprite = _handleCircleSprite;
                 _handleImage.type = Image.Type.Simple;
             }
         }
@@ -126,8 +158,8 @@ namespace Lilo.MonoBehaviours.Input
                 return;
             config = cfg;
 
-            // joystickDiameter is a fraction of screen height (0.25 = 25%).
-            float fraction = cfg.joystickDiameter > 0f ? cfg.joystickDiameter : 0.25f;
+            // joystickDiameter is a fraction of screen height (0.35 = 35%).
+            float fraction = cfg.joystickDiameter > 0f ? cfg.joystickDiameter : 0.35f;
             float screenHeight = Screen.height;
             float diameter = screenHeight * fraction;
 
@@ -140,6 +172,8 @@ namespace Lilo.MonoBehaviours.Input
             if (background != null)
             {
                 background.sizeDelta = new Vector2(diameter, diameter);
+                // Keep joystick fully visible — offset from bottom-left edge by half diameter + margin
+                background.anchoredPosition = new Vector2(radius + ScreenMargin, radius + ScreenMargin);
             }
             if (handle != null)
             {
@@ -152,7 +186,7 @@ namespace Lilo.MonoBehaviours.Input
             if (_bgImage != null)
             {
                 Color c = _bgImage.color;
-                c.a = _idleOpacity * 0.6f;
+                c.a = _idleOpacity * 0.5f;
                 _bgImage.color = c;
             }
             if (_handleImage != null)
@@ -187,7 +221,7 @@ namespace Lilo.MonoBehaviours.Input
             if (_bgImage != null)
             {
                 Color c = _bgImage.color;
-                c.a = _pressOpacity * 0.6f;
+                c.a = _pressOpacity * 0.5f;
                 _bgImage.color = c;
             }
             if (_handleImage != null)
