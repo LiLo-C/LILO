@@ -54,7 +54,7 @@ namespace Lilo.MonoBehaviours.Input
                 if (_bgImage != null)
                 {
                     Color c = _bgImage.color;
-                    c.a = Mathf.Lerp(_pressOpacity * 0.4f, _idleOpacity, t);
+                    c.a = Mathf.Lerp(_pressOpacity * 0.6f, _idleOpacity * 0.6f, t);
                     _bgImage.color = c;
                 }
                 if (_handleImage != null)
@@ -152,7 +152,7 @@ namespace Lilo.MonoBehaviours.Input
             if (_bgImage != null)
             {
                 Color c = _bgImage.color;
-                c.a = _idleOpacity * 0.4f;
+                c.a = _idleOpacity * 0.6f;
                 _bgImage.color = c;
             }
             if (_handleImage != null)
@@ -187,7 +187,7 @@ namespace Lilo.MonoBehaviours.Input
             if (_bgImage != null)
             {
                 Color c = _bgImage.color;
-                c.a = _pressOpacity * 0.4f;
+                c.a = _pressOpacity * 0.6f;
                 _bgImage.color = c;
             }
             if (_handleImage != null)
