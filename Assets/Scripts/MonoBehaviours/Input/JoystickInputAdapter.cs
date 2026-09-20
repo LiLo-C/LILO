@@ -117,6 +117,7 @@ namespace Lilo.MonoBehaviours.Input
 
         /// <summary>
         /// Sizes the joystick from GameConfig and enforces Apple HIG minimums.
+        /// joystickDiameter is a screen-height fraction (0–1), so it scales on every device.
         /// </summary>
         public void ApplyPresentation()
         {
@@ -125,7 +126,10 @@ namespace Lilo.MonoBehaviours.Input
                 return;
             config = cfg;
 
-            float diameter = cfg.joystickDiameter > 0f ? cfg.joystickDiameter : 200f;
+            // joystickDiameter is a fraction of screen height (0.25 = 25%).
+            float fraction = cfg.joystickDiameter > 0f ? cfg.joystickDiameter : 0.25f;
+            float screenHeight = Screen.height;
+            float diameter = screenHeight * fraction;
 
             // Apple HIG: minimum 44pt touch target. At ~2x scale, 44pt ≈ 88px.
             float minDiameter = MinTouchTargetPt * 2f;

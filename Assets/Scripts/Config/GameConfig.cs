@@ -23,8 +23,8 @@ namespace Lilo.Config
         [Header("15.3 Joystick presentation (movement-and-camera/001)")]
         [Tooltip("Feel value — no prior tuning, pending on-device pass. 0 is a placeholder, not a locked default.")]
         public float joystickDeadZone = 0f;
-        [Tooltip("Feel value — no prior tuning, pending on-device pass.")]
-        public float joystickDiameter = 0f;
+        [Tooltip("Fraction of screen height (0–1). 0.25 = 25% of screen height. Scales across all devices.")]
+        public float joystickDiameter = 0.25f;
         [Tooltip("Feel value — no prior tuning, pending on-device pass.")]
         public float joystickOpacity = 0f;
         [Tooltip("Feel value — no prior tuning, pending on-device pass.")]
@@ -146,6 +146,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(readabilityFillIntensity), readabilityFillIntensity.ToString(), "must be >= 0"));
             if (joystickDeadZone >= sprintJoystickThreshold)
                 failures.Add(new ConfigValidationFailure(nameof(joystickDeadZone), joystickDeadZone.ToString(), "must be < sprintJoystickThreshold (leaves no walking band otherwise, spec FR-013)"));
+            if (joystickDiameter < 0.05f || joystickDiameter > 0.8f)
+                failures.Add(new ConfigValidationFailure(nameof(joystickDiameter), joystickDiameter.ToString(), "must be in [0.05, 0.8] (fraction of screen height)"));
 
             // 17.2 Light & Battery
             if (batteryDuration <= 0f)
