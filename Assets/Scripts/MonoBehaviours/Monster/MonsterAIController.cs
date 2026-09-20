@@ -83,6 +83,7 @@ namespace Lilo.MonoBehaviours.Monster
         private MonsterBrainState _brain;
         private Vector3[] _waypoints = System.Array.Empty<Vector3>();
         private readonly List<PendingPulse> _pulses = new List<PendingPulse>();
+        private readonly List<NoisePulse> _pulsesBuffer = new List<NoisePulse>();
         private Vector3 _lastPlayerPos;
         private bool _hasLastPlayerPos;
         private Vector3 _stuckCheckPos;
@@ -292,8 +293,9 @@ namespace Lilo.MonoBehaviours.Monster
             List<NoisePulse> pulses = null;
             if (_pulses.Count > 0)
             {
-                pulses = new List<NoisePulse>(_pulses.Count);
-                foreach (var p in _pulses) pulses.Add(new NoisePulse { Position = p.Position, Radius = p.Radius });
+                _pulsesBuffer.Clear();
+                foreach (var p in _pulses) _pulsesBuffer.Add(new NoisePulse { Position = p.Position, Radius = p.Radius });
+                pulses = _pulsesBuffer;
             }
 
             bool arrived = !(_agent.pathPending)

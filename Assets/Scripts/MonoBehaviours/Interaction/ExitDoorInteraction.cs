@@ -19,6 +19,8 @@ namespace Lilo.MonoBehaviours.Interaction
             var playerGo = GameObject.Find("PlayerCharacter");
             if (playerGo != null)
                 _player = playerGo.transform;
+            else
+                Debug.LogWarning("[ExitDoor] PlayerCharacter not found — door interaction disabled.");
         }
 
         private void Update()
