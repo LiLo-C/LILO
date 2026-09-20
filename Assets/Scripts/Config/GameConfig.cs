@@ -17,12 +17,14 @@ namespace Lilo.Config
         public float sprintJoystickThreshold = 0.9f;
         [Tooltip("Feel value — TBD on device, not a fabricated final number.")]
         public float interactionRadius = 60.0f;
+        [Tooltip("Provisional current-scene world scale value; re-confirm on device before locking.")]
+        public float playerRadius = 0.5f;
 
         [Header("15.3 Joystick presentation (movement-and-camera/001)")]
         [Tooltip("Feel value — no prior tuning, pending on-device pass. 0 is a placeholder, not a locked default.")]
         public float joystickDeadZone = 0f;
-        [Tooltip("Feel value — no prior tuning, pending on-device pass.")]
-        public float joystickDiameter = 0f;
+        [Tooltip("Fraction of screen height (0–1). 0.35 = 35% of screen height. Scales across all devices.")]
+        public float joystickDiameter = 0.35f;
         [Tooltip("Feel value — no prior tuning, pending on-device pass.")]
         public float joystickOpacity = 0f;
         [Tooltip("Feel value — no prior tuning, pending on-device pass.")]
@@ -84,6 +86,19 @@ namespace Lilo.Config
         };
         public bool monsterActiveFloor52 = false;
 
+        public MonsterTuningProfile GetMonsterProfile(FloorId floor)
+        {
+            switch (floor)
+            {
+                case FloorId.Floor50:
+                    return monsterTuningFloor50;
+                case FloorId.Floor51:
+                    return monsterTuningFloor51;
+                default:
+                    return new MonsterTuningProfile { monsterActive = monsterActiveFloor52 };
+            }
+        }
+
         [Header("002 Monster behavior (FR-018 new keys)")]
         [Tooltip("Close-range detection that turns INVESTIGATE into CHASE. Feel value — tune on device.")]
         public float chaseTriggerDistance = 2.5f;
@@ -121,6 +136,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(sprintJoystickThreshold), sprintJoystickThreshold.ToString(), "must be in [0, 1]"));
             if (interactionRadius <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(interactionRadius), interactionRadius.ToString(), "must be > 0"));
+            if (playerRadius <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(playerRadius), playerRadius.ToString(), "must be > 0"));
             if (flashlightNormalRadius <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(flashlightNormalRadius), flashlightNormalRadius.ToString(), "must be > 0"));
             if (lightRadiusEaseRate < 0f)
@@ -129,6 +146,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(readabilityFillIntensity), readabilityFillIntensity.ToString(), "must be >= 0"));
             if (joystickDeadZone >= sprintJoystickThreshold)
                 failures.Add(new ConfigValidationFailure(nameof(joystickDeadZone), joystickDeadZone.ToString(), "must be < sprintJoystickThreshold (leaves no walking band otherwise, spec FR-013)"));
+            if (joystickDiameter < 0.05f || joystickDiameter > 0.8f)
+                failures.Add(new ConfigValidationFailure(nameof(joystickDiameter), joystickDiameter.ToString(), "must be in [0.05, 0.8] (fraction of screen height)"));
 
             // 17.2 Light & Battery
             if (batteryDuration <= 0f)
@@ -210,6 +229,10 @@ namespace Lilo.Config
             if (!profile.monsterActive)
                 return;
 
+            if (profile.patrolSpeed <= 0f)
+                failures.Add(new ConfigValidationFailure($"{label}.patrolSpeed", profile.patrolSpeed.ToString(), "must be > 0"));
+            if (profile.chaseSpeed <= 0f)
+                failures.Add(new ConfigValidationFailure($"{label}.chaseSpeed", profile.chaseSpeed.ToString(), "must be > 0"));
             if (profile.chaseSpeed >= sprintMultiplier)
                 failures.Add(new ConfigValidationFailure($"{label}.chaseSpeed", profile.chaseSpeed.ToString(), "must be < sprintMultiplier (hard rule, GDD 6.2)"));
             if (profile.investigateDuration <= 0f)

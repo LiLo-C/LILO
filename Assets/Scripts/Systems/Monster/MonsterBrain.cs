@@ -48,6 +48,8 @@ namespace Lilo.Systems.Monster
     {
         public Vector3 MoveTarget;
         public float Speed;
+        public bool CaughtThisStep;
+        public MonsterState StateBeforeCatch;
     }
 
     /// <summary>
@@ -61,14 +63,8 @@ namespace Lilo.Systems.Monster
 
         public static MonsterBrainOutput Step(ref MonsterBrainState s, MonsterBrainInput i)
         {
-            // CATCH in any state (FR-010). Fires once; controller consumes CatchFired.
-            if (s.State != MonsterState.Catch && DistXZ(i.MonsterPosition, i.PlayerPosition) < i.CatchRadius)
-            {
-                s.State = MonsterState.Catch;
-                s.CatchFired = true;
-                s.Timer = 0f;
-                return new MonsterBrainOutput { MoveTarget = i.MonsterPosition, Speed = 0f };
-            }
+            // CATCH is checked after the regular transition so a close detected noise still
+            // produces INVESTIGATE -> CHASE -> CATCH in one step.
 
             // Detection: monster learns only a world position (FR-014).
             // Simultaneous noises: the largest DETECTING radius wins.
@@ -120,7 +116,7 @@ namespace Lilo.Systems.Monster
                     {
                         s.Target = i.MonsterPosition;
                     }
-                    return new MonsterBrainOutput { MoveTarget = s.Target, Speed = patrolSpeed };
+                    break;
 
                 case MonsterState.Investigate:
                     if (detected)
@@ -144,7 +140,7 @@ namespace Lilo.Systems.Monster
                         if (s.Timer >= i.Profile.investigateDuration)
                             ReturnToPatrol(ref s, i);
                     }
-                    return new MonsterBrainOutput { MoveTarget = s.Target, Speed = patrolSpeed };
+                    break;
 
                 case MonsterState.Chase:
                     if (detected)
@@ -165,7 +161,7 @@ namespace Lilo.Systems.Monster
                             s.Target = s.LastKnown;
                         }
                     }
-                    return new MonsterBrainOutput { MoveTarget = s.Target, Speed = chaseSpeed };
+                    break;
 
                 case MonsterState.Search:
                     if (detected)
@@ -193,11 +189,38 @@ namespace Lilo.Systems.Monster
                             s.Target = s.SearchPoint;
                         }
                     }
-                    return new MonsterBrainOutput { MoveTarget = s.Target, Speed = patrolSpeed };
+                    break;
 
                 default: // Catch — terminal, controller runs the sequence.
-                    return new MonsterBrainOutput { MoveTarget = i.MonsterPosition, Speed = 0f };
+                    return new MonsterBrainOutput
+                    {
+                        MoveTarget = i.MonsterPosition,
+                        Speed = 0f,
+                        StateBeforeCatch = MonsterState.Catch,
+                    };
             }
+
+            MonsterState stateBeforeCatch = s.State;
+            if (DistXZ(i.MonsterPosition, i.PlayerPosition) < i.CatchRadius)
+            {
+                s.State = MonsterState.Catch;
+                s.CatchFired = true;
+                s.Timer = 0f;
+                return new MonsterBrainOutput
+                {
+                    MoveTarget = i.MonsterPosition,
+                    Speed = 0f,
+                    CaughtThisStep = true,
+                    StateBeforeCatch = stateBeforeCatch,
+                };
+            }
+
+            return new MonsterBrainOutput
+            {
+                MoveTarget = s.Target,
+                Speed = s.State == MonsterState.Chase ? chaseSpeed : patrolSpeed,
+                StateBeforeCatch = s.State,
+            };
         }
 
         private static void ReturnToPatrol(ref MonsterBrainState s, MonsterBrainInput i)

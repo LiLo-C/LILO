@@ -16,9 +16,10 @@ MonoBehaviour:
   sprintMultiplier: 1.6
   sprintJoystickThreshold: 0.9
   interactionRadius: 60
-  joystickDeadZone: 0
-  joystickDiameter: 0
-  joystickOpacity: 0
+  playerRadius: 0.5
+  joystickDeadZone: 0.12
+  joystickDiameter: 0.35
+  joystickOpacity: 0.35
   joystickCenterOffset: {x: 0, y: 0}
   cameraFollowLerpFactor: 0.12
   cameraBoundsInset: 80
@@ -54,6 +55,13 @@ MonoBehaviour:
     chaseHoldDuration: 5
     searchDuration: 8
   monsterActiveFloor52: 0
+  chaseTriggerDistance: 2.5
+  searchRadius: 4
+  catchRadius: 0.9
+  monsterStuckTimeout: 2
+  monsterSpawnMinDistance: 8
+  monsterSpawnObjectiveClearance: 3
+  monsterSpawnSafeSeconds: 5
   lives: 3
   floorCount: 3
   checkpointPerFloor: 1

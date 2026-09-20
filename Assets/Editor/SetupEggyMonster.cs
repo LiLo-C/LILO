@@ -27,6 +27,15 @@ namespace Lilo.Editor
                 return;
             }
 
+            var modelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(ModelPath);
+            if (modelPrefab == null)
+            {
+                CreateVisibleFallback(placeholder);
+                EditorSceneManager.MarkSceneDirty(placeholder.scene);
+                Debug.LogWarning($"[EggySetup] Model not found at {ModelPath}; using shaded placeholder monster.");
+                return;
+            }
+
             // 1. Remove capsule visuals, keep Transform + CapsuleCollider.
             var meshFilter = placeholder.GetComponent<MeshFilter>();
             if (meshFilter != null) Object.DestroyImmediate(meshFilter);
@@ -36,13 +45,6 @@ namespace Lilo.Editor
             // 2. (Re)create model child.
             var old = placeholder.transform.Find("EggyModel");
             if (old != null) Object.DestroyImmediate(old.gameObject);
-
-            var modelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(ModelPath);
-            if (modelPrefab == null)
-            {
-                Debug.LogError($"[EggySetup] Model not found at {ModelPath}");
-                return;
-            }
 
             var model = (GameObject)PrefabUtility.InstantiatePrefab(modelPrefab, placeholder.transform);
             model.name = "EggyModel";
@@ -131,6 +133,64 @@ namespace Lilo.Editor
             EditorSceneManager.MarkSceneDirty(placeholder.scene);
             Debug.Log($"[EggySetup] Done. scale={k:F3} targetHeight={TargetHeight} swappedMats={swapped} " +
                       $"mat={UrpMatPath} controller={ControllerPath}");
+        }
+
+        private static void CreateVisibleFallback(GameObject placeholder)
+        {
+            var meshFilter = placeholder.GetComponent<MeshFilter>();
+            if (meshFilter != null) Object.DestroyImmediate(meshFilter);
+            var meshRenderer = placeholder.GetComponent<MeshRenderer>();
+            if (meshRenderer != null) Object.DestroyImmediate(meshRenderer);
+
+            var oldEggy = placeholder.transform.Find("EggyModel");
+            if (oldEggy != null) Object.DestroyImmediate(oldEggy.gameObject);
+            var oldFallback = placeholder.transform.Find("MonsterPlaceholderVisual");
+            if (oldFallback != null) Object.DestroyImmediate(oldFallback.gameObject);
+
+            Material bodyMaterial = GetOrCreateMaterial(
+                "Assets/Materials/MonsterPlaceholderBody.mat",
+                new Color(0.22f, 0.04f, 0.07f));
+            Material eyeMaterial = GetOrCreateMaterial(
+                "Assets/Materials/MonsterPlaceholderEye.mat",
+                new Color(1f, 0.78f, 0.18f));
+
+            var root = new GameObject("MonsterPlaceholderVisual");
+            root.transform.SetParent(placeholder.transform, false);
+
+            GameObject body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            body.name = "Body";
+            body.transform.SetParent(root.transform, false);
+            body.transform.localPosition = new Vector3(0f, 1f, 0f);
+            body.transform.localScale = new Vector3(1.15f, 1f, 1.15f);
+            body.GetComponent<Renderer>().sharedMaterial = bodyMaterial;
+            Object.DestroyImmediate(body.GetComponent<Collider>());
+
+            CreateEye(root.transform, new Vector3(-0.23f, 1.25f, 0.48f), eyeMaterial);
+            CreateEye(root.transform, new Vector3(0.23f, 1.25f, 0.48f), eyeMaterial);
+        }
+
+        private static void CreateEye(Transform parent, Vector3 position, Material material)
+        {
+            GameObject eye = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            eye.name = "Eye";
+            eye.transform.SetParent(parent, false);
+            eye.transform.localPosition = position;
+            eye.transform.localScale = Vector3.one * 0.18f;
+            eye.GetComponent<Renderer>().sharedMaterial = material;
+            Object.DestroyImmediate(eye.GetComponent<Collider>());
+        }
+
+        private static Material GetOrCreateMaterial(string path, Color color)
+        {
+            var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (material != null) return material;
+
+            Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+            material = new Material(shader) { name = System.IO.Path.GetFileNameWithoutExtension(path) };
+            material.SetColor("_BaseColor", color);
+            if (material.HasProperty("_Color")) material.color = color;
+            AssetDatabase.CreateAsset(material, path);
+            return material;
         }
     }
 }
