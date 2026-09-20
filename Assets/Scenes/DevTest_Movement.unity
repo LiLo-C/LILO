@@ -2995,7 +2995,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f117bf24a14345d687cc6f9114b3bff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Input.JoystickInputAdapter
-  config: {fileID: 0}
+  config: {fileID: 11400000, guid: bccb21d47a5db4c259ef1a1369add67a, type: 2}
   background: {fileID: 1604482439}
   handle: {fileID: 791283186}
   radius: 80
