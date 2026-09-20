@@ -51,21 +51,18 @@ namespace Lilo.MonoBehaviours.Interaction
             _pickedUp = true;
 
             var state = GameManager.Instance?.State;
-            if (state == null)
+            if (state != null)
             {
-                Debug.LogWarning("[Battery] No GameManager — cannot pick up.");
-                return;
+                if (state.SpareBatterySlotOccupied)
+                {
+                    Debug.Log("[Battery] Spare slot full — cannot pick up.");
+                    _pickedUp = false;
+                    return;
+                }
+                state.PickUpSpareBattery(config != null ? config.batteryDuration : 180f);
             }
 
-            if (state.SpareBatterySlotOccupied)
-            {
-                Debug.Log("[Battery] Spare slot full — cannot pick up.");
-                _pickedUp = false;
-                return;
-            }
-
-            state.PickUpSpareBattery(config.batteryDuration);
-            Debug.Log($"[Battery] Picked up — spare slot now has {config.batteryDuration}s charge.");
+            Debug.Log($"[Battery] Picked up.");
 
             if (monster != null && config != null)
                 monster.EmitPulse(transform.position, config.noiseBatterySwap);

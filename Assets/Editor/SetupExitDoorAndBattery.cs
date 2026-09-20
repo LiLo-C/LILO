@@ -10,8 +10,9 @@ using Lilo.MonoBehaviours.Monster;
 namespace Lilo.Editor
 {
     /// <summary>
-    /// Wires ExitDoorInteraction and BatteryPickup to the existing scene placeholders.
-    /// Idempotent — safe to run multiple times. Run via LILO/Setup Exit Door & Battery.
+    /// Wires ExitDoorInteraction, BatteryPickup, and NavMeshObstacle to the existing
+    /// scene placeholders. Idempotent — safe to run multiple times.
+    /// Run via LILO/Setup Exit Door & Battery.
     /// </summary>
     public static class SetupExitDoorAndBattery
     {
@@ -25,27 +26,6 @@ namespace Lilo.Editor
                 return;
             }
 
-            // Ensure PlayerCharacter has "Player" tag and a kinematic Rigidbody
-            // (required for OnTriggerEnter to fire on iOS/Android).
-            var player = GameObject.Find("PlayerCharacter");
-            if (player != null)
-            {
-                if (!player.CompareTag("Player"))
-                {
-                    player.tag = "Player";
-                    Debug.Log("[ExitDoorBatterySetup] Set PlayerCharacter tag to 'Player'.");
-                }
-
-                var rb = player.GetComponent<Rigidbody>();
-                if (rb == null)
-                {
-                    rb = player.AddComponent<Rigidbody>();
-                    rb.isKinematic = true;
-                    rb.useGravity = false;
-                    Debug.Log("[ExitDoorBatterySetup] Added kinematic Rigidbody to PlayerCharacter for trigger detection.");
-                }
-            }
-
             // --- Exit Door ---
             var door = GameObject.Find("ExitDoorPlaceholder");
             if (door == null)
@@ -54,22 +34,12 @@ namespace Lilo.Editor
                 return;
             }
 
-            // BoxCollider must be trigger for OnTriggerEnter to fire.
-            var doorCollider = door.GetComponent<BoxCollider>();
-            if (doorCollider != null && !doorCollider.isTrigger)
-            {
-                doorCollider.isTrigger = true;
-                Debug.Log("[ExitDoorBatterySetup] Set ExitDoor BoxCollider.isTrigger = true.");
-            }
-
             // NavMeshObstacle blocks the monster from walking through the door.
             var obstacle = door.GetComponent<NavMeshObstacle>();
             if (obstacle == null)
                 obstacle = door.AddComponent<NavMeshObstacle>();
             obstacle.shape = NavMeshObstacleShape.Box;
             obstacle.carving = true;
-            obstacle.center = doorCollider != null ? doorCollider.center : Vector3.zero;
-            obstacle.size = doorCollider != null ? doorCollider.size : new Vector3(1f, 1f, 1f);
 
             var doorInteraction = door.GetComponent<ExitDoorInteraction>();
             if (doorInteraction == null)
@@ -81,14 +51,6 @@ namespace Lilo.Editor
             {
                 Debug.LogError("[ExitDoorBatterySetup] 'BatteryPlaceholder' not found — run LILO/Setup Monster Arena first.");
                 return;
-            }
-
-            // BatteryBoxCollider must be trigger.
-            var batteryCollider = battery.GetComponent<Collider>();
-            if (batteryCollider != null && !batteryCollider.isTrigger)
-            {
-                batteryCollider.isTrigger = true;
-                Debug.Log("[ExitDoorBatterySetup] Set Battery BoxCollider.isTrigger = true.");
             }
 
             var batteryPickup = battery.GetComponent<BatteryPickup>();
@@ -105,7 +67,7 @@ namespace Lilo.Editor
 
             EditorSceneManager.MarkSceneDirty(door.scene);
             AssetDatabase.SaveAssets();
-            Debug.Log("[ExitDoorBatterySetup] Done. Walk into door/battery to interact (trigger-based, iOS-ready).");
+            Debug.Log("[ExitDoorBatterySetup] Done. Walk into door/battery to interact (distance-based, iOS-ready).");
         }
     }
 }
