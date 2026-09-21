@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-17
 
-**Status**: Draft
+**Status**: Implemented; target-hardware feel validation pending
 
 **GDD Sources**: Ch. 16.3 (level validation checklist implies solid geometry the player cannot
 pass through); feel/physicality requirement carried by this vault's ROADMAP.md (sliding, not
@@ -232,10 +232,10 @@ the obstacle, at a distance no greater than the original penetration depth.
   approximated as axis-aligned rectangles. This is the simplest shape pairing that satisfies the
   sliding requirement (constitution Principle II) — more complex shapes (capsules, rotated
   obstacles) are not justified by any current user story and are not built ahead of need.
-- `playerRadius` has a carried-over prior on-device value (`20` world units) from this project's
-  earlier on-device tuning pass on an equivalent build (see ROADMAP.md §0's carried-over-value
-  convention) — used as a default to re-confirm against this project's current world scale, not a
-  locked constant.
+- `playerRadius` uses a provisional value of `0.5` world units, matching the current
+  `PlayerCharacter` capsule and the current 20×20 prototype room. The earlier carried-over value
+  of `20` belongs to a different world scale and is not suitable for this scene. `0.5` remains a
+  feel value to re-confirm on target hardware, not a locked constant.
 - Preventing tunneling through obstacles thinner than one frame's maximum travel distance at sprint
   speed is treated as a level-authoring constraint (minimum wall/furniture thickness), not a
   runtime concern for this spec's discrete resolution math — consistent with keeping this system a

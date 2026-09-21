@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,7 @@ using Lilo.State;
 using Lilo.Systems.Monster;
 using Lilo.MonoBehaviours.Audio;
 using Lilo.MonoBehaviours.Player;
+using StarterAssets;
 
 namespace Lilo.MonoBehaviours.Monster
 {
@@ -31,9 +33,11 @@ namespace Lilo.MonoBehaviours.Monster
     public class MonsterAIController : MonoBehaviour
     {
         [SerializeField] private GameConfig config;
+        [SerializeField] private FloorId floorProfile = FloorId.Floor51;
         [Header("Arena wiring (auto-found by name if empty)")]
         [SerializeField] private Transform patrolRoute;
         [SerializeField] private Transform spawnPresets;
+        [SerializeField] private Transform spawnObjectives;
         [SerializeField] private Transform player;
 
         [Header("Debug (arena testing only — never enable in release)")]
@@ -42,6 +46,7 @@ namespace Lilo.MonoBehaviours.Monster
 
         [Header("Audio")]
         [SerializeField] private SfxController sfx;
+        [SerializeField] private GameplaySpeedSettings speedSettings;
 
         /// <summary>
         /// Instance-level one-shot noise pulses (interact/battery, specs 005/006).
@@ -56,6 +61,7 @@ namespace Lilo.MonoBehaviours.Monster
 
         public MonsterState CurrentState => _brain.State;
         public float DistanceToPlayer => player != null ? MonsterBrain.DistXZ(transform.position, player.position) : -1f;
+        public event Action PlayerCaught;
 
         private struct PendingPulse
         {
@@ -75,10 +81,12 @@ namespace Lilo.MonoBehaviours.Monster
         private NavMeshAgent _agent;
         private Animator _animator;
         private PlayerMovementController _playerMovement;
+        private StarterAssetsInputs _starterAssetsInput;
         private MonsterTuningProfile _profile;
         private MonsterBrainState _brain;
         private Vector3[] _waypoints = System.Array.Empty<Vector3>();
         private readonly List<PendingPulse> _pulses = new List<PendingPulse>();
+        private readonly List<NoisePulse> _pulsesBuffer = new List<NoisePulse>();
         private Vector3 _lastPlayerPos;
         private bool _hasLastPlayerPos;
         private Vector3 _stuckCheckPos;
@@ -99,7 +107,18 @@ namespace Lilo.MonoBehaviours.Monster
                 return;
             }
             config = cfg;
-            _profile = cfg.monsterTuningFloor51; // dev arena = Floor 51 aggression until spec 004.
+            if (sfx == null)
+            {
+                var sfxGo = GameObject.Find("SfxController");
+                if (sfxGo != null)
+                    sfx = sfxGo.GetComponent<SfxController>();
+            }
+            if (speedSettings == null)
+                speedSettings = FindFirstObjectByType<GameplaySpeedSettings>();
+            FloorId activeFloor = GameManager.Instance != null
+                ? GameManager.Instance.State.CurrentFloor
+                : floorProfile;
+            _profile = cfg.GetMonsterProfile(activeFloor);
             if (!_profile.monsterActive)
             {
                 gameObject.SetActive(false); // Floor 52: no monster, no detection (US5).
@@ -108,11 +127,13 @@ namespace Lilo.MonoBehaviours.Monster
 
             if (patrolRoute == null) patrolRoute = GameObject.Find("MonsterPatrolRoute")?.transform;
             if (spawnPresets == null) spawnPresets = GameObject.Find("MonsterSpawns")?.transform;
+            if (spawnObjectives == null) spawnObjectives = GameObject.Find("MonsterSpawnObjectives")?.transform;
             var playerGo = player != null ? player.gameObject : GameObject.Find("PlayerCharacter");
             if (playerGo != null)
             {
                 player = playerGo.transform;
                 _playerMovement = playerGo.GetComponent<PlayerMovementController>();
+                _starterAssetsInput = playerGo.GetComponent<StarterAssetsInputs>();
             }
             if (player == null || patrolRoute == null || patrolRoute.childCount == 0)
             {
@@ -132,20 +153,17 @@ namespace Lilo.MonoBehaviours.Monster
 
             _animator = GetComponentInChildren<Animator>(true);
             if (_animator == null)
-                Debug.LogError("[Monster] No Animator under monster — run LILO/Setup Eggy Monster.");
+                Debug.LogWarning("[Monster] No Animator under monster; using the visible placeholder without animation.");
 
-            EnsureNavMesh();
+            if (!EnsureNavMesh())
+                return;
 
             var points = new List<Vector3>();
             foreach (Transform child in patrolRoute) points.Add(child.position);
             _waypoints = points.ToArray();
 
-            // FR-002: start at a random preset spawn point, never near the player by authoring.
-            if (spawnPresets != null && spawnPresets.childCount > 0)
-            {
-                Transform spawn = spawnPresets.GetChild(Random.Range(0, spawnPresets.childCount));
-                _agent.Warp(spawn.position);
-            }
+            if (!PlaceAtValidatedSpawn())
+                return;
 
             _brain = new MonsterBrainState
             {
@@ -155,7 +173,7 @@ namespace Lilo.MonoBehaviours.Monster
             _stuckCheckPos = transform.position;
         }
 
-        private void EnsureNavMesh()
+        private bool EnsureNavMesh()
         {
             var surfaceGo = GameObject.Find("NavMesh");
             var surface = surfaceGo != null ? surfaceGo.GetComponent<NavMeshSurface>() : null;
@@ -163,13 +181,96 @@ namespace Lilo.MonoBehaviours.Monster
             {
                 Debug.LogError("[Monster] No NavMesh surface — run LILO/Setup Monster Arena.");
                 enabled = false;
-                return;
+                return false;
             }
             if (surface.navMeshData == null)
             {
                 surface.BuildNavMesh();
                 Debug.Log("[Monster] NavMesh baked at startup (dev arena).");
             }
+            return surface.navMeshData != null;
+        }
+
+        private bool PlaceAtValidatedSpawn()
+        {
+            if (spawnPresets == null || spawnPresets.childCount < 2)
+            {
+                Debug.LogError("[Monster] At least two authored spawn presets are required.");
+                enabled = false;
+                return false;
+            }
+
+            Vector3 entry = player.position;
+            var objectives = new List<Vector3>();
+            if (spawnObjectives != null)
+            {
+                foreach (Transform objective in spawnObjectives)
+                    objectives.Add(objective.position);
+            }
+
+            var candidates = new List<MonsterSpawnCandidate>(spawnPresets.childCount);
+            var transforms = new List<Transform>(spawnPresets.childCount);
+            foreach (Transform spawn in spawnPresets)
+            {
+                transforms.Add(spawn);
+                candidates.Add(new MonsterSpawnCandidate(
+                    spawn.position,
+                    IsReachable(entry, spawn.position),
+                    IsVisibleFromEntry(entry, spawn.position)));
+            }
+
+            int selected = MonsterSpawnSelector.ChooseValidIndex(
+                candidates,
+                entry,
+                objectives,
+                config.monsterSpawnMinDistance,
+                config.monsterSpawnObjectiveClearance,
+                _rng);
+            if (selected < 0)
+            {
+                Debug.LogError("[Monster] No spawn preset passed reachability, distance, visibility, and objective-clearance validation.");
+                enabled = false;
+                return false;
+            }
+
+            if (!_agent.Warp(transforms[selected].position))
+            {
+                Debug.LogError($"[Monster] Validated spawn '{transforms[selected].name}' was not on the NavMesh.");
+                enabled = false;
+                return false;
+            }
+            return true;
+        }
+
+        private static bool IsReachable(Vector3 entry, Vector3 spawn)
+        {
+            if (!NavMesh.SamplePosition(entry, out NavMeshHit entryHit, 2f, NavMesh.AllAreas)
+                || !NavMesh.SamplePosition(spawn, out NavMeshHit spawnHit, 2f, NavMesh.AllAreas))
+                return false;
+
+            var path = new NavMeshPath();
+            return NavMesh.CalculatePath(entryHit.position, spawnHit.position, NavMesh.AllAreas, path)
+                && path.status == NavMeshPathStatus.PathComplete;
+        }
+
+        private static bool IsVisibleFromEntry(Vector3 entry, Vector3 spawn)
+        {
+            UnityEngine.Camera camera = UnityEngine.Camera.main;
+            if (camera == null)
+                return false;
+
+            Vector3 viewport = camera.WorldToViewportPoint(spawn + Vector3.up);
+            bool onScreen = viewport.z > 0f
+                && viewport.x >= 0f && viewport.x <= 1f
+                && viewport.y >= 0f && viewport.y <= 1f;
+            if (!onScreen)
+                return false;
+
+            Vector3 start = entry + Vector3.up;
+            Vector3 end = spawn + Vector3.up;
+            Vector3 direction = (end - start).normalized;
+            start += direction * 0.6f;
+            return !Physics.Linecast(start, end, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
         }
 
         private void Update()
@@ -196,7 +297,8 @@ namespace Lilo.MonoBehaviours.Monster
             bool moving = playerSpeed > 0.05f || debugForceMoveNoise;
             bool sprinting = debugForceSprintNoise
                 || (_playerMovement != null ? _playerMovement.IsSprinting
-                    : playerSpeed > config.walkSpeed * config.sprintMultiplier * 0.9f);
+                    : (_starterAssetsInput != null ? _starterAssetsInput.sprint
+                        : playerSpeed > config.walkSpeed * config.sprintMultiplier * 0.9f));
             bool hiding = GameManager.Instance != null && GameManager.Instance.State.IsHiding;
             float moveRadius = MonsterNoise.MovementRadius(config, hiding, moving, sprinting);
 
@@ -204,8 +306,9 @@ namespace Lilo.MonoBehaviours.Monster
             List<NoisePulse> pulses = null;
             if (_pulses.Count > 0)
             {
-                pulses = new List<NoisePulse>(_pulses.Count);
-                foreach (var p in _pulses) pulses.Add(new NoisePulse { Position = p.Position, Radius = p.Radius });
+                _pulsesBuffer.Clear();
+                foreach (var p in _pulses) _pulsesBuffer.Add(new NoisePulse { Position = p.Position, Radius = p.Radius });
+                pulses = _pulsesBuffer;
             }
 
             bool arrived = !(_agent.pathPending)
@@ -223,6 +326,8 @@ namespace Lilo.MonoBehaviours.Monster
                 Pulses = pulses,
                 Profile = _profile,
                 WalkSpeed = config.walkSpeed,
+                PatrolSpeed = speedSettings != null ? speedSettings.monsterPatrolSpeed : 0f,
+                ChaseSpeed = speedSettings != null ? speedSettings.monsterChaseSpeed : 0f,
                 ChaseTriggerDistance = config.chaseTriggerDistance,
                 SearchRadius = config.searchRadius,
                 CatchRadius = config.catchRadius,
@@ -235,9 +340,22 @@ namespace Lilo.MonoBehaviours.Monster
             if (_brain.State != _lastLoggedState)
             {
                 Debug.Log($"[Monster] {_lastLoggedState} -> {_brain.State} (target={_brain.Target})");
-                if ((_brain.State == MonsterState.Chase || _brain.State == MonsterState.Catch) && sfx != null)
+                if (_brain.State == MonsterState.Chase && sfx != null)
+                {
+                    sfx.PlayBehindYou();
                     sfx.PlayHorrorChase();
+                }
+                else if (_brain.State == MonsterState.Catch && sfx != null)
+                {
+                    sfx.PlayHorrorChase();
+                }
                 _lastLoggedState = _brain.State;
+            }
+
+            if (output.CaughtThisStep)
+            {
+                StartCoroutine(CatchSequence());
+                return;
             }
 
             _agent.isStopped = output.Speed < 0.01f;
@@ -310,12 +428,52 @@ namespace Lilo.MonoBehaviours.Monster
         private IEnumerator CatchSequence()
         {
             _catchRunning = true;
+            PlayerCaught?.Invoke();
             if (_animator != null) _animator.SetTrigger("attack");
             if (_playerMovement != null) _playerMovement.enabled = false; // input stops (US4).
+            if (_starterAssetsInput != null)
+            {
+                _starterAssetsInput.MoveInput(Vector2.zero);
+                _starterAssetsInput.SprintInput(false);
+                _starterAssetsInput.JumpInput(false);
+            }
             _agent.isStopped = true;
-            Debug.Log("[Monster] Player caught — outcome fires once; arena reloads until spec 007.");
+            var state = GameManager.Instance?.State;
+            if (state != null)
+            {
+                state.LoseLife();
+                if (state.Lives > 0)
+                    state.ResetForFloorRestart(config);
+                else
+                    state.SetOutcome(RunOutcome.BadEnding);
+            }
+            Debug.Log($"[Monster] Player caught — lives remaining: {state?.Lives ?? -1}.");
             yield return new WaitForSeconds(1.6f);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+            string respawnScene = ResolveRespawnScene(state);
+            Debug.Log($"[Monster] Respawning on {respawnScene} for floor {state?.CurrentFloor.ToString() ?? "active scene"}.");
+            SceneManager.LoadScene(respawnScene);
+        }
+
+        private static string ResolveRespawnScene(GameState state)
+        {
+            // Keep the respawn tied to the persistent floor state. This prevents a
+            // Floor 2 death from falling back to the scene that started the run.
+            if (state != null)
+            {
+                string floorScene = state.CurrentFloor switch
+                {
+                    FloorId.Floor50 => "OfficeLevel2",
+                    FloorId.Floor51 => "OfficeLevel1",
+                    _ => string.Empty,
+                };
+
+                if (!string.IsNullOrEmpty(floorScene)
+                    && Application.CanStreamedLevelBeLoaded(floorScene))
+                    return floorScene;
+            }
+
+            return SceneManager.GetActiveScene().name;
         }
 
         private static int NearestWaypoint(Vector3 pos, Vector3[] waypoints)

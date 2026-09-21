@@ -46,5 +46,14 @@ namespace Lilo.Systems.Flashlight
                     return Mathf.Lerp(compactRadius, config.flashlightNormalRadius, t);
             }
         }
+
+        public static float GetTargetIntensity(float chargeFraction, GameConfig config)
+        {
+            float charge = Mathf.Clamp01(chargeFraction);
+            float normal = config.flashlightNormalIntensity;
+            float compact = config.flashlightCompactDarknessIntensity;
+
+            return Mathf.Lerp(compact, normal, charge);
+        }
     }
 }

@@ -164,6 +164,24 @@ namespace Lilo.Tests
         }
 
         [Test]
+        public void Search_DetectedNoise_ReturnsToChase()
+        {
+            var s = new MonsterBrainState
+            {
+                State = MonsterState.Search,
+                LastKnown = new Vector3(8f, 0f, 0f),
+            };
+            var i = BaseInput();
+            i.PlayerPosition = new Vector3(2f, 0f, 0f);
+            i.MovementNoiseRadius = 3f;
+
+            MonsterBrain.Step(ref s, i);
+
+            Assert.AreEqual(MonsterState.Chase, s.State);
+            Assert.AreEqual(i.PlayerPosition, s.LastKnown);
+        }
+
+        [Test]
         public void LargestDetectingRadius_Wins()
         {
             var s = new MonsterBrainState { State = MonsterState.Patrol };
@@ -190,10 +208,27 @@ namespace Lilo.Tests
             Assert.AreEqual(MonsterState.Catch, s.State);
             Assert.IsTrue(s.CatchFired);
             Assert.AreEqual(0f, output.Speed);
+            Assert.IsTrue(output.CaughtThisStep);
 
-            MonsterBrain.Step(ref s, i); // stays caught, still fired once.
+            output = MonsterBrain.Step(ref s, i); // stays caught, does not fire again.
             Assert.AreEqual(MonsterState.Catch, s.State);
             Assert.IsTrue(s.CatchFired);
+            Assert.IsFalse(output.CaughtThisStep);
+        }
+
+        [Test]
+        public void Investigate_CloseNoise_TransitionsBeforeCatch()
+        {
+            var s = new MonsterBrainState { State = MonsterState.Investigate };
+            var i = BaseInput();
+            i.PlayerPosition = new Vector3(0.5f, 0f, 0f);
+            i.MovementNoiseRadius = 3f;
+
+            MonsterBrainOutput output = MonsterBrain.Step(ref s, i);
+
+            Assert.AreEqual(MonsterState.Catch, s.State);
+            Assert.AreEqual(MonsterState.Chase, output.StateBeforeCatch);
+            Assert.IsTrue(output.CaughtThisStep);
         }
 
         [Test]
@@ -215,6 +250,29 @@ namespace Lilo.Tests
             cfg.monsterTuningFloor51.chaseSpeed = cfg.sprintMultiplier; // == sprint: invalid.
             var failures = cfg.Validate();
             Assert.IsTrue(failures.Exists(f => f.ToString().Contains("monsterTuningFloor51.chaseSpeed")));
+        }
+
+        [Test]
+        public void Config_RejectsNonPositiveMonsterSpeeds()
+        {
+            var cfg = ScriptableObject.CreateInstance<GameConfig>();
+            cfg.monsterTuningFloor51.patrolSpeed = 0f;
+            cfg.monsterTuningFloor50.chaseSpeed = 0f;
+
+            var failures = cfg.Validate();
+
+            Assert.IsTrue(failures.Exists(f => f.ToString().Contains("monsterTuningFloor51.patrolSpeed")));
+            Assert.IsTrue(failures.Exists(f => f.ToString().Contains("monsterTuningFloor50.chaseSpeed")));
+        }
+
+        [Test]
+        public void Floor52Profile_IsInactive_WhileLaterFloorsUseConfiguredProfiles()
+        {
+            var cfg = ScriptableObject.CreateInstance<GameConfig>();
+
+            Assert.IsFalse(cfg.GetMonsterProfile(FloorId.Floor52).monsterActive);
+            Assert.AreEqual(cfg.monsterTuningFloor51.chaseSpeed, cfg.GetMonsterProfile(FloorId.Floor51).chaseSpeed);
+            Assert.AreEqual(cfg.monsterTuningFloor50.searchDuration, cfg.GetMonsterProfile(FloorId.Floor50).searchDuration);
         }
     }
 }
