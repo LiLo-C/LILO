@@ -36,6 +36,8 @@ namespace Lilo.Systems.Monster
         public List<NoisePulse> Pulses;
         public MonsterTuningProfile Profile;
         public float WalkSpeed;
+        public float PatrolSpeed;
+        public float ChaseSpeed;
         public float ChaseTriggerDistance;
         public float SearchRadius;
         public float CatchRadius;
@@ -94,8 +96,8 @@ namespace Lilo.Systems.Monster
                 }
             }
 
-            float patrolSpeed = i.Profile.patrolSpeed * i.WalkSpeed;
-            float chaseSpeed = i.Profile.chaseSpeed * i.WalkSpeed;
+            float patrolSpeed = i.PatrolSpeed > 0f ? i.PatrolSpeed : i.Profile.patrolSpeed * i.WalkSpeed;
+            float chaseSpeed = i.ChaseSpeed > 0f ? i.ChaseSpeed : i.Profile.chaseSpeed * i.WalkSpeed;
 
             switch (s.State)
             {

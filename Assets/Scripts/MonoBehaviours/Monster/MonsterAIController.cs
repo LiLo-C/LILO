@@ -46,6 +46,7 @@ namespace Lilo.MonoBehaviours.Monster
 
         [Header("Audio")]
         [SerializeField] private SfxController sfx;
+        [SerializeField] private GameplaySpeedSettings speedSettings;
 
         /// <summary>
         /// Instance-level one-shot noise pulses (interact/battery, specs 005/006).
@@ -112,6 +113,8 @@ namespace Lilo.MonoBehaviours.Monster
                 if (sfxGo != null)
                     sfx = sfxGo.GetComponent<SfxController>();
             }
+            if (speedSettings == null)
+                speedSettings = FindFirstObjectByType<GameplaySpeedSettings>();
             FloorId activeFloor = GameManager.Instance != null
                 ? GameManager.Instance.State.CurrentFloor
                 : floorProfile;
@@ -323,6 +326,8 @@ namespace Lilo.MonoBehaviours.Monster
                 Pulses = pulses,
                 Profile = _profile,
                 WalkSpeed = config.walkSpeed,
+                PatrolSpeed = speedSettings != null ? speedSettings.monsterPatrolSpeed : 0f,
+                ChaseSpeed = speedSettings != null ? speedSettings.monsterChaseSpeed : 0f,
                 ChaseTriggerDistance = config.chaseTriggerDistance,
                 SearchRadius = config.searchRadius,
                 CatchRadius = config.catchRadius,
@@ -335,8 +340,15 @@ namespace Lilo.MonoBehaviours.Monster
             if (_brain.State != _lastLoggedState)
             {
                 Debug.Log($"[Monster] {_lastLoggedState} -> {_brain.State} (target={_brain.Target})");
-                if ((_brain.State == MonsterState.Chase || _brain.State == MonsterState.Catch) && sfx != null)
+                if (_brain.State == MonsterState.Chase && sfx != null)
+                {
+                    sfx.PlayBehindYou();
                     sfx.PlayHorrorChase();
+                }
+                else if (_brain.State == MonsterState.Catch && sfx != null)
+                {
+                    sfx.PlayHorrorChase();
+                }
                 _lastLoggedState = _brain.State;
             }
 

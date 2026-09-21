@@ -70,6 +70,16 @@ public static class SetupOfficeGameplay
         }
 
         var manager = go.GetComponent<GameManager>();
+        var speedSettings = go.GetComponent<GameplaySpeedSettings>();
+        if (speedSettings == null)
+        {
+            speedSettings = go.AddComponent<GameplaySpeedSettings>();
+            var profile = config.GetMonsterProfile(FloorId.Floor51);
+            speedSettings.playerWalkSpeed = config.walkSpeed;
+            speedSettings.playerSprintSpeed = config.walkSpeed * config.sprintMultiplier;
+            speedSettings.monsterPatrolSpeed = config.walkSpeed * profile.patrolSpeed;
+            speedSettings.monsterChaseSpeed = config.walkSpeed * profile.chaseSpeed;
+        }
         var serialized = new SerializedObject(manager);
         serialized.FindProperty("config").objectReferenceValue = config;
         serialized.FindProperty("useConfiguredStartingFloor").boolValue = true;
@@ -79,6 +89,10 @@ public static class SetupOfficeGameplay
 
     private static void EnsureGameplayProps(GameConfig config)
     {
+        var managerGo = GameObject.Find("GameManager");
+        var speedSettings = managerGo != null
+            ? managerGo.GetComponent<GameplaySpeedSettings>()
+            : null;
         var monsterGo = GameObject.Find("MonsterPlaceholder");
         var monster = monsterGo != null ? monsterGo.GetComponent<MonsterAIController>() : null;
         var sfxGo = GameObject.Find("SfxController");
@@ -149,7 +163,20 @@ public static class SetupOfficeGameplay
             monsterSerialized.FindProperty("config").objectReferenceValue = config;
             monsterSerialized.FindProperty("spawnObjectives").objectReferenceValue = objectives.transform;
             monsterSerialized.FindProperty("sfx").objectReferenceValue = sfx;
+            monsterSerialized.FindProperty("speedSettings").objectReferenceValue = speedSettings;
             monsterSerialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        var bridgeObject = GameObject.Find("MobileInputBridge");
+        if (bridgeObject != null)
+        {
+            var bridge = bridgeObject.GetComponent<Lilo.MonoBehaviours.Input.MobileStarterAssetsBridge>();
+            if (bridge != null)
+            {
+                var bridgeSerialized = new SerializedObject(bridge);
+                bridgeSerialized.FindProperty("speedSettings").objectReferenceValue = speedSettings;
+                bridgeSerialized.ApplyModifiedPropertiesWithoutUndo();
+            }
         }
 
         var batteryGlow = battery.transform.Find("BatteryGlow");
