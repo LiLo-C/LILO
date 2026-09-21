@@ -1,0 +1,3594 @@
+fileFormatVersion: 2
+guid: 640e17b4282e043b0a31ea415a11994b
+ModelImporter:
+  serializedVersion: 24600
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Belt buckle _ aged brass
+    second: {fileID: 2100000, guid: 53e5a83a93acd4fa5b1add52a2265b35, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "Eddie \u2022 chestnut shoes"
+    second: {fileID: 2100000, guid: 53c56d6a2669d4ac3afebceee149093a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "Eddie \u2022 ginger 0"
+    second: {fileID: 2100000, guid: 2372a132d0c1b49ab9c290190a7c73cb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "Eddie \u2022 pale warm ivory skin"
+    second: {fileID: 2100000, guid: 8d0de4ac819914c7db7176a5a423a8d7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "Eddie \u2022 soft cinnamon freckles"
+    second: {fileID: 2100000, guid: 39bace758ead24ddbb89c4a3d87358b2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glass
+    second: {fileID: 2100000, guid: 8c50f448394a447dc8e734d08e35c3fc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glossy
+    second: {fileID: 2100000, guid: 576aecea3873c4685b790798d48daaee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands
+    second: {fileID: 2100000, guid: bcbab592b6ccc4289a6dc006d5aecd78, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.001
+    second: {fileID: 2100000, guid: e62e2c3b4974f48528056a9c771e4064, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.002
+    second: {fileID: 2100000, guid: 6eccf5206fca44fd4a4da7320a8e0754, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.003
+    second: {fileID: 2100000, guid: a6765291e9de646e5ba1892ba22dc0cc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.004
+    second: {fileID: 2100000, guid: e0b7758b0d5374c04a28d396534f185f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.005
+    second: {fileID: 2100000, guid: b41e6991c950440be9d4d000b16cd10d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.006
+    second: {fileID: 2100000, guid: dcaf6d4b1b5334293a04a5500bc279a4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.007
+    second: {fileID: 2100000, guid: 0815f28d532f3488bb1107871dc232fb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.008
+    second: {fileID: 2100000, guid: d9f20b6e764684173abb6d97388ee7f3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.009
+    second: {fileID: 2100000, guid: c584ca13a1db54c438c5751c177042d1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.010
+    second: {fileID: 2100000, guid: 5a9109250eb4a4fd09447672ad8c2d18, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.011
+    second: {fileID: 2100000, guid: 4233d0cff82ae4f1ca5577c528d387c2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.012
+    second: {fileID: 2100000, guid: 36b9b381ccb8445c494ca99ad56c98b5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.013
+    second: {fileID: 2100000, guid: 02c94554792d3470cbe19d82d3beb39a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.014
+    second: {fileID: 2100000, guid: ada0189b490f34ce884dcc93c74929cf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.015
+    second: {fileID: 2100000, guid: e569a83c7f99240e3bd7c1a85be4328a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.016
+    second: {fileID: 2100000, guid: cce6fd13a797f4bb293ce6bc6bf7d245, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.017
+    second: {fileID: 2100000, guid: 9f6cbcbc09a264376bc2890bdfafef36, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.018
+    second: {fileID: 2100000, guid: ec0589c3a69484e3c80522f257020179, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.019
+    second: {fileID: 2100000, guid: a4e5b73caa5454809a62c03e56932701, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.020
+    second: {fileID: 2100000, guid: 6d4dd416df34d45b3ba10d516f16bff0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.021
+    second: {fileID: 2100000, guid: 5ff99ea52abc94994ab1ff9b688c9914, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.022
+    second: {fileID: 2100000, guid: 1233312e5687147e9a856c840a2f97b1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.023
+    second: {fileID: 2100000, guid: 29da934799fa04eeeade8dc9c31b4e50, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.024
+    second: {fileID: 2100000, guid: a75489e1de81c4486bac635d41c366c8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.025
+    second: {fileID: 2100000, guid: 0cab171db2a944824bdb0fb3f2cff371, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.026
+    second: {fileID: 2100000, guid: 8cebbb0d5e1904b6db1f0d6e71dea920, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.027
+    second: {fileID: 2100000, guid: 3525392396de141df972848941dc9ae7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.028
+    second: {fileID: 2100000, guid: de7fb0a9f42b44283b1773ba2f577e95, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.029
+    second: {fileID: 2100000, guid: a3310848d68904b2ca3b0b5119d59ae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.030
+    second: {fileID: 2100000, guid: 031461eaba22849d09163149082c749b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.031
+    second: {fileID: 2100000, guid: 0c6ae5767f7c04c17ad9c1e59010548f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.032
+    second: {fileID: 2100000, guid: b615cdf423f9141609c8eb3ae8a0bbab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.033
+    second: {fileID: 2100000, guid: 358bd57148b4c4b34b8f2fb130ff962c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.034
+    second: {fileID: 2100000, guid: ae80f44ae29964d599f28af4e49ebe76, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.035
+    second: {fileID: 2100000, guid: 6446a45986b64453f9e9c0eaa61f3f2f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.036
+    second: {fileID: 2100000, guid: 9bbe5a4b38e2c4298b288e4f1085b366, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.037
+    second: {fileID: 2100000, guid: 2ce1e3bdaf9b04e7c959d8eb9bfb1b46, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.038
+    second: {fileID: 2100000, guid: 38a19e251df0d481ba1a56e1b3285510, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.039
+    second: {fileID: 2100000, guid: 48ad174f7ea1640cd835044fec19c141, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.040
+    second: {fileID: 2100000, guid: cbe97550348504f5c92d1380dd5806c0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.041
+    second: {fileID: 2100000, guid: de66f6a02769b4127867cea0615ac0b5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.042
+    second: {fileID: 2100000, guid: b0a711fb59a1f42cfa3ca966efbbe85b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.044
+    second: {fileID: 2100000, guid: ce952cf29e48a41528567bf12b36dc67, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.045
+    second: {fileID: 2100000, guid: db46525e63f044f3e97c473dffb880ae, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.046
+    second: {fileID: 2100000, guid: 5e3989c08305b4e3099c227031ea368f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.047
+    second: {fileID: 2100000, guid: 91a671fab173f457d97555b765bfd527, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.048
+    second: {fileID: 2100000, guid: eeb37789baa3f4f068a30f888c6320e0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.049
+    second: {fileID: 2100000, guid: 791cef0f6c1a94f7db2cb82d24dc65b4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.050
+    second: {fileID: 2100000, guid: 5922c73c56a114c90a4d4918141c391c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.051
+    second: {fileID: 2100000, guid: dfc7dd4aa401244f981de55a44c45162, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.052
+    second: {fileID: 2100000, guid: aa7921985a5c045d6b579bba452cca85, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.053
+    second: {fileID: 2100000, guid: 388be3eb922fe4ce4862b96871815e88, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.054
+    second: {fileID: 2100000, guid: bb420fd50dcdb49cdab903d14ef70efe, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.055
+    second: {fileID: 2100000, guid: 0e0d60d6753bf40169de864730137a4c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.056
+    second: {fileID: 2100000, guid: 2e9e61bc4b9f546a38ad46a8c0999a2f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.057
+    second: {fileID: 2100000, guid: 873bd0eb54b344c63bf705a45c78908e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.058
+    second: {fileID: 2100000, guid: 8d078b117166244d497127e6974ce699, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.059
+    second: {fileID: 2100000, guid: f53eb79e65869469a8c6de8e6430878c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.060
+    second: {fileID: 2100000, guid: 39daffe74f2b5491a91ab04e57394c45, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.061
+    second: {fileID: 2100000, guid: 290a6ceb328e64dad88be66f84b57eea, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.062
+    second: {fileID: 2100000, guid: 476739fc79e5a4f68927ce03b43f38af, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.063
+    second: {fileID: 2100000, guid: 9cf50407f391c43899bd8dc44bd85f4e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.064
+    second: {fileID: 2100000, guid: f0e18079962d1442d9bc1e35e4ae83a8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.065
+    second: {fileID: 2100000, guid: 6e3b0118b389944f2941ab0a3a261647, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.066
+    second: {fileID: 2100000, guid: 373a81ee86c0c46c68dcc4f31d68f16f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.067
+    second: {fileID: 2100000, guid: c0fda4779932e41d89f6e033a30de3c2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.068
+    second: {fileID: 2100000, guid: 3165ec0f51b1b4aa9acac51661ae8d1c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.069
+    second: {fileID: 2100000, guid: ce49f957f3c4540809010ba62fd3032c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.070
+    second: {fileID: 2100000, guid: c301be643c500402aa1826c6c7d3b9eb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.071
+    second: {fileID: 2100000, guid: 9f9d13a25860c47259e2d1aff311a619, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.072
+    second: {fileID: 2100000, guid: ab131caa85e1e45c18be0ebd59325a32, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.073
+    second: {fileID: 2100000, guid: 1c5ad7e3aa77642bbb21af0070f841c2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.074
+    second: {fileID: 2100000, guid: 2aaff6648f76e4fcdab1f4162801cc0c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.075
+    second: {fileID: 2100000, guid: 7590d7e34b91e41e0b59345f7feb2fc5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.076
+    second: {fileID: 2100000, guid: 8ebc0bafce9264ba3a81aa30b4b015f4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.077
+    second: {fileID: 2100000, guid: fc9e6013c3c174135bbc51615dd5c53d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.078
+    second: {fileID: 2100000, guid: 22786d2c99bc04653b0366d935b772a9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.079
+    second: {fileID: 2100000, guid: fc44477a6d6d844f996aa31aface6ba7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.080
+    second: {fileID: 2100000, guid: 53e23080862ff464ca0467c90a34db24, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.081
+    second: {fileID: 2100000, guid: e2d9664f0011a4e588b279ee08979a66, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.082
+    second: {fileID: 2100000, guid: 95d64c8ff859c4caaad917885dd64a95, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.083
+    second: {fileID: 2100000, guid: b0543de5c07a6471eb48305298683620, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.084
+    second: {fileID: 2100000, guid: 6476bceea7abc4a7ba68a92a14694034, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.085
+    second: {fileID: 2100000, guid: 23b70fa55480f44649b3a897b0b4595b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.086
+    second: {fileID: 2100000, guid: d5d5e3638257147499a5acb34b524b4b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.087
+    second: {fileID: 2100000, guid: c174980a3914e492495af95410bf5f33, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.089
+    second: {fileID: 2100000, guid: 210cb1695efad495e8505b9b4e54f550, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.090
+    second: {fileID: 2100000, guid: 189c5e8544e6e465f805df08b321c765, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.091
+    second: {fileID: 2100000, guid: 113dc66fd00464ae494d2ff39649c8ab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.092
+    second: {fileID: 2100000, guid: 6555e7a6dd9fb42c7aa40c639ef0ff50, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.093
+    second: {fileID: 2100000, guid: c370d9bea38e64721bdc21a964b584d3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.094
+    second: {fileID: 2100000, guid: cf37cb2d56f4b4d189b07c20e8c695c4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.095
+    second: {fileID: 2100000, guid: 28fe1a01fa987439dae5e3cfe28fc107, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.096
+    second: {fileID: 2100000, guid: db681741af9194381b2b075c66b87bf6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.097
+    second: {fileID: 2100000, guid: 84354f6ce1e57443790818b6f0205121, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.098
+    second: {fileID: 2100000, guid: 9e4da95eb155f4d6289860cd1fdf617b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.099
+    second: {fileID: 2100000, guid: 46d85fb63f7834a54a3c37e59674c817, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.100
+    second: {fileID: 2100000, guid: 1a971bbbd946f404fa329cdcde4279ad, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.101
+    second: {fileID: 2100000, guid: 8fb2cac0ad4b74d1986276f0426ba8ea, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.102
+    second: {fileID: 2100000, guid: 582494fa415e94223bf303d3780cbcaa, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.103
+    second: {fileID: 2100000, guid: dc1756bca20d74f6ba45a7b7a7291a65, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.104
+    second: {fileID: 2100000, guid: 3cf496ad13c93454aa26689f303e4d14, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.105
+    second: {fileID: 2100000, guid: 2a7b7aa5ad44e423c857c57afeed3765, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.106
+    second: {fileID: 2100000, guid: 229fc00527ffb42a181eff8da1ee0930, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.107
+    second: {fileID: 2100000, guid: f45ed5dc2488c4eee8a21b796f0f8e54, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.108
+    second: {fileID: 2100000, guid: 317f1479012914a06b1a47c48618a289, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.109
+    second: {fileID: 2100000, guid: 6b22ecb0b0c7e45fab96c8022615cf05, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.110
+    second: {fileID: 2100000, guid: e28537af3102b4bc09598923b3751a31, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.111
+    second: {fileID: 2100000, guid: 2d237247d1908457b81d56469f4dae7e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.112
+    second: {fileID: 2100000, guid: 5bbd046411800499dbe4cba43113751b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.113
+    second: {fileID: 2100000, guid: a28f3605abcfa49f6942255598b5f1c6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.114
+    second: {fileID: 2100000, guid: 9bd884c2f9cec4d5ea9047ae87970f79, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.115
+    second: {fileID: 2100000, guid: 8486e0e6fc01842cca932f3a48a16e61, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.116
+    second: {fileID: 2100000, guid: a7b55762cd4c44b04af008d4be28695b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.117
+    second: {fileID: 2100000, guid: 4339b750eb91d4b2bace414693bdb3a0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.118
+    second: {fileID: 2100000, guid: a5c5acae78bdd4407996f85ab3a198f4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.119
+    second: {fileID: 2100000, guid: f222c9848a46e4ae1a00d7fa54866c03, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.120
+    second: {fileID: 2100000, guid: 5e0ff6b466a854bc2ae10da2d8c2b227, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.121
+    second: {fileID: 2100000, guid: fd3911fe28f334879b78b14716f1c64f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.122
+    second: {fileID: 2100000, guid: 40856dbb7b92e4a6ba4c250f4c115d39, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.123
+    second: {fileID: 2100000, guid: 4aeec664f3f714c5bbc5a712e2544aad, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.124
+    second: {fileID: 2100000, guid: cba19bf634a034ec183ef107668c4ca7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.125
+    second: {fileID: 2100000, guid: a43e907f21559447cbfa135eec0c0057, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.126
+    second: {fileID: 2100000, guid: a13d61063badb4ed196ba56f334735f3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.127
+    second: {fileID: 2100000, guid: 293d40c3105ac4c98afe240b0f63a0ad, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.128
+    second: {fileID: 2100000, guid: 47e62849871ee4b8d950c2952ddbdb0c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.129
+    second: {fileID: 2100000, guid: f81ff87461c5b4b8896ee393a5ed0d8c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.130
+    second: {fileID: 2100000, guid: 6e2711b3fed444fee974312ee2f5f0e8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.131
+    second: {fileID: 2100000, guid: d79bb52024e1a4da29f36e3d453a80e8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.132
+    second: {fileID: 2100000, guid: 3fab06f94ee0d4e11a2a841ea2774e66, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.133
+    second: {fileID: 2100000, guid: d4e6c2923668c4d8e965d51258678157, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.134
+    second: {fileID: 2100000, guid: e26e5d8cd42ad4ac2a7d25443173db09, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.135
+    second: {fileID: 2100000, guid: 1823b4482fbd648fdb87d29d0b9d7c43, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.136
+    second: {fileID: 2100000, guid: 3e1017cc52e0c48418a4f9cbf1942965, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.137
+    second: {fileID: 2100000, guid: d92bad63ae30a4d5dbe779edb3a15904, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.138
+    second: {fileID: 2100000, guid: eaee24433de6e4e9d9b7e109b6635a55, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.139
+    second: {fileID: 2100000, guid: d8b597df76c4c4398a38f8d91a3341bb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.140
+    second: {fileID: 2100000, guid: 70b0186545d0f499d9e6d9b420e80677, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.141
+    second: {fileID: 2100000, guid: f6066b1a96ef84838a2e118d2e07c3df, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.142
+    second: {fileID: 2100000, guid: bf1b25c6c90224e9fa1d93e6697d956a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.143
+    second: {fileID: 2100000, guid: eab30a526e9a54137b7a9a23355d7370, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.144
+    second: {fileID: 2100000, guid: 783136544af404104ab91396d4a7b39f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.145
+    second: {fileID: 2100000, guid: 8fff475ccbec84d5e9ddf8ce03b24c50, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.146
+    second: {fileID: 2100000, guid: 688251525f1d14911b21373b3d3663f3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.147
+    second: {fileID: 2100000, guid: 337fe0ce945144b85ab682f34eec89a1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.148
+    second: {fileID: 2100000, guid: 7b9e2798e3145405da0f530790b438e9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.149
+    second: {fileID: 2100000, guid: 94797b7255a8e4aeba7a5464a3e8cd5c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.150
+    second: {fileID: 2100000, guid: 880e533b11b2a44b8ba0175770ed483c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.151
+    second: {fileID: 2100000, guid: 7664b94c18318401bb486f0034fc0213, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.152
+    second: {fileID: 2100000, guid: b09ebb99fc9774319809e1337a501990, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.154
+    second: {fileID: 2100000, guid: 450ef7269db13448b83de866f9f89b5d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.155
+    second: {fileID: 2100000, guid: 7f373c76685eb447ba7757a7dd2bc21b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.156
+    second: {fileID: 2100000, guid: 19d9e6983ef78454d880a344c106a376, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.157
+    second: {fileID: 2100000, guid: 1363cb6932f2941d981d5d9e6062d241, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.158
+    second: {fileID: 2100000, guid: 233fca7c48ed84bab820302a09e3c0e2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.159
+    second: {fileID: 2100000, guid: c4a50589df8ca4fe2a506f2494478da8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.160
+    second: {fileID: 2100000, guid: 10a155561f7c944759dcf2ed366f8c69, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.161
+    second: {fileID: 2100000, guid: e10fa15b5a8b645c6809ac994d6457c8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.162
+    second: {fileID: 2100000, guid: 3e3bb313804fd422da1ba2aff60746fb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.163
+    second: {fileID: 2100000, guid: b0c3c13e653f74a67a6584ff08be6be1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.164
+    second: {fileID: 2100000, guid: fd1f5bb0ea1264a7c91979dc55a5ddf7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.165
+    second: {fileID: 2100000, guid: e93b199448638431e846e65d8b45e88e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.166
+    second: {fileID: 2100000, guid: e909247f753fd452ba2f0990bf002c77, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.167
+    second: {fileID: 2100000, guid: 463cec56847e8401d9665e59984c64e9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.168
+    second: {fileID: 2100000, guid: 5f2fefb1c123c4410b60dfe285435ada, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.169
+    second: {fileID: 2100000, guid: 57fef2368b09c4b0caace9cfef52eb60, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.170
+    second: {fileID: 2100000, guid: 2111b6516091447cbac11efad8f6ba2e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.171
+    second: {fileID: 2100000, guid: efc7362e5a58148e4983beb01c0e7aeb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.172
+    second: {fileID: 2100000, guid: 10370033600944e998484afe1913926d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.173
+    second: {fileID: 2100000, guid: 37be1552ad3f04bcdac322bb54f99d8a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.174
+    second: {fileID: 2100000, guid: 643606e6229af4d0ea7b0735e306911c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.175
+    second: {fileID: 2100000, guid: 401710d13f3ac466a9e2b20421332964, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.176
+    second: {fileID: 2100000, guid: 5ee392aa29ceb4bfab3a3dee8e584f4b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.177
+    second: {fileID: 2100000, guid: 43b7dfd011bdf431b962e587af361b0b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.178
+    second: {fileID: 2100000, guid: 8ffc95741990641299b1405101ea51bc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.179
+    second: {fileID: 2100000, guid: 89f11edd6f36c4c85b8f619f9ed30336, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.180
+    second: {fileID: 2100000, guid: b5b441b77f29745e98cf352407d708ef, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.181
+    second: {fileID: 2100000, guid: 335b03badf516442298595f7191d59c4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.182
+    second: {fileID: 2100000, guid: 537d32fc6c5a645b69bf2093eb5d9449, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.183
+    second: {fileID: 2100000, guid: d8a564903ae3640b9b0e972a35cc7c06, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.185
+    second: {fileID: 2100000, guid: a1ebbf4f26faf4efc825ace09700e773, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.186
+    second: {fileID: 2100000, guid: 2665817d0a0a94ce686b9be819ffbb72, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.187
+    second: {fileID: 2100000, guid: fb5737907728e4e6ba932b3a69ac45d6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.188
+    second: {fileID: 2100000, guid: 44e89a6cba0494cd4a4c8cc884b9cd48, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.189
+    second: {fileID: 2100000, guid: a2529ebd4322241e58da204cc23b9218, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.190
+    second: {fileID: 2100000, guid: b98bdde00f15e4a1ebfea433b37302ee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.191
+    second: {fileID: 2100000, guid: afaee58ea4e8f48fea97e95b7a863e1a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.192
+    second: {fileID: 2100000, guid: 5854538ee1c4c47a196f653584eee73c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.193
+    second: {fileID: 2100000, guid: 555300cebd45d403dacdaee1d0e0e057, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.194
+    second: {fileID: 2100000, guid: 7e39e53e52c374533b42900294aa22ab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.195
+    second: {fileID: 2100000, guid: ed2f1f0b4d4d844858a6baf9ed4b09d6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.196
+    second: {fileID: 2100000, guid: 0b074951dedbe4ffaa39d3d396c67e69, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.197
+    second: {fileID: 2100000, guid: 229cb7796b0124e19a8432d1e7c3e05c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.198
+    second: {fileID: 2100000, guid: 4e496a790a153496dbd9f1bae6e7dd7e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.199
+    second: {fileID: 2100000, guid: ae602a5dd1ada448aaef07f81ebe3f7f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.200
+    second: {fileID: 2100000, guid: 915b7ef88923940908d0d1034f42651e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.201
+    second: {fileID: 2100000, guid: 7040a7d56971d44aea4bcf1aa2d48819, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.202
+    second: {fileID: 2100000, guid: 78c79d53ee4724c6d8618559f4e83622, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.203
+    second: {fileID: 2100000, guid: eae556a9f32674a12a5df5e7a2ef344f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.204
+    second: {fileID: 2100000, guid: cd9e1a14da30c42f98d83526fdc26e89, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.205
+    second: {fileID: 2100000, guid: 9a2de5d33d7754a31bb84621dd37a385, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.206
+    second: {fileID: 2100000, guid: 40b0e18ef9a3b4dbe8618d7fbe8194d1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.207
+    second: {fileID: 2100000, guid: dbac4f90e7fc142bca828fa215af0f24, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.208
+    second: {fileID: 2100000, guid: 56ed173bb48b94749a5f3d7fad48af4b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.209
+    second: {fileID: 2100000, guid: 01f17ca882d6d413ea8f95dca2266b65, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.210
+    second: {fileID: 2100000, guid: 422545285bb1a4ffaabfbc25f14f195b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.211
+    second: {fileID: 2100000, guid: 34dc961179d724cc89d9ccc90b8f31d0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.212
+    second: {fileID: 2100000, guid: 252fd0cafc7c84340985091abad28844, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.213
+    second: {fileID: 2100000, guid: 27470275a9b8a43ff874a5b59ffdb281, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.214
+    second: {fileID: 2100000, guid: e616aac024e2448c59ea65a9b7f0cce8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.215
+    second: {fileID: 2100000, guid: 4a99e28430e7b456486040f325db3607, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.216
+    second: {fileID: 2100000, guid: 6f49afb3f54a64d68841073db2121e82, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.217
+    second: {fileID: 2100000, guid: 538487a2399f144df8f4ccf8fa6d79dd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.218
+    second: {fileID: 2100000, guid: 4f5bed3e2011e4517a210b3c9cb66802, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.219
+    second: {fileID: 2100000, guid: 967b18fd24e4e403182e2c30b298dd09, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.220
+    second: {fileID: 2100000, guid: 482b517617edb448cb201dbac17b3d91, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.221
+    second: {fileID: 2100000, guid: 7dd4027ad66a9420d8c69c1fde266d46, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.222
+    second: {fileID: 2100000, guid: 95a924b55f6f74ec1b7aeb82e81333a5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.223
+    second: {fileID: 2100000, guid: 703a6044abcd64b8abf001ce2ce86d60, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.224
+    second: {fileID: 2100000, guid: 43dd0288cf0fd4645b93127a3ed638ac, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.225
+    second: {fileID: 2100000, guid: 6a0d084a10e83477cad38f6c9b13776c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.226
+    second: {fileID: 2100000, guid: 4e97d0d8588da4e149a50673f8c1397f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.227
+    second: {fileID: 2100000, guid: 0256ca1196dfc4bc58d040d1a6a7a197, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.228
+    second: {fileID: 2100000, guid: 05a05d9e1e34746369a4edefe6f1b2f8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.229
+    second: {fileID: 2100000, guid: 57a672bb5baab4a7c8a7b85d538e5f8d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.230
+    second: {fileID: 2100000, guid: 265bc4f1f674e476abddf12ae9cdbc76, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.231
+    second: {fileID: 2100000, guid: 5193f0f55f6ea46e7acfcdf7fde67091, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.232
+    second: {fileID: 2100000, guid: 4be097b40f9da408688364594b133366, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.233
+    second: {fileID: 2100000, guid: a3ff15aa279ca420a950061fb699959e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.234
+    second: {fileID: 2100000, guid: f7fe67faf45484cafab36bc91d495f21, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.235
+    second: {fileID: 2100000, guid: b2c78f3983aed4419869dc94ce6ace8e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.236
+    second: {fileID: 2100000, guid: 5f2f140e25f2d4755a98b275526a67da, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HAIR _ original ginger - directional layered strands.237
+    second: {fileID: 2100000, guid: 28117b07e48b9407dbef1f030afc5d63, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lamp
+    second: {fileID: 2100000, guid: eacf6ecdc1df745c79c32682f0a907b8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RedLed
+    second: {fileID: 2100000, guid: 56066b9b42ba84f789c47fed6ebae3ec, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Rubber
+    second: {fileID: 2100000, guid: 04bd4cb0e3fcd4a219278951478f023f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SHIRT _ #CCE2DF
+    second: {fileID: 2100000, guid: 9639949b1ff34428482032325fc39c5c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SharpMetal
+    second: {fileID: 2100000, guid: 0b6b577bfdb624ac89b685cac81b7f83, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Shirt - matching mint topstitch
+    second: {fileID: 2100000, guid: 31a61537c5aca422484981626c367823, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Shirt - warm grey button thread
+    second: {fileID: 2100000, guid: e723381bb2c48405c942b849a0ba876c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SilverBody
+    second: {fileID: 2100000, guid: 15d62887bf96e49a7a5f0ba1cd191bb0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SilverNeck
+    second: {fileID: 2100000, guid: 940c3ab01194a4d63be4bf2adf5da544, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TIE _ #931723
+    second: {fileID: 2100000, guid: 68fe625748ac04e38a4feb3601248770, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TROUSERS + TIE DOTS _ #EDEBD2
+    second: {fileID: 2100000, guid: ae871c7ad2e244f4dbecfdcf154241c9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TROUSERS _ #EDEBD2 wool-viscose
+    second: {fileID: 2100000, guid: 7015f36434e3d42d1b6d1d0ed352a705, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: black
+    second: {fileID: 2100000, guid: ee5b2ede8aa5c47bc96f92d8d6fca9a9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: color_e1e1e1_texture_Std_Lower_Teeth_diffuse
+    second: {fileID: 2100000, guid: 1515cb9eea5c6490193f02854e76c3f5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: color_e1e1e1_texture_Std_Upper_Teeth_diffuse
+    second: {fileID: 2100000, guid: bb7916d368d1f46f4b39e65a65ecbda5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: color_ffffff_texture_Std_Cornea_L_diffuse
+    second: {fileID: 2100000, guid: 96ae40e7be73246278bfbcc0b8d2bb00, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: color_ffffff_texture_Std_Cornea_R_diffuse
+    second: {fileID: 2100000, guid: f5ac25938f96c41c7b710148dfbffc77, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: color_ffffff_texture_Std_Eye_L_diffuse
+    second: {fileID: 2100000, guid: 2d41c283034194d3bb9c8daa8eaa3143, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: color_ffffff_texture_Std_Eyelash_diffuse
+    second: {fileID: 2100000, guid: b1fd077d460624b7b9da3990af4da3d0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: color_ffffff_texture_Std_Nails_diffuse
+    second: {fileID: 2100000, guid: 4bcb8f848513c4061b2a186677df1a11, type: 2}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+    searchTexturesGlobally: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    preBakeConvexCollisionMesh: 0
+    preBakeTriangleCollisionMesh: 0
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    importUVs: -1
+    importVertexColors: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+    calculateBlendshapeNormalsDeltaFromImportedNormals: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human:
+    - boneName: spine
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: thigh.L
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: thigh.R
+      humanName: RightUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shin.L
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shin.R
+      humanName: RightLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: foot.L
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: foot.R
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: chest
+      humanName: Spine
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: neck
+      humanName: Neck
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: head
+      humanName: Head
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: upper_arm.L
+      humanName: LeftUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: upper_arm.R
+      humanName: RightUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: forearm.L
+      humanName: LeftLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: forearm.R
+      humanName: RightLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: hand.L
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: hand.R
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: EDDIE(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Arms and hands
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Base_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 0.06574721, y: 0.06574721, z: 0.043652862}
+    - name: baseLight_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 0.079554126, y: 0.079554126, z: 0.06574721}
+    - name: Belt - brown leather matching shoes
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Belt buckle - bottom
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Belt buckle - left
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Belt buckle - prong
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Belt buckle - right
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Belt buckle - top
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Body_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 0.06574721, y: 0.06574721, z: 0.043652862}
+    - name: Button 01 - crossed sewing thread
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button 01 - stitch holes
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button 02 - crossed sewing thread
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button 02 - stitch holes
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button 03 - crossed sewing thread
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button 03 - stitch holes
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button 04 - crossed sewing thread
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button 04 - stitch holes
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button 05 - crossed sewing thread
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button 05 - stitch holes
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button 06 - crossed sewing thread
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button 06 - stitch holes
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Button_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.25575268, y: 0.67019826, z: 0.081476316}
+      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 0.06574721, y: 0.06574721, z: 0.06574721}
+    - name: Circle_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.5770956, z: 0.11736311}
+      rotation: {x: -0.00000003774895, y: 0, z: -0, w: 1}
+      scale: {x: 0.06574721, y: 0.06574721, z: 0.06574721}
+    - name: Circle_006_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: 0.000000015454313, y: -0.70710677, z: 0.000000015454312, w: 0.7071068}
+      scale: {x: 0.06574721, y: 0.06574721, z: 0.06574721}
+    - name: Circle_008_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: 0.000000015454313, y: -0.70710677, z: 0.000000015454312, w: 0.7071068}
+      scale: {x: 0.06574721, y: 0.06574721, z: 0.06574721}
+    - name: Circle_009_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 0.06574721, y: 0.06574721, z: 0.06574721}
+    - name: EDDIE_RIG
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: root
+      parentName: EDDIE_RIG
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+      scale: {x: 1, y: 0.99999994, z: 0.99999994}
+    - name: spine
+      parentName: root
+      position: {x: -0, y: 1, z: 0}
+      rotation: {x: -0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 0.9999779, z: 0.9999779}
+    - name: chest
+      parentName: spine
+      position: {x: -0, y: 0.15999997, z: 0}
+      rotation: {x: -0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1.0000104, z: 1.0000104}
+    - name: clavicle.L
+      parentName: chest
+      position: {x: -0.015, y: 0.16000009, z: 0}
+      rotation: {x: -0.5976985, y: 0.4221122, z: 0.42211232, w: 0.5351626}
+      scale: {x: 1.0000123, y: 1.0000192, z: 1.0000497}
+    - name: upper_arm.L
+      parentName: clavicle.L
+      position: {x: -0.000000014901161, y: 0.14115594, z: 4.656613e-10}
+      rotation: {x: 0.06621696, y: -0.53434, z: -0.12863833, w: -0.83279544}
+      scale: {x: 0.999363, y: 1.0003409, z: 1.000793}
+    - name: forearm.L
+      parentName: upper_arm.L
+      position: {x: 0.00000005401671, y: 0.26011142, z: 0}
+      rotation: {x: -0.024109975, y: 0.17572765, z: -0.0053937244, w: 0.98412883}
+      scale: {x: 0.99992764, y: 0.9991439, z: 1.001294}
+    - name: hand.L
+      parentName: forearm.L
+      position: {x: -0.000000006868504, y: 0.21678117, z: -0.0000000027939677}
+      rotation: {x: -0.14661156, y: 0.024015348, z: -0.012767078, w: 0.9888202}
+      scale: {x: 0.9936664, y: 0.9846016, z: 1.0224879}
+    - name: lantern
+      parentName: hand.L
+      position: {x: -0.012000012, y: 0.113448285, z: -0.0018676212}
+      rotation: {x: 0.29243407, y: -0.000000048428767, z: 0.000000008381902, w: 0.9562857}
+      scale: {x: 0.9999949, y: 1.0925426, z: 0.9158447}
+    - name: clavicle.R
+      parentName: chest
+      position: {x: 0.015, y: 0.16000009, z: 0}
+      rotation: {x: -0.5976985, y: -0.4221122, z: -0.42211232, w: 0.5351626}
+      scale: {x: 1.0000123, y: 1.0000192, z: 1.0000497}
+    - name: upper_arm.R
+      parentName: clavicle.R
+      position: {x: 0.000000014901161, y: 0.14115594, z: 4.656613e-10}
+      rotation: {x: 0.06621696, y: 0.53434, z: 0.12863833, w: -0.83279544}
+      scale: {x: 0.99936205, y: 1.0003409, z: 1.000793}
+    - name: forearm.R
+      parentName: upper_arm.R
+      position: {x: -0.00000005401671, y: 0.26011142, z: 0}
+      rotation: {x: -0.024110224, y: -0.17572768, z: 0.005393813, w: 0.9841288}
+      scale: {x: 0.9999264, y: 0.99914473, z: 1.0012958}
+    - name: hand.R
+      parentName: forearm.R
+      position: {x: 0.000000006868504, y: 0.21678117, z: -0.0000000027939677}
+      rotation: {x: 0.09328741, y: -0.091849044, z: 0.070945695, w: 0.98885185}
+      scale: {x: 0.9743152, y: 1.017469, z: 1.0091312}
+    - name: neck
+      parentName: chest
+      position: {x: -0, y: 0.16000009, z: 0}
+      rotation: {x: -0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1.0000004, z: 1.0000004}
+    - name: head
+      parentName: neck
+      position: {x: -0, y: 0.13999999, z: 0}
+      rotation: {x: -0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+    - name: pelvis
+      parentName: spine
+      position: {x: -0, y: -0.120000005, z: 0}
+      rotation: {x: -0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1.0000104, z: 1.0000104}
+    - name: thigh.L
+      parentName: pelvis
+      position: {x: -0.087, y: 0.01999998, z: 0}
+      rotation: {x: 0.9996369, y: -0.016869454, z: -0.016868958, w: 0.012529135}
+      scale: {x: 1.0000007, y: 1.0000236, z: 1.0000243}
+    - name: shin.L
+      parentName: thigh.L
+      position: {x: -0.0000000026484486, y: 0.39034468, z: 6.9849193e-10}
+      rotation: {x: 0.04210363, y: 0.016362827, z: -0.01736122, w: 0.9988284}
+      scale: {x: 1.0000001, y: 0.99999285, z: 0.9999859}
+    - name: foot.L
+      parentName: shin.L
+      position: {x: 6.511451e-10, y: 0.4057104, z: -2.641798e-10}
+      rotation: {x: -0.568349, y: -0, z: 0.0000000019790605, w: 0.82278764}
+      scale: {x: 0.9999999, y: 1.0001283, z: 1.0001042}
+    - name: toe.L
+      parentName: foot.L
+      position: {x: 0.000000007450581, y: 0.14681956, z: 0.0000000061150303}
+      rotation: {x: -0.1644154, y: -0.0000000019140944, z: -0.000000001572425, w: 0.9863912}
+      scale: {x: 1.0000001, y: 1.000052, z: 0.99981177}
+    - name: thigh.R
+      parentName: pelvis
+      position: {x: 0.087, y: 0.01999998, z: 0}
+      rotation: {x: 0.9996369, y: 0.016869454, z: 0.016868958, w: 0.012529135}
+      scale: {x: 1.0000007, y: 1.0000232, z: 1.000024}
+    - name: shin.R
+      parentName: thigh.R
+      position: {x: 0.0000000026484486, y: 0.39034468, z: 6.9849193e-10}
+      rotation: {x: 0.04210363, y: -0.016362827, z: 0.01736122, w: 0.9988284}
+      scale: {x: 1.0000001, y: 0.9999881, z: 0.99998623}
+    - name: foot.R
+      parentName: shin.R
+      position: {x: -6.511451e-10, y: 0.4057104, z: -2.641798e-10}
+      rotation: {x: -0.568349, y: -0, z: -0.0000000019790605, w: 0.82278764}
+      scale: {x: 1, y: 1.0001314, z: 1.0001051}
+    - name: toe.R
+      parentName: foot.R
+      position: {x: -0.000000007450581, y: 0.14681956, z: 0.0000000061150303}
+      rotation: {x: -0.1644154, y: 0.0000000019140944, z: 0.000000001572425, w: 0.9863912}
+      scale: {x: 1, y: 0.9999839, z: 0.99987763}
+    - name: Eye LEFT - cornea
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Eye LEFT - iris
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Eye RIGHT - cornea
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Eye RIGHT - iris
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Eyebrow - original expression
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Eyebrow - original expression.001
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Eyelashes - lower
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Eyelashes - upper
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Face and neck - ORIGINAL EXPRESSION unchanged
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00033469812, z: 0}
+      rotation: {x: -0.70710677, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 1.0282907, y: 1.0282907, z: 1.0282907}
+    - name: Freckles - ORIGINAL placement unchanged
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Glass_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 0.079554126, y: 0.079554126, z: 0.06574721}
+    - name: Hair - Back lock 27
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 27.001
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 27.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.0069941347, y: 0.022410277, z: 0.007269785}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 27.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.003389419, y: 0.034036487, z: 0.015094098}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 27.004
+      parentName: EDDIE(Clone)
+      position: {x: -0.00035220978, y: 0.035328265, z: 0.0016852119}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 27.005
+      parentName: EDDIE(Clone)
+      position: {x: -0.00035220978, y: 0.035328265, z: 0.0016852119}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 28
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 28.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.0019323668, y: 0.04523813, z: 0.024638737}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 28.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.00037986063, y: 0.041464813, z: 0.026887845}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 28.003
+      parentName: EDDIE(Clone)
+      position: {x: 0.016116947, y: 0.046744645, z: 0.017504392}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 29
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 29.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.0133991, y: 0.04324125, z: 0.01962275}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 30
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 30.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.0117865885, y: 0.03233233, z: 0.0038264594}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 30.002
+      parentName: EDDIE(Clone)
+      position: {x: 0.0067777224, y: 0.056383774, z: 0.05021077}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 30.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.009843756, y: 0.032232296, z: 0.0034830687}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 30.004
+      parentName: EDDIE(Clone)
+      position: {x: -0.012952719, y: 0.051810876, z: 0.02936417}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 31
+      parentName: EDDIE(Clone)
+      position: {x: -0.0064196163, y: 0.047941137, z: 0.020432193}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 31.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.002537903, y: 0.040002793, z: 0.010216165}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 31.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.008901708, y: 0.04948419, z: 0.035012808}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 31.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.0028457562, y: 0.040002827, z: 0.0032240613}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 32
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 32.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.011419921, y: 0.039499097, z: 0.008307855}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 33
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 33.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.025068745, y: 0.044906437, z: 0.008412572}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 49
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 49.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.011972002, y: 0.036220953, z: -0.008189195}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 49.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.007061797, y: 0.03588712, z: 0.010757396}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 49.003
+      parentName: EDDIE(Clone)
+      position: {x: 0.0062116254, y: 0.034774844, z: -0.0024045166}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 49.004
+      parentName: EDDIE(Clone)
+      position: {x: 0.004745658, y: 0.038095344, z: -0.001574461}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.001
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.002
+      parentName: EDDIE(Clone)
+      position: {x: 0.010429192, y: 0.0047533303, z: 0.016529083}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.017878471, y: 0.013501876, z: 0.02617482}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.004
+      parentName: EDDIE(Clone)
+      position: {x: 0.0051654023, y: 0.004017991, z: 0.022520643}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.005
+      parentName: EDDIE(Clone)
+      position: {x: 0.01807403, y: 0.0062955087, z: 0.0122286705}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.006
+      parentName: EDDIE(Clone)
+      position: {x: 0.028481612, y: 0.0024401795, z: 0.009839902}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.007
+      parentName: EDDIE(Clone)
+      position: {x: 0.036850896, y: 0.0035214163, z: 0.006321952}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.008
+      parentName: EDDIE(Clone)
+      position: {x: 0.05242166, y: 0.0035143334, z: 0.009672608}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.009
+      parentName: EDDIE(Clone)
+      position: {x: 0.0454416, y: 0.002444753, z: 0.00824493}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.010
+      parentName: EDDIE(Clone)
+      position: {x: 0.06304808, y: 0.0035143709, z: 0.012126907}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.011
+      parentName: EDDIE(Clone)
+      position: {x: 0.010429192, y: 0.0047533303, z: 0.016529083}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.012
+      parentName: EDDIE(Clone)
+      position: {x: 0.07086828, y: 0.0017863229, z: 0.018211285}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.013
+      parentName: EDDIE(Clone)
+      position: {x: 0.0751312, y: 0.001786351, z: 0.022815645}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.014
+      parentName: EDDIE(Clone)
+      position: {x: 0.08130085, y: 0.005286742, z: 0.028157769}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.015
+      parentName: EDDIE(Clone)
+      position: {x: 0.08618913, y: 0.0071261185, z: 0.036485985}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.016
+      parentName: EDDIE(Clone)
+      position: {x: 0.09409614, y: 0.014238095, z: 0.028299417}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.017
+      parentName: EDDIE(Clone)
+      position: {x: 0.08406162, y: 0.010174083, z: 0.027649583}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.018
+      parentName: EDDIE(Clone)
+      position: {x: 0.08632077, y: 0.012206076, z: 0.025310563}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.019
+      parentName: EDDIE(Clone)
+      position: {x: 0.08218361, y: 0.012206056, z: 0.021314658}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.020
+      parentName: EDDIE(Clone)
+      position: {x: 0.07804644, y: 0.012206037, z: 0.017318754}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.021
+      parentName: EDDIE(Clone)
+      position: {x: 0.076052904, y: 0.008770531, z: 0.012241612}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.022
+      parentName: EDDIE(Clone)
+      position: {x: 0.08685897, y: 0.011924235, z: 0.014903163}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.023
+      parentName: EDDIE(Clone)
+      position: {x: 0.094932936, y: 0.017678788, z: 0.021463212}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.024
+      parentName: EDDIE(Clone)
+      position: {x: 0.059213318, y: 0.0017862949, z: 0.019435266}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.025
+      parentName: EDDIE(Clone)
+      position: {x: 0.047320828, y: 0.0023532817, z: 0.018397493}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.026
+      parentName: EDDIE(Clone)
+      position: {x: 0.03775933, y: 0.0029202742, z: 0.017114924}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.027
+      parentName: EDDIE(Clone)
+      position: {x: 0.027831849, y: 0.004113966, z: 0.020149196}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.028
+      parentName: EDDIE(Clone)
+      position: {x: 0.01612688, y: 0.003728797, z: 0.023853969}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.029
+      parentName: EDDIE(Clone)
+      position: {x: 0.0065923324, y: 0.0064391964, z: 0.013901921}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.030
+      parentName: EDDIE(Clone)
+      position: {x: -0.009504218, y: 0.0040179514, z: 0.03381578}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.031
+      parentName: EDDIE(Clone)
+      position: {x: 0.007317993, y: 0.002909857, z: 0.029761812}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.032
+      parentName: EDDIE(Clone)
+      position: {x: -0.0039226357, y: 0.0032792084, z: 0.03476998}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.033
+      parentName: EDDIE(Clone)
+      position: {x: -0.018974515, y: 0.011135326, z: 0.03386128}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.034
+      parentName: EDDIE(Clone)
+      position: {x: -0.022524167, y: 0.011135316, z: 0.03963006}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.035
+      parentName: EDDIE(Clone)
+      position: {x: -0.0064682304, y: 0.008774335, z: 0.025650738}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.036
+      parentName: EDDIE(Clone)
+      position: {x: -0.027734553, y: 0.014439262, z: 0.038084183}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.037
+      parentName: EDDIE(Clone)
+      position: {x: 0.03442173, y: 0.007924404, z: 0.00036804006}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.038
+      parentName: EDDIE(Clone)
+      position: {x: 0.017885916, y: 0.025415815, z: -0.0019678324}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.039
+      parentName: EDDIE(Clone)
+      position: {x: 0.010964813, y: 0.011041399, z: 0.0046099164}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.040
+      parentName: EDDIE(Clone)
+      position: {x: 0.06319489, y: 0.0040260004, z: 0.025324795}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.041
+      parentName: EDDIE(Clone)
+      position: {x: 0.0564414, y: -0.00045338785, z: 0.027965844}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.042
+      parentName: EDDIE(Clone)
+      position: {x: 0.05297825, y: -0.0026930836, z: 0.02825636}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.043
+      parentName: EDDIE(Clone)
+      position: {x: 0.10371726, y: 0.02639057, z: 0.02418869}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.044
+      parentName: EDDIE(Clone)
+      position: {x: 0.11045084, y: 0.029206831, z: 0.020991815}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.045
+      parentName: EDDIE(Clone)
+      position: {x: 0.08791479, y: 0.009524315, z: 0.04283216}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.046
+      parentName: EDDIE(Clone)
+      position: {x: 0.09675925, y: 0.0178401, z: 0.03626542}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.047
+      parentName: EDDIE(Clone)
+      position: {x: 0.103361316, y: 0.026390579, z: 0.032012254}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.048
+      parentName: EDDIE(Clone)
+      position: {x: 0.11266397, y: 0.03830881, z: 0.029950028}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.049
+      parentName: EDDIE(Clone)
+      position: {x: 0.0922576, y: 0.01547542, z: 0.04477561}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.050
+      parentName: EDDIE(Clone)
+      position: {x: 0.094802834, y: 0.019046083, z: 0.046536315}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.051
+      parentName: EDDIE(Clone)
+      position: {x: 0.10005764, y: 0.02260893, z: 0.03960966}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.052
+      parentName: EDDIE(Clone)
+      position: {x: 0.10847611, y: 0.032483235, z: 0.041525524}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.053
+      parentName: EDDIE(Clone)
+      position: {x: 0.11163722, y: 0.03611278, z: 0.036598958}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.054
+      parentName: EDDIE(Clone)
+      position: {x: 0.066516526, y: 0.0063402983, z: 0.0331429}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.055
+      parentName: EDDIE(Clone)
+      position: {x: 0.10412949, y: 0.027579539, z: 0.038035505}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.056
+      parentName: EDDIE(Clone)
+      position: {x: 0.10163684, y: 0.0251277, z: 0.044584896}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.057
+      parentName: EDDIE(Clone)
+      position: {x: 0.11606604, y: 0.04110926, z: 0.04015499}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.058
+      parentName: EDDIE(Clone)
+      position: {x: 0.09860367, y: 0.022537375, z: 0.050622515}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.059
+      parentName: EDDIE(Clone)
+      position: {x: 0.10558451, y: 0.028753856, z: 0.04882894}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.060
+      parentName: EDDIE(Clone)
+      position: {x: 0.020423515, y: 0.006965634, z: 0.006335032}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.061
+      parentName: EDDIE(Clone)
+      position: {x: -0.03381195, y: 0.0144392885, z: 0.048440788}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.062
+      parentName: EDDIE(Clone)
+      position: {x: -0.038769368, y: 0.013318406, z: 0.059454612}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.063
+      parentName: EDDIE(Clone)
+      position: {x: -0.032617882, y: 0.006543214, z: 0.06543058}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.064
+      parentName: EDDIE(Clone)
+      position: {x: -0.018963382, y: 0.0056764595, z: 0.046133976}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.065
+      parentName: EDDIE(Clone)
+      position: {x: -0.026018105, y: 0.0066474755, z: 0.05123306}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.066
+      parentName: EDDIE(Clone)
+      position: {x: -0.02883685, y: 0.0056764632, z: 0.057252772}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.067
+      parentName: EDDIE(Clone)
+      position: {x: -0.039178252, y: 0.011244673, z: 0.06653341}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.068
+      parentName: EDDIE(Clone)
+      position: {x: -0.03721352, y: 0.014439282, z: 0.053334095}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 50.069
+      parentName: EDDIE(Clone)
+      position: {x: -0.039040323, y: 0.017702507, z: 0.04722559}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 51
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 51.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.009090534, y: 0.04199187, z: -0.0034416593}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 51.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.0036219698, y: 0.06135518, z: 0.0012177774}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 52
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 52.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.040321443, y: 0.016496373, z: 0.0063865567}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 52.002
+      parentName: EDDIE(Clone)
+      position: {x: 0.027314326, y: 0.013154294, z: 0.0059611234}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 52.003
+      parentName: EDDIE(Clone)
+      position: {x: 0.01872982, y: -0.0013438466, z: 0.005876464}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 52.004
+      parentName: EDDIE(Clone)
+      position: {x: -0.00196154, y: 0.0055213477, z: -0.0003115912}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 52.005
+      parentName: EDDIE(Clone)
+      position: {x: -0.015592079, y: -0.0010005147, z: 0.007458629}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 52.006
+      parentName: EDDIE(Clone)
+      position: {x: 0.0077703553, y: 0.039812002, z: 0.0049578547}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 52.007
+      parentName: EDDIE(Clone)
+      position: {x: 0.0047241105, y: 0.05287958, z: 0.005816496}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 53
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 53.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.00054686866, y: 0.05147412, z: -0.0021025871}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 54
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 54.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.002132237, y: 0.044425935, z: 0.0026770546}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55
+      parentName: EDDIE(Clone)
+      position: {x: 0.0048889355, y: -0.00019732583, z: 0.014383704}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.011093812, y: 0.012451112, z: 0.05067314}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.020152668, y: 0.034538973, z: 0.00010032834}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.0009860331, y: 0.008314739, z: 0.0035618749}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.004
+      parentName: EDDIE(Clone)
+      position: {x: -0.0037412802, y: 0.0035030108, z: 0.0006785393}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.005
+      parentName: EDDIE(Clone)
+      position: {x: 0.007202428, y: 0.0150333205, z: 0.04089088}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.006
+      parentName: EDDIE(Clone)
+      position: {x: 0.015098078, y: 0.011281771, z: 0.038633958}
+      rotation: {x: -0.70644987, y: -0.030474985, z: -0.03047499, w: 0.70644975}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.007
+      parentName: EDDIE(Clone)
+      position: {x: 0.017689716, y: 0.030066628, z: 0.04197524}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.008
+      parentName: EDDIE(Clone)
+      position: {x: 0.016143773, y: 0.028102139, z: 0.037775867}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.009
+      parentName: EDDIE(Clone)
+      position: {x: 0.013133662, y: 0.00049519073, z: 0.027982047}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.010
+      parentName: EDDIE(Clone)
+      position: {x: 0.0151024265, y: 0.0052138763, z: 0.024020854}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.011
+      parentName: EDDIE(Clone)
+      position: {x: 0.015043632, y: 0.01840807, z: 0.05362913}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.012
+      parentName: EDDIE(Clone)
+      position: {x: -0.019416224, y: -0.0046835057, z: -0.010852541}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.013
+      parentName: EDDIE(Clone)
+      position: {x: 0.016132902, y: 0.0114744995, z: 0.030583046}
+      rotation: {x: -0.70644987, y: -0.030474985, z: -0.03047499, w: 0.70644975}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.014
+      parentName: EDDIE(Clone)
+      position: {x: 0.016000088, y: 0.00665537, z: 0.03512008}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.015
+      parentName: EDDIE(Clone)
+      position: {x: 0.005185742, y: 0.007210317, z: 0.028317813}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.016
+      parentName: EDDIE(Clone)
+      position: {x: 0.013687272, y: 0.008407168, z: 0.043095596}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.017
+      parentName: EDDIE(Clone)
+      position: {x: 0.00915928, y: 0.005854405, z: 0.039344434}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.018
+      parentName: EDDIE(Clone)
+      position: {x: -0.010991173, y: 0.0010061793, z: -0.007154458}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.019
+      parentName: EDDIE(Clone)
+      position: {x: -0.0039781537, y: 0.0035200343, z: 0.027780188}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.020
+      parentName: EDDIE(Clone)
+      position: {x: -0.0010835943, y: 0.014765208, z: 0.036467444}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.021
+      parentName: EDDIE(Clone)
+      position: {x: 0.0018109651, y: 0.026010381, z: 0.045154702}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.022
+      parentName: EDDIE(Clone)
+      position: {x: -0.005049323, y: 0.011698326, z: 0.038048014}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.023
+      parentName: EDDIE(Clone)
+      position: {x: 0.0017471751, y: 0.03316639, z: 0.05305285}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.024
+      parentName: EDDIE(Clone)
+      position: {x: -0.0021857247, y: 0.02386342, z: 0.044293396}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.025
+      parentName: EDDIE(Clone)
+      position: {x: -0.0022030585, y: 0.031261016, z: 0.05113028}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.026
+      parentName: EDDIE(Clone)
+      position: {x: -0.0071494062, y: 0.014475817, z: 0.0432184}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.027
+      parentName: EDDIE(Clone)
+      position: {x: -0.008364335, y: -0.0031149602, z: 0.028523002}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.028
+      parentName: EDDIE(Clone)
+      position: {x: -0.009794474, y: -0.0003374694, z: 0.032860294}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.029
+      parentName: EDDIE(Clone)
+      position: {x: -0.018612362, y: 0.019464735, z: 0.0029024465}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.030
+      parentName: EDDIE(Clone)
+      position: {x: -0.0076375706, y: 0.027573783, z: 0.0061084507}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.031
+      parentName: EDDIE(Clone)
+      position: {x: -0.026510116, y: 0.046832852, z: 0.0067620403}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.032
+      parentName: EDDIE(Clone)
+      position: {x: -0.0061012805, y: 0.05078522, z: 0.011712868}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.033
+      parentName: EDDIE(Clone)
+      position: {x: -0.030791635, y: 0.05545256, z: 0.008468691}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 55.034
+      parentName: EDDIE(Clone)
+      position: {x: -0.009665994, y: 0.034876518, z: 0.006479602}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 56
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 56.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.029103572, y: -0.018415295, z: -0.031504683}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 56.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.005279483, y: 0.037422203, z: -0.010475948}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 56.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.020473734, y: 0.06642814, z: -0.00043153856}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 73
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 73.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.00498956, y: 0.03486106, z: 0.0060577067}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 73.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.007279112, y: 0.04976107, z: -0.005595397}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 78
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 79
+      parentName: EDDIE(Clone)
+      position: {x: 0.028990848, y: 0.047367137, z: 0.07162985}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 79.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.030474905, y: 0.054198816, z: 0.06432134}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 79.002
+      parentName: EDDIE(Clone)
+      position: {x: 0.0346514, y: 0.06733573, z: 0.06764752}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Back lock 80
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0.03671549}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.55029756, y: 0.55029756, z: 0.55029756}
+    - name: Hair - Crown lock 01
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 02
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 03
+      parentName: EDDIE(Clone)
+      position: {x: -0.004544106, y: 0.0329717, z: -0.0023158141}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 04
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 05
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 06
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 07
+      parentName: EDDIE(Clone)
+      position: {x: -0.002272053, y: 0.034149982, z: -0.0011579071}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 07.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.00019592326, y: 0.03380625, z: 0.012829858}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 07.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.0052224183, y: 0.024151457, z: -0.007565692}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 07.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.002272053, y: 0.034149982, z: -0.0011579071}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 08
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 09
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 10
+      parentName: EDDIE(Clone)
+      position: {x: 0.0032685664, y: 0.03768483, z: 0.0048186816}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 11
+      parentName: EDDIE(Clone)
+      position: {x: 0.005376472, y: 0.038455516, z: 0.005568468}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 12
+      parentName: EDDIE(Clone)
+      position: {x: -0.012945252, y: 0.018780824, z: 0.0016802619}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 12.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.0008561477, y: 0.019848429, z: -0.0021195645}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 13
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 14
+      parentName: EDDIE(Clone)
+      position: {x: -0.012197342, y: 0.032971736, z: 0.012701392}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Crown lock 15
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 18
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 18.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.00796251, y: 0.035328224, z: 0.002586428}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 19
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 20
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 21
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 21.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.011317575, y: 0.035328314, z: 0.0030335574}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 22
+      parentName: EDDIE(Clone)
+      position: {x: -0.011356176, y: 0.013140028, z: 0.012063472}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 22.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.008486096, y: 0.024992898, z: 0.01399553}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 22.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.009867672, y: 0.016991675, z: 0.010917363}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 22.003
+      parentName: EDDIE(Clone)
+      position: {x: 0.0009474503, y: 0.023696827, z: 0.0052408194}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 22.004
+      parentName: EDDIE(Clone)
+      position: {x: 0.0032343203, y: 0.035478495, z: -0.0042866366}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 23
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 37
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 37.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.013877727, y: 0.04571351, z: 0.0036618486}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 38
+      parentName: EDDIE(Clone)
+      position: {x: -0.0009695147, y: 0.035328258, z: 0.00031118596}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 38.002
+      parentName: EDDIE(Clone)
+      position: {x: 0.009410759, y: 0.029133005, z: -0.00058472063}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 39
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 39.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.01268583, y: 0.033381846, z: 0.003051837}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 39.002
+      parentName: EDDIE(Clone)
+      position: {x: 0.0030805562, y: 0.033504292, z: -0.0019240874}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 39.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.026903115, y: 0.036733326, z: 0.0017082269}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 40
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 40.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.011843476, y: 0.034431368, z: -0.0015084804}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 40.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.009927353, y: 0.03805119, z: -0.0022587292}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 41
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 41.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.008738089, y: 0.044006847, z: -0.0046434505}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 41.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.0024713855, y: 0.0470579, z: -0.005467329}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 41.003
+      parentName: EDDIE(Clone)
+      position: {x: 0.008123467, y: 0.033459898, z: -0.00021288267}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 42
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 42.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.010553312, y: 0.029888323, z: 0.009012633}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 42.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.038347777, y: 0.034077995, z: -0.058058612}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 42.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.0039035692, y: 0.028037474, z: -0.0041089216}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 42.004
+      parentName: EDDIE(Clone)
+      position: {x: -0.03846695, y: 0.028927624, z: -0.06348363}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 42.005
+      parentName: EDDIE(Clone)
+      position: {x: -0.039007515, y: 0.025836812, z: -0.069025956}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 42.006
+      parentName: EDDIE(Clone)
+      position: {x: -0.03882509, y: 0.029592257, z: -0.0734857}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 43
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 43.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.0066680084, y: 0.029485565, z: 0.008978739}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 43.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.0040386817, y: 0.03674746, z: -0.0068132365}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 44
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 60
+      parentName: EDDIE(Clone)
+      position: {x: 0.0027576173, y: 0.033657014, z: -0.0025052764}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 61
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 61.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.0052548544, y: 0.045775257, z: -0.009161671}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 62
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 62.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.010959132, y: 0.038247775, z: 0.0014661943}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 62.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.0044470937, y: 0.040417165, z: 0.00032870512}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 63
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 63.001
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 64
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 65
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 66
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 67
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 67.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.009400278, y: 0.03243775, z: -0.012457498}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 67.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.010141954, y: 0.038437612, z: -0.012477589}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 68
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Fringe lock 68.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.0035923356, y: 0.0153757725, z: -0.0152569255}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - LEFT sideburn layer 01.001
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.018141026, z: -0.021431817}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5537575, y: 0.5537575, z: 0.5537575}
+    - name: Hair - LEFT sideburn layer 01.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.0015437312, y: -0.03281056, z: -0.01291321}
+      rotation: {x: -0.70710677, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 0.5641583, y: 0.5641583, z: 0.5641583}
+    - name: Hair - LEFT sideburn layer 01.003
+      parentName: EDDIE(Clone)
+      position: {x: 0.006131784, y: -0.008431908, z: -0.010483778}
+      rotation: {x: -0.70710677, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 0.5641583, y: 0.5641583, z: 0.5641583}
+    - name: Hair - LEFT sideburn layer 03
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54841304, y: 0.54841304, z: 0.54841304}
+    - name: Hair - LEFT sideburn layer 03.001
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: -0.018530918}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54841304, y: 0.54841304, z: 0.54841304}
+    - name: Hair - LEFT sideburn layer 03.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.0016217288, y: -0.013315131, z: -0.010774401}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5564912, y: 0.5564912, z: 0.5564912}
+    - name: Hair - LEFT sideburn layer 03.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.001504065, y: -0.001732023, z: -0.026077908}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5564912, y: 0.5564912, z: 0.5564912}
+    - name: Hair - LEFT sideburn layer 03.004
+      parentName: EDDIE(Clone)
+      position: {x: -0.0017471077, y: -0.022221664, z: -0.06468228}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5564912, y: 0.5564912, z: 0.5564912}
+    - name: Hair - LEFT sideburn layer 03.005
+      parentName: EDDIE(Clone)
+      position: {x: -0.0042266753, y: -0.031395093, z: -0.071758665}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5564912, y: 0.5564912, z: 0.5564912}
+    - name: Hair - RIGHT sideburn layer 01
+      parentName: EDDIE(Clone)
+      position: {x: -0.0028234776, y: 0.036923334, z: 0.0020448104}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5548078, y: 0.5548078, z: 0.5548078}
+    - name: Hair - RIGHT sideburn layer 01.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.006529592, y: 0.018941348, z: -0.0100338375}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5548078, y: 0.5548078, z: 0.5548078}
+    - name: Hair - RIGHT sideburn layer 02
+      parentName: EDDIE(Clone)
+      position: {x: 0.00041737192, y: 0.03778764, z: 0.000572642}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54811144, y: 0.54811144, z: 0.54811144}
+    - name: Hair - RIGHT sideburn layer 03.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.0122532565, y: -0.21986422, z: -0.019303387}
+      rotation: {x: -0.70710677, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 0.6355661, y: 0.6355661, z: 0.6355661}
+    - name: Hair - RIGHT sideburn layer 03.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.006390947, y: -0.20175889, z: -0.031093778}
+      rotation: {x: -0.70710677, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 0.6355661, y: 0.6355661, z: 0.6355661}
+    - name: Hair - RIGHT sideburn layer 03.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.0072521735, y: -0.22013143, z: -0.05228134}
+      rotation: {x: -0.70710677, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 0.6355661, y: 0.6355661, z: 0.6355661}
+    - name: Hair - RIGHT sideburn layer 03.004
+      parentName: EDDIE(Clone)
+      position: {x: -0.0026206188, y: -0.19443193, z: -0.04114223}
+      rotation: {x: -0.70710677, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 0.6355661, y: 0.6355661, z: 0.6355661}
+    - name: Hair - Sides lock 16
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 16.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.005876649, y: 0.03999282, z: 0.0038778894}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 17
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 17.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.0077115614, y: 0.0368921, z: 0.008900526}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 24
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 24.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.0088630775, y: 0.027240522, z: 0.016318351}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 24.002
+      parentName: EDDIE(Clone)
+      position: {x: 0.005324243, y: 0.007310683, z: 0.014708996}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 25
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 25.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.0042736144, y: 0.03398474, z: -0.012924186}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 26
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 34
+      parentName: EDDIE(Clone)
+      position: {x: -0.00139495, y: 0.030909821, z: -0.004194525}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 35
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 35.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.00051073387, y: 0.036943946, z: 0.0106579475}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 35.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.006785429, y: 0.050129063, z: 0.001294763}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 35.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.010147544, y: 0.050209705, z: -0.008162085}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 35.004
+      parentName: EDDIE(Clone)
+      position: {x: -0.009303242, y: 0.039161287, z: -0.014347428}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 35.005
+      parentName: EDDIE(Clone)
+      position: {x: -0.015669491, y: 0.05020971, z: -0.015031181}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 35.006
+      parentName: EDDIE(Clone)
+      position: {x: -0.023144884, y: 0.059178982, z: -0.004408599}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 35.007
+      parentName: EDDIE(Clone)
+      position: {x: -0.033537865, y: 0.057575587, z: -0.015595533}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 36
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 36.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.0065446766, y: 0.043481532, z: -0.0019892124}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 36.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.015036855, y: 0.025034122, z: 0.010574365}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 36.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.019129975, y: 0.022836722, z: 0.015896818}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 36.004
+      parentName: EDDIE(Clone)
+      position: {x: -0.022348108, y: 0.023405608, z: 0.024679301}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 36.005
+      parentName: EDDIE(Clone)
+      position: {x: -0.014697394, y: 0.032362167, z: 0.009372825}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 36.006
+      parentName: EDDIE(Clone)
+      position: {x: -0.016260464, y: 0.058791086, z: -0.009258777}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 45
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 46
+      parentName: EDDIE(Clone)
+      position: {x: 0.0008234651, y: 0.035328265, z: 0.0046724738}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 46.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.0033025914, y: 0.032191515, z: 0.010612492}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 47
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 47.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.004092524, y: 0.0100243725, z: 0.012245434}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 47.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.0013836952, y: 0.031881962, z: -0.014904671}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 47.003
+      parentName: EDDIE(Clone)
+      position: {x: 0.0017295437, y: 0.044440314, z: 0.004386538}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 47.004
+      parentName: EDDIE(Clone)
+      position: {x: 0.0064244526, y: 0.05432898, z: 0.00078109954}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 47.005
+      parentName: EDDIE(Clone)
+      position: {x: -0.0028702808, y: 0.015394812, z: 0.006613028}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 47.006
+      parentName: EDDIE(Clone)
+      position: {x: -0.0031900462, y: 0.019971823, z: 0.006398601}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 48
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 48.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.0072339205, y: 0.005423896, z: 0.01129232}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 48.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.0009077139, y: 0.032988753, z: 0.0042261225}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 57
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 57.001
+      parentName: EDDIE(Clone)
+      position: {x: 0.003660212, y: 0.009306649, z: 0.0087955445}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 57.002
+      parentName: EDDIE(Clone)
+      position: {x: 0.00052007055, y: 0.042435355, z: 0.019230992}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 57.003
+      parentName: EDDIE(Clone)
+      position: {x: 0.0032445714, y: 0.051514648, z: 0.033787243}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 58
+      parentName: EDDIE(Clone)
+      position: {x: -0.013598597, y: -0.11795015, z: 0.005664707}
+      rotation: {x: -0.70710677, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 0.59346837, y: 0.59346837, z: 0.59346837}
+    - name: Hair - Sides lock 59
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 69
+      parentName: EDDIE(Clone)
+      position: {x: 0.00028129303, y: 0.03836305, z: -0.00083054637}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 70
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 70.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.0006184877, y: 0.01978739, z: 0.0033501773}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 70.002
+      parentName: EDDIE(Clone)
+      position: {x: 0.005410098, y: 0.04965274, z: 0.013411382}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 70.003
+      parentName: EDDIE(Clone)
+      position: {x: 0.0047912165, y: 0.05681496, z: 0.008819718}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 70.004
+      parentName: EDDIE(Clone)
+      position: {x: 0.005840286, y: 0.064403646, z: 0.008627257}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 70.005
+      parentName: EDDIE(Clone)
+      position: {x: 0.006456364, y: 0.06831467, z: 0.009171548}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 70.006
+      parentName: EDDIE(Clone)
+      position: {x: 0.0057892487, y: 0.056814965, z: 0.011820786}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 71
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 71.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.0018074991, y: 0.025026036, z: 0.00011186965}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 71.002
+      parentName: EDDIE(Clone)
+      position: {x: -0.0071858475, y: 0.034778014, z: 0.020955589}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 71.003
+      parentName: EDDIE(Clone)
+      position: {x: -0.0028941, y: 0.021462815, z: 0.008717743}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 71.004
+      parentName: EDDIE(Clone)
+      position: {x: -0.0016108856, y: 0.024625674, z: 0.0056212232}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 72
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: 0.03532826, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 72.001
+      parentName: EDDIE(Clone)
+      position: {x: -0.00401317, y: 0.03183791, z: 0.011539317}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 72.002
+      parentName: EDDIE(Clone)
+      position: {x: 0.0016758663, y: 0.025739115, z: 0.006489833}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.54475874, y: 0.54475874, z: 0.54475874}
+    - name: Hair - Sides lock 81
+      parentName: EDDIE(Clone)
+      position: {x: -0.008316837, y: -0.079062454, z: 0.027168088}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.59386826, y: 0.59386826, z: 0.59386826}
+    - name: Handle_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.25428522, y: 0.71134484, z: 0.08118045}
+      rotation: {x: -0.00000003774895, y: 0, z: -0, w: 1}
+      scale: {x: 0.06574721, y: 0.06574721, z: 0.06574721}
+    - name: Hat_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 0.08547137, y: 0.08547137, z: 0.06574721}
+    - name: Led_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.60766673, z: 0.08135534}
+      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 0.0055812807, y: 0.0055812807, z: 0.0055812807}
+    - name: Mouth interior
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Nails
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Neck_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 0.079554126, y: 0.079554126, z: 0.06574721}
+    - name: Neck_002_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 0.079554126, y: 0.079554126, z: 0.06574721}
+    - name: Open buttonhole 01
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Open buttonhole 02
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: RoofToop_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 0.079554126, y: 0.079554126, z: 0.06574721}
+    - name: Settings_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.5770956, z: 0.11736311}
+      rotation: {x: -0.00000003774895, y: 0, z: -0, w: 1}
+      scale: {x: 0.06574721, y: 0.06574721, z: 0.06574721}
+    - name: Shirt - continuous collar stand, open fronts and button facings
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shirt - LEFT facing topstitch
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shirt - LEFT sleeve with below-elbow rolled cuff
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shirt - RIGHT facing topstitch
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.00046253204, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shirt - RIGHT sleeve with below-elbow rolled cuff
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shirt - sewn chest pocket
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shirt button 01 - sewn four-hole button
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shirt button 02 - sewn four-hole button
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shirt button 03 - sewn four-hole button
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shirt button 04 - sewn four-hole button
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shirt button 05 - sewn four-hole button
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shirt button 06 - sewn four-hole button
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Shoes - brown leather
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Support_0
+      parentName: EDDIE(Clone)
+      position: {x: -0.2559795, y: 0.49927393, z: 0.081476316}
+      rotation: {x: -0.00000003774895, y: 0, z: -0, w: 1}
+      scale: {x: 0.06574721, y: 0.06574721, z: 0.06574721}
+    - name: Teeth - lower
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Teeth - upper
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Tie - burgundy blade fitted over buttons and belt
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Tie - cream polka dots #EDEBD2
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Tie - loose knot
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: -0.02690237}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Tie - neckband fitted beneath the collar
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Torso - beneath the unbuttoned shirt
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    - name: Trousers - wide leg cream
+      parentName: EDDIE(Clone)
+      position: {x: -0, y: -0.0004624929, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 0.5563727, y: 0.5563727, z: 0.5563727}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 3
+  humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
