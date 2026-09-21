@@ -449,7 +449,31 @@ namespace Lilo.MonoBehaviours.Monster
             }
             Debug.Log($"[Monster] Player caught — lives remaining: {state?.Lives ?? -1}.");
             yield return new WaitForSeconds(1.6f);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+            string respawnScene = ResolveRespawnScene(state);
+            Debug.Log($"[Monster] Respawning on {respawnScene} for floor {state?.CurrentFloor.ToString() ?? "active scene"}.");
+            SceneManager.LoadScene(respawnScene);
+        }
+
+        private static string ResolveRespawnScene(GameState state)
+        {
+            // Keep the respawn tied to the persistent floor state. This prevents a
+            // Floor 2 death from falling back to the scene that started the run.
+            if (state != null)
+            {
+                string floorScene = state.CurrentFloor switch
+                {
+                    FloorId.Floor50 => "OfficeLevel2",
+                    FloorId.Floor51 => "OfficeLevel1",
+                    _ => string.Empty,
+                };
+
+                if (!string.IsNullOrEmpty(floorScene)
+                    && Application.CanStreamedLevelBeLoaded(floorScene))
+                    return floorScene;
+            }
+
+            return SceneManager.GetActiveScene().name;
         }
 
         private static int NearestWaypoint(Vector3 pos, Vector3[] waypoints)
