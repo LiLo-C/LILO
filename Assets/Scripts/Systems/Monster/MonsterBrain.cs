@@ -134,7 +134,7 @@ namespace Lilo.Systems.Monster
                             s.Timer = 0f;
                         }
                     }
-                    else if (i.ArrivedAtTarget)
+                    else
                     {
                         s.Timer += i.DeltaTime;
                         if (s.Timer >= i.Profile.investigateDuration)

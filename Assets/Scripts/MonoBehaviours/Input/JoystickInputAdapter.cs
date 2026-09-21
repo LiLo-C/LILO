@@ -173,7 +173,8 @@ namespace Lilo.MonoBehaviours.Input
             {
                 background.sizeDelta = new Vector2(diameter, diameter);
                 // Keep joystick fully visible — offset from bottom-left edge by half diameter + margin
-                background.anchoredPosition = new Vector2(radius + ScreenMargin, radius + ScreenMargin);
+                background.anchoredPosition = new Vector2(radius + ScreenMargin, radius + ScreenMargin)
+                    + cfg.joystickCenterOffset;
             }
             if (handle != null)
             {

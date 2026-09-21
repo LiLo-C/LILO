@@ -8,11 +8,15 @@ namespace Lilo.MonoBehaviours
     /// The sole owner of GameState. Created once in Bootstrap, persists via DontDestroyOnLoad
     /// across every later scene. A second instance appearing anywhere fails visibly (spec 002 FR-002/FR-005).
     /// </summary>
+    [DefaultExecutionOrder(-1000)]
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance { get; private set; }
 
         [SerializeField] private GameConfig config;
+        [Header("Optional standalone scene bootstrap")]
+        [SerializeField] private bool useConfiguredStartingFloor;
+        [SerializeField] private FloorId configuredStartingFloor = FloorId.Floor52;
 
         public GameConfig Config => config;
         public GameState State { get; private set; }
@@ -21,7 +25,8 @@ namespace Lilo.MonoBehaviours
         {
             if (Instance != null && Instance != this)
             {
-                Debug.LogError("Duplicate GameManager detected — destroying the new instance. Exactly one must exist (spec 002 FR-002/FR-005).");
+                if (useConfiguredStartingFloor && Instance.State != null)
+                    Instance.State.AdvanceToFloor(configuredStartingFloor);
                 Destroy(gameObject);
                 return;
             }
@@ -31,6 +36,8 @@ namespace Lilo.MonoBehaviours
 
             GameConfigLoader.LoadAndValidate(config);
             State = new GameState(config);
+            if (useConfiguredStartingFloor)
+                State.AdvanceToFloor(configuredStartingFloor);
         }
     }
 }

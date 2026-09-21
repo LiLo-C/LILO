@@ -38,6 +38,10 @@ namespace Lilo.Config
 
         [Header("flashlight-and-battery/001+003+005+006 — feel content, carried over, re-confirm")]
         public float flashlightNormalRadius = 220f;
+        [Tooltip("Flashlight intensity at full charge.")]
+        public float flashlightNormalIntensity = 1.0f;
+        [Tooltip("Flashlight intensity at Compact Darkness.")]
+        public float flashlightCompactDarknessIntensity = 0.2f;
         public float lightRadiusEaseRate = 4.0f;
         public bool shadowsEnabled = true;
         [Tooltip("Single tunable for out-of-flashlight readability. 0 = pure black outside the beam.")]

@@ -10,6 +10,7 @@ using Lilo.State;
 using Lilo.Systems.Monster;
 using Lilo.MonoBehaviours.Audio;
 using Lilo.MonoBehaviours.Player;
+using StarterAssets;
 
 namespace Lilo.MonoBehaviours.Monster
 {
@@ -79,6 +80,7 @@ namespace Lilo.MonoBehaviours.Monster
         private NavMeshAgent _agent;
         private Animator _animator;
         private PlayerMovementController _playerMovement;
+        private StarterAssetsInputs _starterAssetsInput;
         private MonsterTuningProfile _profile;
         private MonsterBrainState _brain;
         private Vector3[] _waypoints = System.Array.Empty<Vector3>();
@@ -104,6 +106,12 @@ namespace Lilo.MonoBehaviours.Monster
                 return;
             }
             config = cfg;
+            if (sfx == null)
+            {
+                var sfxGo = GameObject.Find("SfxController");
+                if (sfxGo != null)
+                    sfx = sfxGo.GetComponent<SfxController>();
+            }
             FloorId activeFloor = GameManager.Instance != null
                 ? GameManager.Instance.State.CurrentFloor
                 : floorProfile;
@@ -122,6 +130,7 @@ namespace Lilo.MonoBehaviours.Monster
             {
                 player = playerGo.transform;
                 _playerMovement = playerGo.GetComponent<PlayerMovementController>();
+                _starterAssetsInput = playerGo.GetComponent<StarterAssetsInputs>();
             }
             if (player == null || patrolRoute == null || patrolRoute.childCount == 0)
             {
@@ -285,7 +294,8 @@ namespace Lilo.MonoBehaviours.Monster
             bool moving = playerSpeed > 0.05f || debugForceMoveNoise;
             bool sprinting = debugForceSprintNoise
                 || (_playerMovement != null ? _playerMovement.IsSprinting
-                    : playerSpeed > config.walkSpeed * config.sprintMultiplier * 0.9f);
+                    : (_starterAssetsInput != null ? _starterAssetsInput.sprint
+                        : playerSpeed > config.walkSpeed * config.sprintMultiplier * 0.9f));
             bool hiding = GameManager.Instance != null && GameManager.Instance.State.IsHiding;
             float moveRadius = MonsterNoise.MovementRadius(config, hiding, moving, sprinting);
 
@@ -409,8 +419,23 @@ namespace Lilo.MonoBehaviours.Monster
             PlayerCaught?.Invoke();
             if (_animator != null) _animator.SetTrigger("attack");
             if (_playerMovement != null) _playerMovement.enabled = false; // input stops (US4).
+            if (_starterAssetsInput != null)
+            {
+                _starterAssetsInput.MoveInput(Vector2.zero);
+                _starterAssetsInput.SprintInput(false);
+                _starterAssetsInput.JumpInput(false);
+            }
             _agent.isStopped = true;
-            Debug.Log("[Monster] Player caught — outcome fires once; arena reloads until spec 007.");
+            var state = GameManager.Instance?.State;
+            if (state != null)
+            {
+                state.LoseLife();
+                if (state.Lives > 0)
+                    state.ResetForFloorRestart(config);
+                else
+                    state.SetOutcome(RunOutcome.BadEnding);
+            }
+            Debug.Log($"[Monster] Player caught — lives remaining: {state?.Lives ?? -1}.");
             yield return new WaitForSeconds(1.6f);
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }

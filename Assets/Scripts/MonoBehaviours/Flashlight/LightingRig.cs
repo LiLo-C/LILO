@@ -20,6 +20,8 @@ namespace Lilo.MonoBehaviours.Flashlight
 
         public FlashlightLightState CurrentState { get; private set; }
         public float ChargeFraction { get; private set; }
+        public float CurrentIntensity { get; private set; }
+        public float DisplayedRadius => _displayedRadius;
 
         private void Start()
         {
@@ -43,6 +45,7 @@ namespace Lilo.MonoBehaviours.Flashlight
             // 001: derive state + target radius from the fraction alone.
             CurrentState = LightStateSystem.GetState(ChargeFraction, config);
             float target = LightStateSystem.GetTargetRadius(ChargeFraction, config);
+            CurrentIntensity = LightStateSystem.GetTargetIntensity(ChargeFraction, config);
 
             // 003: ease the displayed radius toward that target — never snap.
             _displayedRadius = RadiusEasingSystem.Ease(_displayedRadius, target, config.lightRadiusEaseRate, Time.deltaTime);
@@ -50,6 +53,7 @@ namespace Lilo.MonoBehaviours.Flashlight
             if (flashlightLight != null)
             {
                 flashlightLight.range = _displayedRadius;
+                flashlightLight.intensity = CurrentIntensity;
                 flashlightLight.shadows = config.shadowsEnabled ? LightShadows.Soft : LightShadows.None;
             }
 

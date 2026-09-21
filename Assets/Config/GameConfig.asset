@@ -20,9 +20,15 @@ MonoBehaviour:
   joystickDeadZone: 0.12
   joystickDiameter: 0.18
   joystickOpacity: 0.35
-  joystickCenterOffset: {x: 0, y: 0}
+  joystickCenterOffset: {x: 32, y: 32}
   cameraFollowLerpFactor: 0.12
   cameraBoundsInset: 80
+  flashlightNormalRadius: 220
+  flashlightNormalIntensity: 1
+  flashlightCompactDarknessIntensity: 0.2
+  lightRadiusEaseRate: 4
+  shadowsEnabled: 1
+  readabilityFillIntensity: 0.15
   batteryDuration: 180
   batterySlots: 1
   lightStateFlickerStart: 0.3
@@ -43,14 +49,14 @@ MonoBehaviour:
   monsterTuningFloor51:
     monsterActive: 1
     patrolSpeed: 1
-    chaseSpeed: 1.4
+    chaseSpeed: 0.7
     investigateDuration: 4
     chaseHoldDuration: 3
     searchDuration: 6
   monsterTuningFloor50:
     monsterActive: 1
     patrolSpeed: 1.2
-    chaseSpeed: 1.5
+    chaseSpeed: 0.75
     investigateDuration: 6
     chaseHoldDuration: 5
     searchDuration: 8
