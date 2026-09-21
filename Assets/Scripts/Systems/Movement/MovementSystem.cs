@@ -20,11 +20,11 @@ namespace Lilo.Systems.Movement
 
             // US2: sprint threshold is inclusive and re-evaluated every call — never sticky (FR-004/FR-006).
             bool isSprinting = input.Magnitude >= config.sprintJoystickThreshold;
-            float speed = isSprinting ? config.walkSpeed * config.sprintMultiplier : config.walkSpeed;
+            float topSpeed = isSprinting ? config.walkSpeed * config.sprintMultiplier : config.walkSpeed;
 
-            // US4: direction is already normalized in MovementInput's constructor, so diagonal
-            // input never out-runs cardinal input at the same push strength (FR-007).
-            Vector2 velocity = input.Direction * speed;
+            // Direction is normalized, while magnitude remains proportional to joystick
+            // deflection: a light pull walks and a full pull reaches the sprint speed.
+            Vector2 velocity = input.Direction * topSpeed * input.Magnitude;
             return new MovementResult(velocity, isSprinting);
         }
     }

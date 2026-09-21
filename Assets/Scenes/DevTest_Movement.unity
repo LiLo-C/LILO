@@ -2799,9 +2799,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb077858498846c8bc98fe7cbdffc62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Audio.SfxController
-  behindYouClip: {fileID: 8300000, guid: 8caa614fc9fb243458184358e8c7bbd8, type: 3}
+  behindYouClip: {fileID: 8300000, guid: b3c07c12ea07c4fce9924c2e7932ef70, type: 3}
   horrorChaseClip: {fileID: 8300000, guid: 4a5774741176f46f198e80a7ed036ae5, type: 3}
-  volume: 0.8
+  volume: 1
 --- !u!4 &1510416365
 Transform:
   m_ObjectHideFlags: 0
