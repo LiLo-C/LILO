@@ -18,7 +18,7 @@ MonoBehaviour:
   interactionRadius: 60
   playerRadius: 0.5
   joystickDeadZone: 0.12
-  joystickDiameter: 0.35
+  joystickDiameter: 0.18
   joystickOpacity: 0.35
   joystickCenterOffset: {x: 0, y: 0}
   cameraFollowLerpFactor: 0.12
