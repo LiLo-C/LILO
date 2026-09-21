@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using Lilo.Config;
 using Lilo.MonoBehaviours;
 using Lilo.MonoBehaviours.Interaction;
+using Lilo.MonoBehaviours.Monster;
 
 /// <summary>
 /// Authors the first two office floor scenes from the current OfficeLevel1 layout.
@@ -28,6 +30,37 @@ public static class SetupOfficeFloors
         ConfigureBuildScenes();
         AssetDatabase.SaveAssets();
         Debug.Log("[OfficeFloorsSetup] OfficeLevel1 exit and OfficeLevel2 layout are ready.");
+    }
+
+    public static void Validate()
+    {
+        Scene scene = EditorSceneManager.OpenScene(Floor1Path, OpenSceneMode.Single);
+        GameObject exit = GameObject.Find("ExitDoorPlaceholder");
+        if (exit == null)
+            throw new System.InvalidOperationException("OfficeLevel1 is missing ExitDoorPlaceholder.");
+
+        var interaction = exit.GetComponent<ExitDoorInteraction>();
+        var serialized = interaction != null ? new SerializedObject(interaction) : null;
+        float radius = serialized?.FindProperty("interactRadius")?.floatValue ?? 0f;
+        string nextScene = serialized?.FindProperty("nextSceneName")?.stringValue ?? "<missing>";
+        bool advances = serialized?.FindProperty("advanceToNextFloor")?.boolValue ?? false;
+        bool sceneEnabled = false;
+        foreach (var buildScene in EditorBuildSettings.scenes)
+            sceneEnabled |= buildScene.enabled && buildScene.path.EndsWith("OfficeLevel2.unity");
+
+        GameObject player = GameObject.Find("PlayerCharacter");
+        bool exitOnNavMesh = NavMesh.SamplePosition(exit.transform.position, out NavMeshHit exitHit, 2f, NavMesh.AllAreas);
+        bool playerToExitReachable = false;
+        if (player != null && exitOnNavMesh && NavMesh.SamplePosition(player.transform.position, out NavMeshHit playerHit, 2f, NavMesh.AllAreas))
+        {
+            var path = new NavMeshPath();
+            playerToExitReachable = NavMesh.CalculatePath(playerHit.position, exitHit.position, NavMesh.AllAreas, path)
+                && path.status == NavMeshPathStatus.PathComplete;
+        }
+
+        Debug.Log($"[OfficeFloorsSetup] Exit active={exit.activeSelf} position={exit.transform.position} radius={radius:0.00} "
+            + $"nextScene={nextScene} advanceFloor={advances} OfficeLevel2InBuild={sceneEnabled} "
+            + $"exitOnNavMesh={exitOnNavMesh} playerToExitReachable={playerToExitReachable}");
     }
 
     private static void ConfigureFloor1()
@@ -57,7 +90,18 @@ public static class SetupOfficeFloors
         Scene scene = EditorSceneManager.OpenScene(Floor2Path, OpenSceneMode.Single);
         GameObject exit = GameObject.Find("ExitDoorPlaceholder");
         if (exit == null)
-            throw new System.InvalidOperationException("OfficeLevel2 is missing ExitDoorPlaceholder.");
+        {
+            exit = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            exit.name = "ExitDoorPlaceholder";
+            var obstacle = exit.AddComponent<NavMeshObstacle>();
+            obstacle.shape = NavMeshObstacleShape.Box;
+            obstacle.carving = true;
+            var interaction = exit.AddComponent<ExitDoorInteraction>();
+            var monster = GameObject.Find("MonsterPlaceholder")?.GetComponent<MonsterAIController>();
+            var serialized = new SerializedObject(interaction);
+            serialized.FindProperty("monster").objectReferenceValue = monster;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
 
         ConfigureExitObject(exit, new Vector3(-9.4f, 0.05f, 0f), false);
         ConfigureManager(scene, FloorId.Floor50);
@@ -82,11 +126,13 @@ public static class SetupOfficeFloors
         if (obstacle != null)
             obstacle.enabled = false;
 
+        ConfigureExitHighlight(exit, active);
+
         var interaction = exit.GetComponent<ExitDoorInteraction>();
         if (interaction != null)
         {
             var serialized = new SerializedObject(interaction);
-            serialized.FindProperty("interactRadius").floatValue = 1.8f;
+            serialized.FindProperty("interactRadius").floatValue = 2.5f;
             serialized.FindProperty("nextSceneName").stringValue = active ? "OfficeLevel2" : string.Empty;
             serialized.FindProperty("advanceToNextFloor").boolValue = active;
             serialized.FindProperty("nextFloor").enumValueIndex = (int)FloorId.Floor50;
@@ -94,6 +140,60 @@ public static class SetupOfficeFloors
         }
 
         exit.SetActive(active);
+    }
+
+    private static void ConfigureExitHighlight(GameObject exit, bool active)
+    {
+        Transform highlightRoot = exit.transform.Find("ExitGreenHighlight");
+        if (highlightRoot == null)
+        {
+            highlightRoot = new GameObject("ExitGreenHighlight").transform;
+            highlightRoot.SetParent(exit.transform, false);
+
+            CreateHighlightBar(highlightRoot, "North", new Vector3(0f, -0.5f, 0.517f), new Vector3(1.067f, 0.5f, 0.04f));
+            CreateHighlightBar(highlightRoot, "South", new Vector3(0f, -0.5f, -0.517f), new Vector3(1.067f, 0.5f, 0.04f));
+            CreateHighlightBar(highlightRoot, "East", new Vector3(0.517f, -0.5f, 0f), new Vector3(0.04f, 0.5f, 1.067f));
+            CreateHighlightBar(highlightRoot, "West", new Vector3(-0.517f, -0.5f, 0f), new Vector3(0.04f, 0.5f, 1.067f));
+        }
+
+        highlightRoot.gameObject.SetActive(active);
+
+        Transform glowTransform = exit.transform.Find("ExitGreenGlow");
+        if (glowTransform == null)
+        {
+            glowTransform = new GameObject("ExitGreenGlow").transform;
+            glowTransform.SetParent(exit.transform, false);
+            glowTransform.localPosition = new Vector3(0f, 5f, 0f);
+            var light = glowTransform.gameObject.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.color = new Color(0.05f, 1f, 0.18f);
+            light.intensity = 8f;
+            light.range = 5f;
+            light.shadows = LightShadows.None;
+        }
+
+        glowTransform.gameObject.SetActive(active);
+    }
+
+    private static void CreateHighlightBar(Transform parent, string name, Vector3 localPosition, Vector3 localScale)
+    {
+        GameObject bar = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        bar.name = name;
+        bar.transform.SetParent(parent, false);
+        bar.transform.localPosition = localPosition;
+        bar.transform.localScale = localScale;
+
+        var collider = bar.GetComponent<Collider>();
+        if (collider != null)
+            Object.DestroyImmediate(collider);
+
+        var renderer = bar.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(ExitMaterialPath);
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+        }
     }
 
     private static void ConfigureManager(Scene scene, FloorId startingFloor)
@@ -124,10 +224,16 @@ public static class SetupOfficeFloors
         var material = AssetDatabase.LoadAssetAtPath<Material>(ExitMaterialPath);
         if (material == null)
         {
-            Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+            Shader shader = Shader.Find("Universal Render Pipeline/Unlit")
+                ?? Shader.Find("Universal Render Pipeline/Lit")
+                ?? Shader.Find("Standard");
             material = new Material(shader) { name = "OfficeExitArea" };
             AssetDatabase.CreateAsset(material, ExitMaterialPath);
         }
+
+        Shader unlitShader = Shader.Find("Universal Render Pipeline/Unlit");
+        if (unlitShader != null)
+            material.shader = unlitShader;
 
         Color green = new Color(0.05f, 1f, 0.18f, 1f);
         if (material.HasProperty("_BaseColor"))
