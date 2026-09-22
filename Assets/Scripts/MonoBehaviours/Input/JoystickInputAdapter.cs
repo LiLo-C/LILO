@@ -47,6 +47,21 @@ namespace Lilo.MonoBehaviours.Input
             ApplyPresentation();
         }
 
+        /// <summary>
+        /// Initializes a joystick created by the mobile runtime bootstrap.
+        /// Scene-authored joysticks still use the serialized references above.
+        /// </summary>
+        public void Initialize(GameConfig runtimeConfig, RectTransform runtimeBackground, RectTransform runtimeHandle)
+        {
+            config = runtimeConfig;
+            background = runtimeBackground;
+            handle = runtimeHandle;
+            EnsureSprites();
+            CacheImages();
+            ApplyCircleShape();
+            ApplyPresentation();
+        }
+
         private void Update()
         {
             if (!_active && _fading)
@@ -210,6 +225,20 @@ namespace Lilo.MonoBehaviours.Input
                 float magnitude = Mathf.Clamp01(_rawOffset.magnitude / radius);
                 return new MovementInput(_rawOffset, magnitude);
             }
+        }
+
+        /// <summary>
+        /// Cancels the active pointer before a scene transition so the next scene
+        /// cannot receive a stale drag/up event from the old EventSystem.
+        /// </summary>
+        public void CancelTouch()
+        {
+            _active = false;
+            _rawOffset = Vector2.zero;
+            _fading = false;
+            _fadeTimer = 0f;
+            if (handle != null)
+                handle.anchoredPosition = Vector2.zero;
         }
 
         public void OnPointerDown(PointerEventData eventData)

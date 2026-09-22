@@ -53,6 +53,9 @@ namespace Lilo.MonoBehaviours.Input
 
         private void Update()
         {
+            if (joystick == null)
+                joystick = FindFirstObjectByType<JoystickInputAdapter>();
+
             if (playerInput == null)
                 return;
 
