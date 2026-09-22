@@ -4,6 +4,9 @@ using Lilo.MonoBehaviours;
 using StarterAssets;
 using UnityEngine;
 using UnityEngine.EventSystems;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace Lilo.MonoBehaviours.Input
 {
@@ -17,6 +20,7 @@ namespace Lilo.MonoBehaviours.Input
         [SerializeField] private StarterAssetsInputs playerInput;
         [SerializeField] private GameConfig config;
         [SerializeField] private GameplaySpeedSettings speedSettings;
+        [SerializeField] private bool enableKeyboardInEditor = true;
 
         private ThirdPersonController _characterController;
 
@@ -49,7 +53,7 @@ namespace Lilo.MonoBehaviours.Input
 
         private void Update()
         {
-            if (joystick == null || playerInput == null)
+            if (playerInput == null)
                 return;
 
             var gameState = GameManager.Instance?.State;
@@ -60,7 +64,24 @@ namespace Lilo.MonoBehaviours.Input
                 return;
             }
 
-            var movement = joystick.CurrentInput;
+            var movement = joystick != null
+                ? joystick.CurrentInput
+                : Lilo.Systems.Movement.MovementInput.Zero;
+            bool keyboardJump = false;
+#if ENABLE_INPUT_SYSTEM
+            if (enableKeyboardInEditor && (Application.isEditor || Application.platform == RuntimePlatform.WindowsPlayer
+                || Application.platform == RuntimePlatform.OSXPlayer || Application.platform == RuntimePlatform.LinuxPlayer))
+            {
+                Vector2 keyboardDirection = ReadKeyboardDirection();
+                if (keyboardDirection.sqrMagnitude > 0.001f)
+                {
+                    float magnitude = keyboardDirection.magnitude;
+                    movement = new Lilo.Systems.Movement.MovementInput(keyboardDirection.normalized, magnitude);
+                }
+
+                keyboardJump = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
+            }
+#endif
             GameConfig activeConfig = config != null ? config : GameManager.Instance?.Config;
             if (speedSettings != null && _characterController != null)
             {
@@ -77,9 +98,30 @@ namespace Lilo.MonoBehaviours.Input
             // Starter Assets normally treats a stick as digital unless analogMovement is enabled.
             // Keep the analog magnitude and switch to the sprint speed only near full deflection.
             playerInput.analogMovement = true;
-            playerInput.SprintInput(movement.Magnitude >= sprintThreshold);
+            bool keyboardSprint = false;
+#if ENABLE_INPUT_SYSTEM
+            keyboardSprint = Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
+#endif
+            playerInput.SprintInput(keyboardSprint || movement.Magnitude >= sprintThreshold);
             playerInput.MoveInput(movement.Direction * movement.Magnitude);
+            if (keyboardJump)
+                playerInput.JumpInput(true);
         }
+
+#if ENABLE_INPUT_SYSTEM
+        private static Vector2 ReadKeyboardDirection()
+        {
+            if (Keyboard.current == null)
+                return Vector2.zero;
+
+            Vector2 direction = Vector2.zero;
+            if (Keyboard.current.wKey.isPressed) direction.y += 1f;
+            if (Keyboard.current.sKey.isPressed) direction.y -= 1f;
+            if (Keyboard.current.dKey.isPressed) direction.x += 1f;
+            if (Keyboard.current.aKey.isPressed) direction.x -= 1f;
+            return Vector2.ClampMagnitude(direction, 1f);
+        }
+#endif
 
         private void ApplyConfiguredPlayerSpeed(GameConfig activeConfig)
         {

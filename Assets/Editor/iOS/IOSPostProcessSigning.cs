@@ -33,6 +33,17 @@ namespace Lilo.Editor.iOS
             project.ReadFromFile(projectPath);
 
             string mainTargetGuid = project.GetUnityMainTargetGuid();
+            string frameworkTargetGuid = project.GetUnityFrameworkTargetGuid();
+            string gameAssemblyTargetGuid = project.TargetGuidByName("GameAssembly");
+
+            // Unity's generated GameAssembly Run Script needs to invoke native
+            // build tools and write into the generated project tree. Xcode 27
+            // defaults user script sandboxing to YES, which makes that script
+            // fail with sandbox-exec/sandbox_apply before compilation begins.
+            project.SetBuildProperty(mainTargetGuid, "ENABLE_USER_SCRIPT_SANDBOXING", "NO");
+            project.SetBuildProperty(frameworkTargetGuid, "ENABLE_USER_SCRIPT_SANDBOXING", "NO");
+            if (!string.IsNullOrEmpty(gameAssemblyTargetGuid))
+                project.SetBuildProperty(gameAssemblyTargetGuid, "ENABLE_USER_SCRIPT_SANDBOXING", "NO");
             string teamId = GetLocalTeamId();
 
             if (string.IsNullOrWhiteSpace(teamId))

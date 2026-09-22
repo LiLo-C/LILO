@@ -39,6 +39,7 @@ namespace Lilo.Systems.Monster
         public float PatrolSpeed;
         public float ChaseSpeed;
         public float ChaseTriggerDistance;
+        public bool PlayerVisible;
         public float SearchRadius;
         public float CatchRadius;
         public Vector3[] Waypoints;
@@ -63,11 +64,12 @@ namespace Lilo.Systems.Monster
     public static class MonsterBrain
     {
         public const float SearchRetargetInterval = 2f;
+        public const float DefaultAlertDuration = 2f;
 
         public static MonsterBrainOutput Step(ref MonsterBrainState s, MonsterBrainInput i)
         {
-            // CATCH is checked after the regular transition so a close detected noise still
-            // produces INVESTIGATE -> CHASE -> CATCH in one step.
+            // CATCH is checked after the regular transition so a visible player can be caught
+            // on the same step that CHASE reaches the catch radius.
 
             // Detection: monster learns only a world position (FR-014).
             // Simultaneous noises: the largest DETECTING radius wins.
@@ -103,7 +105,14 @@ namespace Lilo.Systems.Monster
             switch (s.State)
             {
                 case MonsterState.Patrol:
-                    if (detected)
+                    if (i.PlayerVisible)
+                    {
+                        s.State = MonsterState.Alert;
+                        s.Target = i.PlayerPosition;
+                        s.LastKnown = i.PlayerPosition;
+                        s.Timer = 0f;
+                    }
+                    else if (detected)
                     {
                         s.State = MonsterState.Investigate;
                         s.Target = point;
@@ -122,20 +131,17 @@ namespace Lilo.Systems.Monster
                     break;
 
                 case MonsterState.Investigate:
-                    if (detected)
+                    if (i.PlayerVisible)
                     {
-                        if (DistXZ(i.MonsterPosition, point) < i.ChaseTriggerDistance)
-                        {
-                            s.State = MonsterState.Chase;
-                            s.LastKnown = point;
-                            s.Target = point;
-                            s.Timer = 0f;
-                        }
-                        else
-                        {
-                            s.Target = point;
-                            s.Timer = 0f;
-                        }
+                        s.State = MonsterState.Alert;
+                        s.Target = i.PlayerPosition;
+                        s.LastKnown = i.PlayerPosition;
+                        s.Timer = 0f;
+                    }
+                    else if (detected)
+                    {
+                        s.Target = point;
+                        s.Timer = 0f;
                     }
                     else
                     {
@@ -145,33 +151,46 @@ namespace Lilo.Systems.Monster
                     }
                     break;
 
-                case MonsterState.Chase:
-                    if (detected)
+                case MonsterState.Alert:
+                    if (!i.PlayerVisible)
                     {
-                        s.LastKnown = point;
-                        s.Target = point;
-                        s.Timer = 0f;
+                        ReturnToPatrol(ref s, i);
                     }
                     else
                     {
+                        s.Target = i.PlayerPosition;
+                        s.LastKnown = i.PlayerPosition;
                         s.Timer += i.DeltaTime;
-                        if (s.Timer >= i.Profile.chaseHoldDuration)
+                        float alertDuration = i.Profile.alertDuration > 0f
+                            ? i.Profile.alertDuration
+                            : DefaultAlertDuration;
+                        if (s.Timer >= alertDuration)
                         {
-                            s.State = MonsterState.Search;
+                            s.State = MonsterState.Chase;
                             s.Timer = 0f;
-                            s.SearchPoint = s.LastKnown;
-                            s.SearchRetargetTimer = 0f;
-                            s.Target = s.LastKnown;
                         }
                     }
                     break;
 
-                case MonsterState.Search:
-                    if (detected)
+                case MonsterState.Chase:
+                    if (!i.PlayerVisible)
                     {
-                        s.State = MonsterState.Chase;
-                        s.LastKnown = point;
-                        s.Target = point;
+                        ReturnToPatrol(ref s, i);
+                    }
+                    else
+                    {
+                        s.LastKnown = i.PlayerPosition;
+                        s.Target = i.PlayerPosition;
+                        s.Timer = 0f;
+                    }
+                    break;
+
+                case MonsterState.Search:
+                    if (i.PlayerVisible)
+                    {
+                        s.State = MonsterState.Alert;
+                        s.LastKnown = i.PlayerPosition;
+                        s.Target = i.PlayerPosition;
                         s.Timer = 0f;
                     }
                     else
@@ -204,7 +223,8 @@ namespace Lilo.Systems.Monster
             }
 
             MonsterState stateBeforeCatch = s.State;
-            if (!i.IsPlayerHidden && DistXZ(i.MonsterPosition, i.PlayerPosition) < i.CatchRadius)
+            if (!i.IsPlayerHidden && s.State == MonsterState.Chase && i.PlayerVisible
+                && DistXZ(i.MonsterPosition, i.PlayerPosition) < i.CatchRadius)
             {
                 s.State = MonsterState.Catch;
                 s.CatchFired = true;
@@ -221,7 +241,9 @@ namespace Lilo.Systems.Monster
             return new MonsterBrainOutput
             {
                 MoveTarget = s.Target,
-                Speed = s.State == MonsterState.Chase ? chaseSpeed : patrolSpeed,
+                Speed = s.State == MonsterState.Chase
+                    ? chaseSpeed
+                    : (s.State == MonsterState.Alert ? 0f : patrolSpeed),
                 StateBeforeCatch = s.State,
             };
         }
