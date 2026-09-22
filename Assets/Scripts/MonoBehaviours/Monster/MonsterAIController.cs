@@ -518,6 +518,7 @@ namespace Lilo.MonoBehaviours.Monster
 
             string respawnScene = ResolveRespawnScene(state);
             Debug.Log($"[Monster] Respawning on {respawnScene} for floor {state?.CurrentFloor.ToString() ?? "active scene"}.");
+            Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();
             SceneManager.LoadScene(respawnScene);
         }
 
