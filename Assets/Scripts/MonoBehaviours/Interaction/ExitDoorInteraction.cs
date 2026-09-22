@@ -24,6 +24,14 @@ namespace Lilo.MonoBehaviours.Interaction
         private Transform _player;
         private bool _triggered;
 
+        public void ConfigureTransition(string sceneName, bool advance, FloorId destinationFloor)
+        {
+            nextSceneName = sceneName;
+            advanceToNextFloor = advance;
+            nextFloor = destinationFloor;
+            _triggered = false;
+        }
+
         private void Start()
         {
             var playerGo = GameObject.Find("PlayerCharacter");
@@ -66,6 +74,8 @@ namespace Lilo.MonoBehaviours.Interaction
 
                     if (state != null && advanceToNextFloor)
                         state.AdvanceToFloor(nextFloor);
+                    if (state != null && nextSceneName == "GoodEnding")
+                        state.SetOutcome(RunOutcome.GoodEnding);
                     Debug.Log($"[ExitDoor] Player escaped — loading {nextSceneName}.");
                     Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();
                     SceneManager.LoadScene(nextSceneName);

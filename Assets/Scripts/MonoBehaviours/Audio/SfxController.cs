@@ -1,4 +1,5 @@
 using UnityEngine;
+using Lilo.Systems.GameLoop;
 
 namespace Lilo.MonoBehaviours.Audio
 {
@@ -26,19 +27,19 @@ namespace Lilo.MonoBehaviours.Audio
         public void PlayBehindYou()
         {
             if (behindYouClip != null)
-                _source.PlayOneShot(behindYouClip, volume);
+                _source.PlayOneShot(behindYouClip, volume * SoundSettingsStore.Effects);
         }
 
         public void PlayHorrorChase()
         {
             if (horrorChaseClip != null)
-                _source.PlayOneShot(horrorChaseClip, volume);
+                _source.PlayOneShot(horrorChaseClip, volume * SoundSettingsStore.Effects);
         }
 
         public void PlayBatteryPickup()
         {
             AudioClip clip = batteryPickupClip != null ? batteryPickupClip : GetGeneratedBatteryPickupClip();
-            _source.PlayOneShot(clip, volume);
+            _source.PlayOneShot(clip, volume * SoundSettingsStore.Effects);
         }
 
         private AudioClip GetGeneratedBatteryPickupClip()

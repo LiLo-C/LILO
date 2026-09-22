@@ -21,6 +21,20 @@ namespace Lilo.MonoBehaviours
         public GameConfig Config => config;
         public GameState State { get; private set; }
 
+        public void BeginNewRun()
+        {
+            if (config == null)
+            {
+                Debug.LogError("[GameManager] Cannot start a run without a GameConfig.");
+                return;
+            }
+
+            if (State == null)
+                State = new GameState(config);
+            else
+                State.StartNewRun(config);
+        }
+
         private void Awake()
         {
             if (Instance != null && Instance != this)

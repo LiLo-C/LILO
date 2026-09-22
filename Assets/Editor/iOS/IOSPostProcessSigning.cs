@@ -63,6 +63,28 @@ namespace Lilo.Editor.iOS
             }
 
             project.WriteToFile(projectPath);
+            WriteApplicationIdentity(report.summary.outputPath);
+        }
+
+        private static void WriteApplicationIdentity(string buildPath)
+        {
+            string plistPath = Path.Combine(buildPath, "Info.plist");
+            if (!File.Exists(plistPath))
+            {
+                UnityEngine.Debug.LogWarning($"Could not find generated iOS Info.plist at {plistPath}.");
+                return;
+            }
+
+            var plist = new PlistDocument();
+            plist.ReadFromFile(plistPath);
+            PlistElementDict root = plist.root;
+            root.SetString("CFBundleDisplayName", "LILO");
+            root.SetString("CFBundleName", "LILO");
+            root.SetString("CFBundleIdentifier", "com.LILO.VeryDisco");
+            root.SetString("LSApplicationCategoryType", "public.app-category.games");
+            plist.WriteToFile(plistPath);
+
+            UnityEngine.Debug.Log("Applied LILO iOS identity: Games, LILO, com.LILO.VeryDisco, version 1.0, build 1.");
         }
 
         private static string GetLocalTeamId()
