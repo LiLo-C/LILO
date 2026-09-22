@@ -7,6 +7,7 @@ namespace Lilo.MonoBehaviours.Flashlight
     {
         [SerializeField, Range(0f, 1f)] private float intensityMultiplier = 0.2f;
         [SerializeField, Range(0f, 1f)] private float ambientIntensityMultiplier = 0.15f;
+        [SerializeField] private bool disableBakedLightmaps = true;
 
         private void Awake()
         {
@@ -19,6 +20,8 @@ namespace Lilo.MonoBehaviours.Flashlight
             }
 
             RenderSettings.ambientIntensity *= ambientIntensityMultiplier;
+            if (disableBakedLightmaps)
+                LightmapSettings.lightmaps = new LightmapData[0];
         }
     }
 }
