@@ -10,6 +10,7 @@ namespace Lilo.Config
         public float patrolSpeed;
         public float chaseSpeed;
         public float investigateDuration;
+        public float alertDuration;
         public float chaseHoldDuration;
         public float searchDuration;
     }

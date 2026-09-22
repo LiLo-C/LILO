@@ -5,6 +5,7 @@ namespace Lilo.State
     {
         Patrol,
         Investigate,
+        Alert,
         Chase,
         Search,
         Catch,
