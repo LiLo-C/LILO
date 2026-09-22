@@ -9,6 +9,7 @@ using Lilo.Config;
 using Lilo.State;
 using Lilo.Systems.Monster;
 using Lilo.MonoBehaviours.Audio;
+using Lilo.MonoBehaviours.Hiding;
 using Lilo.MonoBehaviours.Player;
 using StarterAssets;
 
@@ -310,7 +311,8 @@ namespace Lilo.MonoBehaviours.Monster
                 || (_playerMovement != null ? _playerMovement.IsSprinting
                     : (_starterAssetsInput != null ? _starterAssetsInput.sprint
                         : playerSpeed > config.walkSpeed * config.sprintMultiplier * 0.9f));
-            bool hiding = GameManager.Instance != null && GameManager.Instance.State.IsHiding;
+            bool hiding = (GameManager.Instance != null && GameManager.Instance.State.IsHiding)
+                || HidingController.IsPlayerHiding;
             float moveRadius = MonsterNoise.MovementRadius(config, hiding, moving, sprinting);
             CurrentNoiseRadius = moveRadius;
             CurrentNoiseSource = hiding
@@ -359,12 +361,13 @@ namespace Lilo.MonoBehaviours.Monster
                 PatrolSpeed = speedSettings != null ? speedSettings.monsterPatrolSpeed : 0f,
                 ChaseSpeed = speedSettings != null ? speedSettings.monsterChaseSpeed : 0f,
                 ChaseTriggerDistance = config.chaseTriggerDistance,
-                PlayerVisible = CanSeePlayer(playerPos),
+                PlayerVisible = !hiding && CanSeePlayer(playerPos), // hiding defeats sight (spec 001); brain logic untouched
                 SearchRadius = config.searchRadius,
                 CatchRadius = config.catchRadius,
                 Waypoints = _waypoints,
                 ArrivedAtTarget = arrived || consumedForce,
                 Rng = _rng,
+                IsPlayerHidden = hiding,
             };
             MonsterBrainOutput output = MonsterBrain.Step(ref _brain, input);
 

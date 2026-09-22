@@ -315,5 +315,33 @@ namespace Lilo.Tests
             Assert.AreEqual(cfg.monsterTuningFloor51.chaseSpeed, cfg.GetMonsterProfile(FloorId.Floor51).chaseSpeed);
             Assert.AreEqual(cfg.monsterTuningFloor50.searchDuration, cfg.GetMonsterProfile(FloorId.Floor50).searchDuration);
         }
+
+        [Test]
+        public void HiddenPlayer_ImmuneToCatchEvenWhenWithinCatchRadius()
+        {
+            var state = new MonsterBrainState { State = MonsterState.Patrol };
+            var input = BaseInput();
+            input.PlayerPosition = input.MonsterPosition; // Overlapping
+            input.IsPlayerHidden = true;
+
+            var output = MonsterBrain.Step(ref state, input);
+
+            Assert.IsFalse(output.CaughtThisStep);
+            Assert.AreNotEqual(MonsterState.Catch, state.State);
+        }
+
+        [Test]
+        public void HiddenPlayer_ImmuneToMovementNoiseDetection()
+        {
+            var state = new MonsterBrainState { State = MonsterState.Patrol };
+            var input = BaseInput();
+            input.PlayerPosition = input.MonsterPosition + new Vector3(2f, 0f, 0f);
+            input.MovementNoiseRadius = 5f;
+            input.IsPlayerHidden = true;
+
+            MonsterBrain.Step(ref state, input);
+
+            Assert.AreEqual(MonsterState.Patrol, state.State);
+        }
     }
 }

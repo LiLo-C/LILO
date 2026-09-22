@@ -59,6 +59,14 @@ namespace Lilo.MonoBehaviours.Input
             if (playerInput == null)
                 return;
 
+            var gameState = GameManager.Instance?.State;
+            if (gameState != null && gameState.IsHiding)
+            {
+                playerInput.MoveInput(Vector2.zero);
+                playerInput.SprintInput(false);
+                return;
+            }
+
             var movement = joystick != null
                 ? joystick.CurrentInput
                 : Lilo.Systems.Movement.MovementInput.Zero;

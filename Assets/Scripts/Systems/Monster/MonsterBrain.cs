@@ -45,6 +45,7 @@ namespace Lilo.Systems.Monster
         public Vector3[] Waypoints;
         public bool ArrivedAtTarget;
         public System.Random Rng;
+        public bool IsPlayerHidden;
     }
 
     public struct MonsterBrainOutput
@@ -75,7 +76,7 @@ namespace Lilo.Systems.Monster
             bool detected = false;
             Vector3 point = default;
             float bestRadius = 0f;
-            if (i.MovementNoiseRadius > 0f
+            if (!i.IsPlayerHidden && i.MovementNoiseRadius > 0f
                 && DistXZ(i.MonsterPosition, i.PlayerPosition) < i.MovementNoiseRadius
                 && i.MovementNoiseRadius > bestRadius)
             {
@@ -222,7 +223,7 @@ namespace Lilo.Systems.Monster
             }
 
             MonsterState stateBeforeCatch = s.State;
-            if (s.State == MonsterState.Chase && i.PlayerVisible
+            if (!i.IsPlayerHidden && s.State == MonsterState.Chase && i.PlayerVisible
                 && DistXZ(i.MonsterPosition, i.PlayerPosition) < i.CatchRadius)
             {
                 s.State = MonsterState.Catch;
