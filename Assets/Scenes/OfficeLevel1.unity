@@ -9814,7 +9814,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 844800770523930964, guid: 72512094524854e94b71bb0134f0cac0, type: 3}
   m_PrefabInstance: {fileID: 815353803}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &815699797
+--- !u!1001 &1815699797
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -9874,7 +9874,7 @@ PrefabInstance:
 --- !u!4 &815699798 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3301116636410014234, guid: 85320d8367c2a41938d7fe7059cb626a, type: 3}
-  m_PrefabInstance: {fileID: 815699797}
+  m_PrefabInstance: {fileID: 1815699797}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &819361369
 PrefabInstance:
