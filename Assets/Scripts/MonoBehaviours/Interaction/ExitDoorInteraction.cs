@@ -67,6 +67,7 @@ namespace Lilo.MonoBehaviours.Interaction
                     if (state != null && advanceToNextFloor)
                         state.AdvanceToFloor(nextFloor);
                     Debug.Log($"[ExitDoor] Player escaped — loading {nextSceneName}.");
+                    Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();
                     SceneManager.LoadScene(nextSceneName);
                     return;
                 }

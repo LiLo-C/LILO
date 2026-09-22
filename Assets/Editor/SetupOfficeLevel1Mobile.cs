@@ -6,41 +6,44 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// Adds the shared mobile controls to OfficeLevel1 while preserving the source DevTest setup.
+/// Adds the shared mobile controls to OfficeLevel1 using the tuned OfficeLevel2 setup.
 /// Wires the mobile controls to the Starter Assets character used by OfficeLevel1.
 /// </summary>
 public static class SetupOfficeLevel1Mobile
 {
     private const string OfficeScenePath = "Assets/Scenes/OfficeLevel1.unity";
-    private const string DevTestScenePath = "Assets/Scenes/DevTest_Movement.unity";
+    private const string SourceMobileScenePath = "Assets/Scenes/OfficeLevel2.unity";
 
     public static void Run()
     {
         Scene office = EditorSceneManager.OpenScene(OfficeScenePath, OpenSceneMode.Single);
-        Scene source = EditorSceneManager.OpenScene(DevTestScenePath, OpenSceneMode.Additive);
+        Scene source = EditorSceneManager.OpenScene(SourceMobileScenePath, OpenSceneMode.Additive);
 
-        GameObject canvasObject = GameObject.Find("MobileControlsCanvas");
+        GameObject sourceCanvas = FindInScene(source, "MobileControlsCanvas");
+        if (sourceCanvas == null)
+            throw new System.InvalidOperationException("OfficeLevel2 is missing MobileControlsCanvas.");
+
+        GameObject canvasObject = FindInScene(office, "MobileControlsCanvas");
+
+        Transform canvasTransform;
         if (canvasObject == null)
-            canvasObject = CreateCanvas();
-
-        Transform canvasTransform = canvasObject.transform;
-
-        RemoveIfPresent(canvasTransform, "JoystickBackground");
-        GameObject sourceJoystick = FindInScene(source, "JoystickBackground");
-        if (sourceJoystick == null)
-            throw new System.InvalidOperationException("DevTest_Movement is missing JoystickBackground.");
-
-        GameObject joystick = Object.Instantiate(sourceJoystick);
-        joystick.name = "JoystickBackground";
-        SceneManager.MoveGameObjectToScene(joystick, office);
-        joystick.transform.SetParent(canvasTransform, false);
-
-        var joystickRect = joystick.GetComponent<RectTransform>();
-        joystickRect.anchorMin = Vector2.zero;
-        joystickRect.anchorMax = Vector2.zero;
-        joystickRect.pivot = new Vector2(0.5f, 0.5f);
-        joystickRect.anchoredPosition = new Vector2(160f, 160f);
-        joystickRect.localScale = Vector3.one;
+        {
+            canvasObject = Object.Instantiate(sourceCanvas);
+            canvasObject.name = "MobileControlsCanvas";
+            SceneManager.MoveGameObjectToScene(canvasObject, office);
+            canvasTransform = canvasObject.transform;
+        }
+        else
+        {
+            canvasTransform = canvasObject.transform;
+            CopyCanvasSettings(sourceCanvas, canvasObject);
+            RemoveIfPresent(canvasTransform, "JoystickBackground");
+            GameObject sourceJoystick = FindInScene(source, "JoystickBackground");
+            GameObject joystick = Object.Instantiate(sourceJoystick);
+            joystick.name = "JoystickBackground";
+            SceneManager.MoveGameObjectToScene(joystick, office);
+            joystick.transform.SetParent(canvasTransform, false);
+        }
 
         if (FindInScene(office, "EventSystem") == null)
         {
@@ -59,19 +62,43 @@ public static class SetupOfficeLevel1Mobile
             }
         }
 
-        RemoveIfPresent(canvasTransform, "JumpButton");
-        CreateJumpButton(canvasTransform);
-
-        RemoveIfPresent(canvasTransform, "MobileInputBridge");
-        var bridge = new GameObject("MobileInputBridge");
-        bridge.transform.SetParent(canvasTransform, false);
-        bridge.AddComponent<Lilo.MonoBehaviours.Input.MobileStarterAssetsBridge>();
+        if (canvasTransform.Find("MobileInputBridge") == null)
+        {
+            var bridge = new GameObject("MobileInputBridge");
+            bridge.transform.SetParent(canvasTransform, false);
+            bridge.AddComponent<Lilo.MonoBehaviours.Input.MobileStarterAssetsBridge>();
+        }
 
         EditorSceneManager.MarkSceneDirty(office);
         EditorSceneManager.SaveScene(office);
         EditorSceneManager.CloseScene(source, true);
 
-        Debug.Log("OfficeLevel1 mobile controls configured: joystick copied, SfxController preserved, JumpButton added.");
+        Debug.Log("OfficeLevel1 mobile controls configured from OfficeLevel2: canvas, joystick, EventSystem, and bridge copied.");
+    }
+
+    private static void CopyCanvasSettings(GameObject source, GameObject destination)
+    {
+        var sourceCanvas = source.GetComponent<Canvas>();
+        var destinationCanvas = destination.GetComponent<Canvas>();
+        if (sourceCanvas != null && destinationCanvas != null)
+        {
+            destinationCanvas.renderMode = sourceCanvas.renderMode;
+            destinationCanvas.worldCamera = sourceCanvas.worldCamera;
+            destinationCanvas.planeDistance = sourceCanvas.planeDistance;
+            destinationCanvas.pixelPerfect = sourceCanvas.pixelPerfect;
+            destinationCanvas.sortingOrder = sourceCanvas.sortingOrder;
+        }
+
+        var sourceScaler = source.GetComponent<CanvasScaler>();
+        var destinationScaler = destination.GetComponent<CanvasScaler>();
+        if (sourceScaler != null && destinationScaler != null)
+        {
+            destinationScaler.uiScaleMode = sourceScaler.uiScaleMode;
+            destinationScaler.referenceResolution = sourceScaler.referenceResolution;
+            destinationScaler.screenMatchMode = sourceScaler.screenMatchMode;
+            destinationScaler.matchWidthOrHeight = sourceScaler.matchWidthOrHeight;
+            destinationScaler.referencePixelsPerUnit = sourceScaler.referencePixelsPerUnit;
+        }
     }
 
     private static GameObject CreateCanvas()

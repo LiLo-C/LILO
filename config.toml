@@ -1,0 +1,132 @@
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
+
+notify = ["/Users/cindyram/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
+
+[model_providers.vikey]
+name = "Vikey"
+base_url = "https://api-plan.vikey.ai/v1"
+env_key = "VIKEY_API_KEY"
+wire_api = "chat"
+
+model_provider = "vikey"
+model = "vikey/plan"
+
+[mcp_servers.n8n_senja]
+enabled = true
+url = "https://n8n.senja.co.uk/mcp-server/http"
+
+[mcp_servers.n8n_senja.http_headers]
+Authorization = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MmZkOTBjNi1mNTEzLTQwZmMtYTUwYS05ZDA5NDIyMTNhYzEiLCJpc3MiOiJuOG4iLCJhdWQiOiJtY3Atc2VydmVyLWFwaSIsImp0aSI6ImQ0MWIxMjQwLThhNTgtNDM5ZC05ZWZlLWJhODZlMGFlN2MxNCIsImlhdCI6MTc3NjEzODQ1OH0.-s-opGabCk1fWZMCpItzY2DZiJMq4AgZuMkuNmuXNXc"
+
+[mcp_servers.node_repl]
+args = []
+command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
+NODE_REPL_TRUSTED_CODE_PATHS = "/Users/cindyram/.codex:/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+CODEX_HOME = "/Users/cindyram/.codex"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+BROWSER_USE_TINYSKY_ENABLED = "1"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = ""
+NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = ""
+NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = ""
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+BROWSER_USE_CODEX_APP_VERSION = "26.915.31945"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/cindyram/.codex/plugins/cache/openai-bundled/browser/26.915.31945/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+SKY_CUA_SERVICE_PATH = "/Users/cindyram/.codex/computer-use/Codex Computer Use.app"
+CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
+
+[mcp_servers.computer-use]
+command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
+args = ["mcp"]
+cwd = "."
+enabled = false
+
+[marketplaces.openai-bundled]
+source_type = "local"
+source = "/Users/cindyram/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[marketplaces.openai-primary-runtime]
+source_type = "local"
+source = "/Users/cindyram/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[projects."/Users/cindyram/Documents/Capital SEO"]
+trust_level = "trusted"
+
+[projects."/Users/cindyram/Documents/Apple/ReSurface"]
+trust_level = "trusted"
+
+[projects."/Users/cindyram/Documents/Talim"]
+trust_level = "trusted"
+
+[projects."/Users/cindyram/Documents/Codex/2026-07-15/github-plugin-github-openai-curated-remote"]
+trust_level = "trusted"
+
+[projects."/Users/cindyram/Documents/Codex/2026-07-15/github-plugin-github-openai-curated-remote-2"]
+trust_level = "trusted"
+
+[projects."/Users/cindyram/Documents/Codex/2026-07-16/hel"]
+trust_level = "trusted"
+
+[projects."/Users/cindyram/Documents/Second Brain"]
+trust_level = "trusted"
+
+[projects."/Users/cindyram/Documents/Apple/v2"]
+trust_level = "trusted"
+
+[projects."/Users/cindyram/Documents/Apple/LILO"]
+trust_level = "trusted"
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."codex-app-tools@openai-bundled"]
+enabled = true
+
+[plugins."unified-computer-use@openai-bundled"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[desktop]
+followUpQueueMode = "queue"
+dock-icon-preference = "codex-system"
+
+[desktop.open-in-target-preferences]
+global = "xcode"
+
+[desktop.open-in-target-preferences.perPath]
+"/Users/cindyram/Documents/New project" = "vscode"
+
+[features]
+js_repl = false
+
+[shell_environment_policy.set]
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "e7fc907079d6797973cb63f97d2562c965aad8d33f52fb726005bf6702f30afc"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 1

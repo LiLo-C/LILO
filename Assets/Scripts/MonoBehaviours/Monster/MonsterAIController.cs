@@ -9,6 +9,7 @@ using Lilo.Config;
 using Lilo.State;
 using Lilo.Systems.Monster;
 using Lilo.MonoBehaviours.Audio;
+using Lilo.MonoBehaviours.Hiding;
 using Lilo.MonoBehaviours.Player;
 using StarterAssets;
 
@@ -48,6 +49,10 @@ namespace Lilo.MonoBehaviours.Monster
         [SerializeField] private SfxController sfx;
         [SerializeField] private GameplaySpeedSettings speedSettings;
 
+        [Header("Vision")]
+        [SerializeField, Min(1f)] private float visionRange = 12f;
+        [SerializeField, Range(10f, 180f)] private float visionAngle = 110f;
+
         /// <summary>
         /// Instance-level one-shot noise pulses (interact/battery, specs 005/006).
         /// Emitters call this on the scene's single MonsterAIController; until those
@@ -61,6 +66,13 @@ namespace Lilo.MonoBehaviours.Monster
 
         public MonsterState CurrentState => _brain.State;
         public float DistanceToPlayer => player != null ? MonsterBrain.DistXZ(transform.position, player.position) : -1f;
+
+        /// <summary>Most recent movement noise radius computed this frame. Telemetry only.</summary>
+        public float CurrentNoiseRadius { get; private set; }
+
+        /// <summary>Most recent movement noise source. Telemetry only.</summary>
+        public Lilo.Systems.Monster.NoiseSource CurrentNoiseSource { get; private set; }
+
         public event Action PlayerCaught;
 
         private struct PendingPulse
@@ -299,10 +311,30 @@ namespace Lilo.MonoBehaviours.Monster
                 || (_playerMovement != null ? _playerMovement.IsSprinting
                     : (_starterAssetsInput != null ? _starterAssetsInput.sprint
                         : playerSpeed > config.walkSpeed * config.sprintMultiplier * 0.9f));
-            bool hiding = GameManager.Instance != null && GameManager.Instance.State.IsHiding;
+            bool hiding = (GameManager.Instance != null && GameManager.Instance.State.IsHiding)
+                || HidingController.IsPlayerHiding;
             float moveRadius = MonsterNoise.MovementRadius(config, hiding, moving, sprinting);
+            CurrentNoiseRadius = moveRadius;
+            CurrentNoiseSource = hiding
+                ? Lilo.Systems.Monster.NoiseSource.Hiding
+                : moveRadius <= 0f
+                    ? Lilo.Systems.Monster.NoiseSource.Silent
+                    : sprinting
+                        ? Lilo.Systems.Monster.NoiseSource.Sprint
+                        : Lilo.Systems.Monster.NoiseSource.Walk;
 
             _pulses.RemoveAll(p => Time.time > p.Expiry);
+            if (!hiding)
+            {
+                float largestPulse = 0f;
+                foreach (var pulse in _pulses)
+                    largestPulse = Mathf.Max(largestPulse, pulse.Radius);
+                if (largestPulse > CurrentNoiseRadius)
+                {
+                    CurrentNoiseRadius = largestPulse;
+                    CurrentNoiseSource = Lilo.Systems.Monster.NoiseSource.Pulse;
+                }
+            }
             List<NoisePulse> pulses = null;
             if (_pulses.Count > 0)
             {
@@ -329,11 +361,13 @@ namespace Lilo.MonoBehaviours.Monster
                 PatrolSpeed = speedSettings != null ? speedSettings.monsterPatrolSpeed : 0f,
                 ChaseSpeed = speedSettings != null ? speedSettings.monsterChaseSpeed : 0f,
                 ChaseTriggerDistance = config.chaseTriggerDistance,
+                PlayerVisible = !hiding && CanSeePlayer(playerPos), // hiding defeats sight (spec 001); brain logic untouched
                 SearchRadius = config.searchRadius,
                 CatchRadius = config.catchRadius,
                 Waypoints = _waypoints,
                 ArrivedAtTarget = arrived || consumedForce,
                 Rng = _rng,
+                IsPlayerHidden = hiding,
             };
             MonsterBrainOutput output = MonsterBrain.Step(ref _brain, input);
 
@@ -390,6 +424,41 @@ namespace Lilo.MonoBehaviours.Monster
             }
 
             DriveAnimator();
+        }
+
+        private bool CanSeePlayer(Vector3 playerPosition)
+        {
+            Vector3 toPlayer = playerPosition - transform.position;
+            Vector3 flatToPlayer = Vector3.ProjectOnPlane(toPlayer, Vector3.up);
+            if (flatToPlayer.sqrMagnitude > visionRange * visionRange || flatToPlayer.sqrMagnitude < 0.0001f)
+                return flatToPlayer.sqrMagnitude < 0.0001f;
+
+            Vector3 flatForward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
+            if (Vector3.Angle(flatForward, flatToPlayer) > visionAngle * 0.5f)
+                return false;
+
+            Vector3 eye = transform.position + Vector3.up * 1.4f;
+            Vector3 target = playerPosition + Vector3.up * 1f;
+            Vector3 direction = target - eye;
+            RaycastHit[] hits = Physics.RaycastAll(eye, direction.normalized, direction.magnitude,
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            float nearestDistance = float.MaxValue;
+            Transform nearest = null;
+            foreach (RaycastHit hit in hits)
+            {
+                if (hit.transform == transform || hit.transform.IsChildOf(transform))
+                    continue;
+                if (hit.distance < nearestDistance)
+                {
+                    nearestDistance = hit.distance;
+                    nearest = hit.transform;
+                }
+            }
+
+            if (nearest != null)
+                return nearest == player || nearest.IsChildOf(player);
+
+            return true;
         }
 
         private void OnStuck()
@@ -452,6 +521,7 @@ namespace Lilo.MonoBehaviours.Monster
 
             string respawnScene = ResolveRespawnScene(state);
             Debug.Log($"[Monster] Respawning on {respawnScene} for floor {state?.CurrentFloor.ToString() ?? "active scene"}.");
+            Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();
             SceneManager.LoadScene(respawnScene);
         }
 

@@ -29,6 +29,13 @@ namespace Lilo.MonoBehaviours.Player
                 return;
             }
 
+            var gameState = GameManager.Instance?.State;
+            if (gameState != null && gameState.IsHiding)
+            {
+                IsSprinting = false;
+                return;
+            }
+
             MovementInput input = joystick.CurrentInput;
             MovementResult result = MovementSystem.Compute(input, config);
             IsSprinting = result.IsSprinting;

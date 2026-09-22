@@ -20,11 +20,15 @@ namespace Lilo.Config
         [Tooltip("Provisional current-scene world scale value; re-confirm on device before locking.")]
         public float playerRadius = 0.5f;
 
+        [Header("Hiding (hiding/001)")]
+        [Tooltip("Transition duration for entering/exiting hiding spots (seconds). Feel value.")]
+        public float hidingTransitionDuration = 0.5f;
+
         [Header("15.3 Joystick presentation (movement-and-camera/001)")]
         [Tooltip("Feel value — no prior tuning, pending on-device pass. 0 is a placeholder, not a locked default.")]
         public float joystickDeadZone = 0f;
         [Tooltip("Fraction of screen height (0–1). 0.35 = 35% of screen height. Scales across all devices.")]
-        public float joystickDiameter = 0.35f;
+        public float joystickDiameter = 0.18f;
         [Tooltip("Feel value — no prior tuning, pending on-device pass.")]
         public float joystickOpacity = 0f;
         [Tooltip("Feel value — no prior tuning, pending on-device pass.")]
@@ -76,6 +80,7 @@ namespace Lilo.Config
             patrolSpeed = 1.0f,
             chaseSpeed = 1.4f,
             investigateDuration = 4f,
+            alertDuration = 2f,
             chaseHoldDuration = 3f,
             searchDuration = 6f,
         };
@@ -85,6 +90,7 @@ namespace Lilo.Config
             patrolSpeed = 1.2f,
             chaseSpeed = 1.5f,
             investigateDuration = 6f,
+            alertDuration = 2f,
             chaseHoldDuration = 5f,
             searchDuration = 8f,
         };
@@ -142,6 +148,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(interactionRadius), interactionRadius.ToString(), "must be > 0"));
             if (playerRadius <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(playerRadius), playerRadius.ToString(), "must be > 0"));
+            if (hidingTransitionDuration < 0f)
+                failures.Add(new ConfigValidationFailure(nameof(hidingTransitionDuration), hidingTransitionDuration.ToString(), "must be >= 0"));
             if (flashlightNormalRadius <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(flashlightNormalRadius), flashlightNormalRadius.ToString(), "must be > 0"));
             if (lightRadiusEaseRate < 0f)

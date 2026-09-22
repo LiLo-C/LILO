@@ -17,6 +17,7 @@ namespace Lilo.MonoBehaviours.Flashlight
         [SerializeField] private Light readabilityFillLight;
 
         private float _displayedRadius;
+        private float _standaloneCharge;
 
         public FlashlightLightState CurrentState { get; private set; }
         public float ChargeFraction { get; private set; }
@@ -25,20 +26,34 @@ namespace Lilo.MonoBehaviours.Flashlight
 
         private void Start()
         {
+            ResolveConfig();
+            if (config == null)
+                return;
+
+            _standaloneCharge = config.batteryDuration;
             _displayedRadius = config.flashlightNormalRadius;
+            CurrentIntensity = LightStateSystem.GetTargetIntensity(1f, config);
+            ApplyLights();
         }
 
         private void Update()
         {
+            ResolveConfig();
             var gm = GameManager.Instance;
-            if (gm == null || config == null)
+            if (config == null)
             {
                 return;
             }
 
             // 002: drain in real wall-clock time, no player-action parameter.
-            float newCharge = BatteryDrainSystem.Drain(gm.State.InstalledBatteryCharge, Time.deltaTime, config.batteryDuration);
-            gm.State.SetInstalledBatteryCharge(newCharge);
+            float currentCharge = gm != null && gm.State != null
+                ? gm.State.InstalledBatteryCharge
+                : _standaloneCharge;
+            float newCharge = BatteryDrainSystem.Drain(currentCharge, Time.deltaTime, config.batteryDuration);
+            if (gm != null && gm.State != null)
+                gm.State.SetInstalledBatteryCharge(newCharge);
+            else
+                _standaloneCharge = newCharge;
 
             ChargeFraction = config.batteryDuration > 0f ? newCharge / config.batteryDuration : 0f;
 
@@ -50,6 +65,20 @@ namespace Lilo.MonoBehaviours.Flashlight
             // 003: ease the displayed radius toward that target — never snap.
             _displayedRadius = RadiusEasingSystem.Ease(_displayedRadius, target, config.lightRadiusEaseRate, Time.deltaTime);
 
+            ApplyLights();
+        }
+
+        private void ResolveConfig()
+        {
+            if (config == null && GameManager.Instance != null)
+                config = GameManager.Instance.Config;
+        }
+
+        private void ApplyLights()
+        {
+            if (config == null)
+                return;
+
             if (flashlightLight != null)
             {
                 flashlightLight.range = _displayedRadius;
@@ -58,9 +87,7 @@ namespace Lilo.MonoBehaviours.Flashlight
             }
 
             if (readabilityFillLight != null)
-            {
                 readabilityFillLight.intensity = config.readabilityFillIntensity;
-            }
         }
     }
 }

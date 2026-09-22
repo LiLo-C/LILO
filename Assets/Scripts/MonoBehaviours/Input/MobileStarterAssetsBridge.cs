@@ -53,8 +53,19 @@ namespace Lilo.MonoBehaviours.Input
 
         private void Update()
         {
+            if (joystick == null)
+                joystick = FindFirstObjectByType<JoystickInputAdapter>();
+
             if (playerInput == null)
                 return;
+
+            var gameState = GameManager.Instance?.State;
+            if (gameState != null && gameState.IsHiding)
+            {
+                playerInput.MoveInput(Vector2.zero);
+                playerInput.SprintInput(false);
+                return;
+            }
 
             var movement = joystick != null
                 ? joystick.CurrentInput
