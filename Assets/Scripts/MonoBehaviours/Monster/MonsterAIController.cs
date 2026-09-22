@@ -9,6 +9,7 @@ using Lilo.Config;
 using Lilo.State;
 using Lilo.Systems.Monster;
 using Lilo.MonoBehaviours.Audio;
+using Lilo.MonoBehaviours.Hiding;
 using Lilo.MonoBehaviours.Player;
 using StarterAssets;
 
@@ -299,7 +300,8 @@ namespace Lilo.MonoBehaviours.Monster
                 || (_playerMovement != null ? _playerMovement.IsSprinting
                     : (_starterAssetsInput != null ? _starterAssetsInput.sprint
                         : playerSpeed > config.walkSpeed * config.sprintMultiplier * 0.9f));
-            bool hiding = GameManager.Instance != null && GameManager.Instance.State.IsHiding;
+            bool hiding = (GameManager.Instance != null && GameManager.Instance.State.IsHiding)
+                || HidingController.IsPlayerHiding;
             float moveRadius = MonsterNoise.MovementRadius(config, hiding, moving, sprinting);
 
             _pulses.RemoveAll(p => Time.time > p.Expiry);
@@ -334,6 +336,7 @@ namespace Lilo.MonoBehaviours.Monster
                 Waypoints = _waypoints,
                 ArrivedAtTarget = arrived || consumedForce,
                 Rng = _rng,
+                IsPlayerHidden = hiding,
             };
             MonsterBrainOutput output = MonsterBrain.Step(ref _brain, input);
 

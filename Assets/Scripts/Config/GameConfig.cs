@@ -20,6 +20,10 @@ namespace Lilo.Config
         [Tooltip("Provisional current-scene world scale value; re-confirm on device before locking.")]
         public float playerRadius = 0.5f;
 
+        [Header("Hiding (hiding/001)")]
+        [Tooltip("Transition duration for entering/exiting hiding spots (seconds). Feel value.")]
+        public float hidingTransitionDuration = 0.5f;
+
         [Header("15.3 Joystick presentation (movement-and-camera/001)")]
         [Tooltip("Feel value — no prior tuning, pending on-device pass. 0 is a placeholder, not a locked default.")]
         public float joystickDeadZone = 0f;
@@ -142,6 +146,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(interactionRadius), interactionRadius.ToString(), "must be > 0"));
             if (playerRadius <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(playerRadius), playerRadius.ToString(), "must be > 0"));
+            if (hidingTransitionDuration < 0f)
+                failures.Add(new ConfigValidationFailure(nameof(hidingTransitionDuration), hidingTransitionDuration.ToString(), "must be >= 0"));
             if (flashlightNormalRadius <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(flashlightNormalRadius), flashlightNormalRadius.ToString(), "must be > 0"));
             if (lightRadiusEaseRate < 0f)

@@ -37,14 +37,17 @@ namespace Lilo.Editor
             }
         }
 
+        private static Callbacks _callbacks = new Callbacks();
+
         [MenuItem("LILO/Run Monster Tests")]
         public static void Run()
         {
+            AssetDatabase.Refresh();
             var api = ScriptableObject.CreateInstance<TestRunnerApi>();
-            api.RegisterCallbacks(new Callbacks());
+            api.RegisterCallbacks(_callbacks);
             var settings = new ExecutionSettings
             {
-                runSynchronously = false,
+                runSynchronously = true,
             };
             settings.filters = new[] { new Filter { testMode = TestMode.EditMode } };
             Debug.Log("[MonsterTests] Running EditMode tests...");
