@@ -28,10 +28,11 @@ public static class SetupOfficeGameplay
             throw new System.InvalidOperationException("Assets/Config/GameConfig.asset is missing.");
 
         var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+        EditorSettings.serializationMode = SerializationMode.ForceText;
         EnsureGameManager(config);
         EnsurePlayerLighting(config);
         EnsureEnvironmentDimming();
-        EnsureDebugHud();
+        EnsureDebugOverlay();
         EnsureGameplayProps(config);
         EnsureNavMesh();
 
@@ -49,7 +50,7 @@ public static class SetupOfficeGameplay
         {
             "GameManager", "MonsterPlaceholder", "MonsterPatrolRoute", "MonsterSpawns",
             "MonsterSpawnObjectives", "ExitDoorPlaceholder", "BatteryPlaceholder", "NavMesh",
-            "MobileControlsCanvas", "MobileInputBridge", "JumpButton", "LightDebugText",
+            "MobileControlsCanvas", "MobileInputBridge", "JumpButton", "DebugOverlayText", "DebugToggleButton",
             "EnvironmentLightDimmer", "PlayerFlashlight"
         };
         foreach (string name in required)
@@ -205,22 +206,23 @@ public static class SetupOfficeGameplay
         serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
-    private static void EnsureDebugHud()
+    private static void EnsureDebugOverlay()
     {
         var canvas = GameObject.Find("MobileControlsCanvas");
         if (canvas == null) return;
 
-        var hud = canvas.transform.Find("LightDebugText");
+        var hud = canvas.transform.Find("DebugOverlayText") ?? canvas.transform.Find("LightDebugText");
         GameObject hudObject;
         if (hud == null)
         {
-            hudObject = new GameObject("LightDebugText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            hudObject = new GameObject("DebugOverlayText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
             hud = hudObject.transform;
             hud.SetParent(canvas.transform, false);
         }
         else
         {
             hudObject = hud.gameObject;
+            hudObject.name = "DebugOverlayText";
         }
 
         var rect = hudObject.GetComponent<RectTransform>();
@@ -228,7 +230,7 @@ public static class SetupOfficeGameplay
         rect.anchorMax = new Vector2(0f, 1f);
         rect.pivot = new Vector2(0f, 1f);
         rect.anchoredPosition = new Vector2(20f, -20f);
-        rect.sizeDelta = new Vector2(260f, 110f);
+        rect.sizeDelta = new Vector2(320f, 140f);
 
         var text = hudObject.GetComponent<Text>();
         text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
@@ -237,11 +239,43 @@ public static class SetupOfficeGameplay
         text.color = Color.white;
         text.raycastTarget = false;
 
-        var debug = hudObject.GetComponent<LightDebugHud>();
-        if (debug == null) debug = hudObject.AddComponent<LightDebugHud>();
+        var oldHud = hudObject.GetComponent<LightDebugHud>();
+        if (oldHud != null) Object.DestroyImmediate(oldHud);
+        var debug = hudObject.GetComponent<Lilo.UI.DebugOverlay>();
+        if (debug == null) debug = hudObject.AddComponent<Lilo.UI.DebugOverlay>();
         var serialized = new SerializedObject(debug);
         serialized.FindProperty("label").objectReferenceValue = text;
         serialized.ApplyModifiedPropertiesWithoutUndo();
+
+        var toggle = canvas.transform.Find("DebugToggleButton")?.gameObject;
+        if (toggle == null)
+        {
+            toggle = new GameObject("DebugToggleButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            toggle.transform.SetParent(canvas.transform, false);
+            var button = toggle.GetComponent<Button>();
+            UnityEditor.Events.UnityEventTools.AddPersistentListener(button.onClick, debug.Toggle);
+            var buttonRect = toggle.GetComponent<RectTransform>();
+            buttonRect.anchorMin = new Vector2(1f, 1f);
+            buttonRect.anchorMax = new Vector2(1f, 1f);
+            buttonRect.pivot = new Vector2(1f, 1f);
+            buttonRect.anchoredPosition = new Vector2(-20f, -20f);
+            buttonRect.sizeDelta = new Vector2(48f, 32f);
+            var image = toggle.GetComponent<Image>();
+            image.color = new Color(0f, 0f, 0f, 0.55f);
+            var labelObject = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            labelObject.transform.SetParent(toggle.transform, false);
+            var buttonText = labelObject.GetComponent<Text>();
+            buttonText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            buttonText.text = "DBG";
+            buttonText.fontSize = 12;
+            buttonText.alignment = TextAnchor.MiddleCenter;
+            buttonText.color = Color.white;
+            var textRect = labelObject.GetComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+        }
     }
 
     private static void EnsurePlayerLighting(GameConfig config)

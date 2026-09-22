@@ -76,6 +76,7 @@ namespace Lilo.Config
             patrolSpeed = 1.0f,
             chaseSpeed = 1.4f,
             investigateDuration = 4f,
+            alertDuration = 2f,
             chaseHoldDuration = 3f,
             searchDuration = 6f,
         };
@@ -85,6 +86,7 @@ namespace Lilo.Config
             patrolSpeed = 1.2f,
             chaseSpeed = 1.5f,
             investigateDuration = 6f,
+            alertDuration = 2f,
             chaseHoldDuration = 5f,
             searchDuration = 8f,
         };
