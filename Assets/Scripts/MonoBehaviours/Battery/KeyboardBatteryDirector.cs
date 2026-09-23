@@ -20,6 +20,7 @@ namespace Lilo.MonoBehaviours.Battery
         [SerializeField] private SfxController sfx;
 
         private KeyboardBatterySlot[] _slots = Array.Empty<KeyboardBatterySlot>();
+        private Transform _player;
 
         public int LoadedCount
         {
@@ -109,6 +110,21 @@ namespace Lilo.MonoBehaviours.Battery
                 var sfxGo = GameObject.Find("SfxController");
                 if (sfxGo != null) sfx = sfxGo.GetComponent<SfxController>();
             }
+
+            var playerGo = GameObject.FindWithTag("Player");
+            if (playerGo == null)
+                playerGo = GameObject.Find("PlayerCharacter");
+            if (playerGo != null)
+                _player = playerGo.transform;
+        }
+
+        private void Update()
+        {
+            if (_player == null || IsSpareFull) return;
+
+            var slot = NearestLoadedSlot(_player.position);
+            if (slot != null)
+                TryTake(slot);
         }
 
         /// <summary>Nearest loaded slot within its interaction radius, or null.</summary>
