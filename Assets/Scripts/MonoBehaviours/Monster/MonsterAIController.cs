@@ -33,6 +33,7 @@ namespace Lilo.MonoBehaviours.Monster
     [RequireComponent(typeof(NavMeshAgent))]
     public class MonsterAIController : MonoBehaviour
     {
+        private const int RandomSpawnSamples = 48;
         [SerializeField] private GameConfig config;
         [SerializeField] private FloorId floorProfile = FloorId.Floor51;
         [Header("Arena wiring (auto-found by name if empty)")]
@@ -109,7 +110,9 @@ namespace Lilo.MonoBehaviours.Monster
 
         private void Awake()
         {
-            _rng = new System.Random(System.Environment.TickCount);
+            // TickCount can repeat when scenes restart quickly. A fresh seed keeps
+            // both the initial spawn and later search targets varied between runs.
+            _rng = new System.Random(System.Guid.NewGuid().GetHashCode());
 
             GameConfig cfg = config != null ? config : GameManager.Instance?.Config;
             if (cfg == null)
@@ -220,15 +223,30 @@ namespace Lilo.MonoBehaviours.Monster
                     objectives.Add(objective.position);
             }
 
-            var candidates = new List<MonsterSpawnCandidate>(spawnPresets.childCount);
-            var transforms = new List<Transform>(spawnPresets.childCount);
+            var candidates = new List<MonsterSpawnCandidate>(spawnPresets.childCount + RandomSpawnSamples);
+            var positions = new List<Vector3>(spawnPresets.childCount + RandomSpawnSamples);
             foreach (Transform spawn in spawnPresets)
             {
-                transforms.Add(spawn);
+                positions.Add(spawn.position);
                 candidates.Add(new MonsterSpawnCandidate(
                     spawn.position,
                     IsReachable(entry, spawn.position),
                     IsVisibleFromEntry(entry, spawn.position)));
+            }
+
+            // Presets ensure hand-authored fallback positions remain available. Add
+            // random points sampled from the baked NavMesh so runs are not limited
+            // to the same small set of fixed locations.
+            NavMeshTriangulation triangulation = NavMesh.CalculateTriangulation();
+            int triangleCount = triangulation.indices != null ? triangulation.indices.Length / 3 : 0;
+            for (int i = 0; i < RandomSpawnSamples && triangleCount > 0; i++)
+            {
+                Vector3 point = RandomPointOnNavMeshTriangle(triangulation, _rng);
+                positions.Add(point);
+                candidates.Add(new MonsterSpawnCandidate(
+                    point,
+                    IsReachable(entry, point),
+                    IsVisibleFromEntry(entry, point)));
             }
 
             int selected = MonsterSpawnSelector.ChooseValidIndex(
@@ -240,18 +258,35 @@ namespace Lilo.MonoBehaviours.Monster
                 _rng);
             if (selected < 0)
             {
-                Debug.LogError("[Monster] No spawn preset passed reachability, distance, visibility, and objective-clearance validation.");
+                Debug.LogError("[Monster] No authored or randomized NavMesh spawn passed reachability, distance, visibility, and objective-clearance validation.");
                 enabled = false;
                 return false;
             }
 
-            if (!_agent.Warp(transforms[selected].position))
+            Vector3 selectedPosition = positions[selected];
+            if (!_agent.Warp(selectedPosition))
             {
-                Debug.LogError($"[Monster] Validated spawn '{transforms[selected].name}' was not on the NavMesh.");
+                Debug.LogError($"[Monster] Validated spawn at {selectedPosition} was not on the NavMesh.");
                 enabled = false;
                 return false;
             }
+            Debug.Log($"[Monster] Randomized spawn selected at ({selectedPosition.x:0.00}, {selectedPosition.y:0.00}, {selectedPosition.z:0.00}) from {candidates.Count} authored and sampled candidates.");
             return true;
+        }
+
+        private static Vector3 RandomPointOnNavMeshTriangle(NavMeshTriangulation triangulation, System.Random rng)
+        {
+            int triangleCount = triangulation.indices.Length / 3;
+            int triangle = rng.Next(triangleCount) * 3;
+            Vector3 a = triangulation.vertices[triangulation.indices[triangle]];
+            Vector3 b = triangulation.vertices[triangulation.indices[triangle + 1]];
+            Vector3 c = triangulation.vertices[triangulation.indices[triangle + 2]];
+
+            // Square-root barycentric sampling distributes points evenly within
+            // the selected triangle instead of clustering near one vertex.
+            float root = Mathf.Sqrt((float)rng.NextDouble());
+            float along = (float)rng.NextDouble();
+            return (1f - root) * a + root * (1f - along) * b + root * along * c;
         }
 
         private static bool IsReachable(Vector3 entry, Vector3 spawn)

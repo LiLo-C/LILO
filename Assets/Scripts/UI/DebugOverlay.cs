@@ -30,8 +30,8 @@ namespace Lilo.UI
             if (player != null)
             {
                 _rig = player.GetComponent<LightingRig>();
-                _monster = FindFirstObjectByType<MonsterAIController>();
             }
+            _monster = FindFirstObjectByType<MonsterAIController>();
             _config = GameManager.Instance != null ? GameManager.Instance.Config : null;
             if (label != null) label.enabled = visibleOnStart;
         }
@@ -47,6 +47,8 @@ namespace Lilo.UI
                 GameObject player = GameObject.Find("PlayerCharacter");
                 if (player != null) _rig = player.GetComponent<LightingRig>();
             }
+            if (_monster == null)
+                _monster = FindFirstObjectByType<MonsterAIController>();
             if (_config == null && GameManager.Instance != null)
                 _config = GameManager.Instance.Config;
 
