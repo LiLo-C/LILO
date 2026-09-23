@@ -7,21 +7,17 @@ namespace Lilo.Editor
 {
     /// <summary>
     /// One-shot setup: turns every "keyboard" prop in the active scene into a
-    /// battery dispenser (KeyboardBatterySlot with base/loaded materials) and
-    /// ensures a single KeyboardBatteryDirector exists. Loaded keyboards glow via
-    /// an emissive material. Run via menu LILO/Setup Keyboard Batteries.
-    /// Safe to re-run (idempotent).
+    /// battery dispenser (KeyboardBatterySlot) and ensures a single
+    /// KeyboardBatteryDirector exists. The glow material is built at runtime by
+    /// the director, so setup only wires components. Run via menu
+    /// LILO/Setup Keyboard Batteries. Safe to re-run (idempotent).
     /// </summary>
     public static class SetupKeyboardBatteries
     {
-        private const string LoadedMatPath = "Assets/Resources/KeyboardBatteryLoaded.mat";
-
         [MenuItem("LILO/Setup Keyboard Batteries")]
         public static void Run()
         {
             var scene = EditorSceneManager.GetActiveScene();
-            Material loadedMat = EnsureLoadedMaterial();
-            if (loadedMat == null) return;
 
             int slots = 0;
             foreach (var root in scene.GetRootGameObjects())
@@ -63,28 +59,7 @@ namespace Lilo.Editor
             }
 
             EditorSceneManager.MarkSceneDirty(scene);
-            Debug.Log($"[BatteryKeyboards] Done. slots={slots} scene={scene.name} glow={LoadedMatPath}");
-        }
-
-        private static Material EnsureLoadedMaterial()
-        {
-            var existing = AssetDatabase.LoadAssetAtPath<Material>(LoadedMatPath);
-            if (existing != null) return existing;
-
-            var urpShader = Shader.Find("Universal Render Pipeline/Lit");
-            if (urpShader == null)
-            {
-                Debug.LogError("[BatteryKeyboards] URP/Lit shader not found.");
-                return null;
-            }
-
-            var mat = new Material(urpShader) { name = "KeyboardBatteryLoaded" };
-            mat.color = new Color(0.12f, 0.12f, 0.14f);
-            mat.EnableKeyword("_EMISSION");
-            mat.SetColor("_EmissionColor", new Color(0.25f, 1f, 0.45f) * 1.6f);
-            AssetDatabase.CreateAsset(mat, LoadedMatPath);
-            Debug.Log($"[BatteryKeyboards] Created {LoadedMatPath}.");
-            return mat;
+            Debug.Log($"[BatteryKeyboards] Done. slots={slots} scene={scene.name} (glow built at runtime)");
         }
     }
 }

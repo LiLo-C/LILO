@@ -22,14 +22,29 @@ namespace Lilo.MonoBehaviours.Battery
 
         private void Awake()
         {
+            ResolveRenderer();
+            if (baseMaterial == null && _renderer != null)
+                baseMaterial = _renderer.sharedMaterial;
+            UpdateVisual();
+        }
+
+        /// <summary>Called by the director at floor entry; wins over Awake fallbacks.</summary>
+        public void Configure(Material baseMat, Material glowMat)
+        {
+            ResolveRenderer();
+            if (baseMat != null)
+                baseMaterial = baseMat;
+            if (glowMat != null)
+                loadedMaterial = glowMat;
+            UpdateVisual();
+        }
+
+        private void ResolveRenderer()
+        {
+            if (_renderer != null) return;
             _renderer = GetComponent<MeshRenderer>();
             if (_renderer == null)
                 _renderer = GetComponentInChildren<Renderer>();
-            if (baseMaterial == null && _renderer != null)
-                baseMaterial = _renderer.sharedMaterial;
-            if (loadedMaterial == null)
-                loadedMaterial = Resources.Load<Material>("KeyboardBatteryLoaded");
-            UpdateVisual();
         }
 
         public void SetLoaded(bool loaded)

@@ -48,12 +48,53 @@ namespace Lilo.MonoBehaviours.Battery
 
             _slots = FindObjectsByType<KeyboardBatterySlot>();
 
+            Material glow = BuildGlowMaterial();
+            foreach (var slot in _slots)
+            {
+                if (slot == null) continue;
+                var rend = slot.GetComponent<MeshRenderer>();
+                if (rend == null) rend = slot.GetComponentInChildren<Renderer>();
+                slot.Configure(rend != null ? rend.sharedMaterial : null, glow);
+                slot.SetLoaded(false);
+            }
+
             int count = config != null ? config.keyboardBatteryCountPerFloor : 3;
             int[] loaded = KeyboardBatteryRoster.PickLoadedIndices(count, _slots.Length, new System.Random());
             foreach (int i in loaded)
                 _slots[i].SetLoaded(true);
 
             Debug.Log($"[BatteryKeyboards] Loaded {loaded.Length} of {_slots.Length} keyboard slots.");
+        }
+
+        /// <summary>
+        /// Runtime-only glow material cloned from a real keyboard material so the
+        /// emissive signal never depends on a serialized asset surviving setup.
+        /// </summary>
+        private Material BuildGlowMaterial()
+        {
+            Material source = null;
+            foreach (var slot in _slots)
+            {
+                if (slot == null) continue;
+                var rend = slot.GetComponent<MeshRenderer>();
+                if (rend == null) rend = slot.GetComponentInChildren<Renderer>();
+                if (rend != null && rend.sharedMaterial != null)
+                {
+                    source = rend.sharedMaterial;
+                    break;
+                }
+            }
+
+            Material glow;
+            if (source != null)
+                glow = new Material(source);
+            else
+                glow = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+
+            glow.name = "KeyboardBatteryGlowRuntime";
+            glow.EnableKeyword("_EMISSION");
+            glow.SetColor("_EmissionColor", new Color(0.25f, 1f, 0.45f) * 2.5f);
+            return glow;
         }
 
         private void Start()
