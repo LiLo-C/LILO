@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 597e1460e2867415398510d77e48c65b
+guid: 75621e0f3ed1b42b4a95a4e3db339694
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2974501379400648085
-    second: cubicle-side-1_0
+      213: 8057007925905242937
+    second: keyboard-side-2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -128,13 +128,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cubicle-side-1_0
+      name: keyboard-side-2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 817
-        height: 1046
+        width: 90
+        height: 231
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -143,8 +143,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 595c517be3d874920800000000000000
-      internalID: 2974501379400648085
+      spriteID: 93bb610550e30df60800000000000000
+      internalID: 8057007925905242937
       vertices: []
       indices: 
       edges: []
@@ -163,7 +163,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      cubicle-side-1_0: 2974501379400648085
+      keyboard-side-2_0: 8057007925905242937
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
