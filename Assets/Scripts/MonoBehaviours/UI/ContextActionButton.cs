@@ -7,8 +7,10 @@ using Lilo.Systems.Hiding;
 namespace Lilo.MonoBehaviours.Hud
 {
     /// <summary>
-    /// Context action button for iOS — shows "Hide"/"Exit" when near a hiding spot,
-    /// hidden otherwise. Proximity-driven, no keyboard.
+    /// Context action button for iOS — shows Hide/Exit near a hiding spot and
+    /// Take/Hands Full near a loaded keyboard battery. Hiding needs a
+    /// HidingController on the player; battery Take works with any
+    /// Player-tagged transform. Proximity-driven, no keyboard.
     /// </summary>
     public class ContextActionButton : MonoBehaviour
     {
@@ -18,6 +20,7 @@ namespace Lilo.MonoBehaviours.Hud
         [SerializeField] private Text label;
         [SerializeField] private CanvasGroup canvasGroup;
 
+        private Transform _playerTransform;
         private float _checkTimer;
 
         private void Awake()
@@ -81,8 +84,6 @@ namespace Lilo.MonoBehaviours.Hud
 
         private void Update()
         {
-            if (hidingController == null) return;
-
             _checkTimer -= Time.deltaTime;
             if (_checkTimer <= 0f)
             {
@@ -91,20 +92,34 @@ namespace Lilo.MonoBehaviours.Hud
             }
         }
 
+        /// <summary>Player transform for proximity checks, with or without hiding.</summary>
+        private Transform PlayerTransform()
+        {
+            if (hidingController != null) return hidingController.transform;
+            if (_playerTransform == null)
+            {
+                var player = GameObject.FindWithTag("Player");
+                if (player != null) _playerTransform = player.transform;
+            }
+            return _playerTransform;
+        }
+
         private void Refresh()
         {
-            if (hidingController == null)
+            Transform player = PlayerTransform();
+            if (player == null)
             {
                 SetVisible(false);
                 return;
             }
 
-            string actionLabel = hidingController.CurrentActionLabel;
+            string actionLabel = hidingController != null ? hidingController.CurrentActionLabel : string.Empty;
+            bool hidden = hidingController != null && hidingController.CurrentState == HidingState.Hidden;
 
             // A loaded battery in reach takes precedence over Hide, never over Exit.
-            if (hidingController.CurrentState != HidingState.Hidden && batteryDirector != null)
+            if (!hidden && batteryDirector != null)
             {
-                var slot = batteryDirector.NearestLoadedSlot(hidingController.transform.position);
+                var slot = batteryDirector.NearestLoadedSlot(player.position);
                 if (slot != null)
                     actionLabel = batteryDirector.IsSpareFull ? "Hands Full" : "Take";
             }
@@ -135,9 +150,12 @@ namespace Lilo.MonoBehaviours.Hud
         /// <summary>Takes a loaded battery in reach; consumes the press either way.</summary>
         private bool HandleBatteryPress()
         {
-            if (batteryDirector == null || hidingController == null) return false;
+            if (batteryDirector == null) return false;
 
-            var slot = batteryDirector.NearestLoadedSlot(hidingController.transform.position);
+            Transform player = PlayerTransform();
+            if (player == null) return false;
+
+            var slot = batteryDirector.NearestLoadedSlot(player.position);
             if (slot == null) return false;
 
             batteryDirector.TryTake(slot);
