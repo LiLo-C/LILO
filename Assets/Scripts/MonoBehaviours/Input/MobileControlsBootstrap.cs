@@ -83,8 +83,50 @@ namespace Lilo.MonoBehaviours.Input
             else
                 joystick.Initialize(config, joystick.transform as RectTransform, joystick.transform.Find("JoystickHandle") as RectTransform);
 
+            EnsureBatterySwapButton(canvasObject.transform);
             EnsureEventSystem();
             EnsureBridge(canvasObject.transform, joystick);
+        }
+
+        private static void EnsureBatterySwapButton(Transform canvas)
+        {
+            if (canvas.Find("BatterySwapButton") != null)
+                return;
+
+            GameObject buttonObject = new GameObject(
+                "BatterySwapButton",
+                typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(CanvasGroup));
+            buttonObject.transform.SetParent(canvas, false);
+
+            RectTransform rect = buttonObject.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(1f, 0.35f);
+            rect.anchorMax = new Vector2(1f, 0.35f);
+            rect.pivot = new Vector2(1f, 0.5f);
+            rect.anchoredPosition = new Vector2(-36f, 0f);
+            rect.sizeDelta = new Vector2(150f, 64f);
+
+            Image image = buttonObject.GetComponent<Image>();
+            image.color = new Color(0.12f, 0.32f, 0.5f, 0.96f);
+            Button button = buttonObject.GetComponent<Button>();
+            button.targetGraphic = image;
+
+            GameObject labelObject = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            labelObject.transform.SetParent(buttonObject.transform, false);
+            RectTransform labelRect = labelObject.GetComponent<RectTransform>();
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = Vector2.zero;
+            labelRect.offsetMax = Vector2.zero;
+
+            Text label = labelObject.GetComponent<Text>();
+            label.text = "CHANGE BATTERY";
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.fontSize = 16;
+            label.alignment = TextAnchor.MiddleCenter;
+            label.color = Color.white;
+            label.raycastTarget = false;
+
+            buttonObject.AddComponent<Lilo.MonoBehaviours.UI.BatterySwapButton>();
         }
 
         private static GameObject CreateCanvas()
