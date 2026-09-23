@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using Lilo.Config;
 using Lilo.MonoBehaviours;
 using Lilo.MonoBehaviours.Interaction;
@@ -24,15 +25,156 @@ public static class SetupGameLoopScenes
     public static void Run()
     {
         EditorSettings.serializationMode = SerializationMode.ForceText;
-        EnsureGameplayScene("OfficeLevel1", Lilo.Config.FloorId.Floor51, "OfficeLevel2", Lilo.Config.FloorId.Floor50);
-        EnsureGameplayScene("OfficeLevel2", Lilo.Config.FloorId.Floor50, "GoodEnding", Lilo.Config.FloorId.Floor50);
         CreateMainMenu();
         CreateEnding("GoodEnding", RunOutcome.GoodEnding);
         CreateEnding("BadEnding", RunOutcome.BadEnding);
+        BuildThreeFloorGameFlow();
+    }
+
+    [MenuItem("LILO/Build Three Floor Game Flow")]
+    public static void BuildThreeFloorGameFlow()
+    {
+        EditorSettings.serializationMode = SerializationMode.ForceText;
+        CloneOfficeLevel("OfficeLevel2");
+        CloneOfficeLevel("OfficeLevel3");
+        EnsureGameplayScene("OfficeLevel1", FloorId.Floor52, "OfficeLevel2", FloorId.Floor51);
+        EnsureGameplayScene("OfficeLevel2", FloorId.Floor51, "OfficeLevel3", FloorId.Floor50);
+        EnsureGameplayScene("OfficeLevel3", FloorId.Floor50, "GoodEnding", FloorId.Floor50);
+        SetOfficeOrthographicCameras();
+        ApplyOfficeTraversalAndSpeedTuning();
         UpdateBuildSettings();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("[GameLoopSetup] MainMenu, gameplay transitions, settings and endings are ready.");
+        ValidateThreeFloorGameFlow();
+        Debug.Log("[GameLoopSetup] OfficeLevel1 → OfficeLevel2 → OfficeLevel3 → GoodEnding, with shared HUD and no jump.");
+    }
+
+    [MenuItem("LILO/Set Office Orthographic Cameras")]
+    public static void SetOfficeOrthographicCameras()
+    {
+        string[] scenes = { "OfficeLevel1", "OfficeLevel2", "OfficeLevel3" };
+        foreach (string sceneName in scenes)
+        {
+            Scene scene = EditorSceneManager.OpenScene(SceneRoot + sceneName + ".unity", OpenSceneMode.Single);
+            var player = GameObject.Find("PlayerCharacter");
+            var camera = GameObject.Find("Main Camera")?.GetComponent<UnityEngine.Camera>();
+            if (player == null || camera == null)
+                throw new System.InvalidOperationException($"{sceneName} requires PlayerCharacter and Main Camera.");
+
+            camera.orthographic = true;
+            camera.orthographicSize = 10f;
+            camera.transform.position = player.transform.position + new Vector3(0f, 13f, -14f);
+            camera.transform.rotation = Quaternion.Euler(43f, 0f, 0f);
+            var follow = camera.GetComponent<global::CameraFollow>() ?? camera.gameObject.AddComponent<global::CameraFollow>();
+            var followSerialized = new SerializedObject(follow);
+            followSerialized.FindProperty("target").objectReferenceValue = player.transform;
+            followSerialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(camera);
+            EditorUtility.SetDirty(camera.transform);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(camera);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(camera.transform);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            Debug.Log($"[CameraSetup] {sceneName}: orthographic size={camera.orthographicSize}, pitch={camera.transform.eulerAngles.x:0.#}°, camera position={camera.transform.position}.");
+        }
+    }
+
+    [MenuItem("LILO/Apply Office Traversal And Speed Tuning")]
+    public static void ApplyOfficeTraversalAndSpeedTuning()
+    {
+        string[] scenes = { "OfficeLevel1", "OfficeLevel2", "OfficeLevel3" };
+        foreach (string sceneName in scenes)
+        {
+            Scene scene = EditorSceneManager.OpenScene(SceneRoot + sceneName + ".unity", OpenSceneMode.Single);
+            var player = GameObject.Find("PlayerCharacter");
+            var controller = player != null ? player.GetComponent<CharacterController>() : null;
+            var speeds = Object.FindFirstObjectByType<GameplaySpeedSettings>();
+            if (controller == null || speeds == null)
+                throw new System.InvalidOperationException($"{sceneName} is missing Player CharacterController or GameplaySpeedSettings.");
+
+            controller.radius = 0.18f;
+            EditorUtility.SetDirty(controller);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(controller);
+            speeds.playerWalkSpeed = 1f;
+            speeds.playerSprintSpeed = 3f;
+            speeds.monsterPatrolSpeed = 0.225f;
+            speeds.monsterChaseSpeed = 0.7f;
+            EditorUtility.SetDirty(speeds);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            Debug.Log($"[OfficeTuning] {sceneName}: player=1/3, monster=0.225/0.7, collider radius={controller.radius}.");
+        }
+
+        var config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/Config/GameConfig.asset");
+        if (config != null)
+        {
+            config.walkSpeed = 1f;
+            config.sprintMultiplier = 3f;
+            config.playerRadius = 0.25f;
+            config.monsterTuningFloor51.patrolSpeed = 0.225f;
+            config.monsterTuningFloor51.chaseSpeed = 0.175f;
+            config.monsterTuningFloor50.patrolSpeed = 0.225f;
+            config.monsterTuningFloor50.chaseSpeed = 0.1875f;
+            EditorUtility.SetDirty(config);
+            AssetDatabase.SaveAssets();
+        }
+    }
+
+    [MenuItem("LILO/Validate Three Floor Game Flow")]
+    public static void ValidateThreeFloorGameFlow()
+    {
+        string[] scenes = { "OfficeLevel1", "OfficeLevel2", "OfficeLevel3" };
+        FloorId[] floors = { FloorId.Floor52, FloorId.Floor51, FloorId.Floor50 };
+        string[] destinations = { "OfficeLevel2", "OfficeLevel3", "GoodEnding" };
+
+        for (int index = 0; index < scenes.Length; index++)
+        {
+            Scene scene = EditorSceneManager.OpenScene(SceneRoot + scenes[index] + ".unity", OpenSceneMode.Single);
+            var controller = GameObject.Find("GameLoopSceneController")?.GetComponent<GameLoopSceneController>();
+            var hud = GameObject.Find("GameplayHudCanvas")?.GetComponent<GameplayHudController>();
+            var door = GameObject.Find("ExitDoorPlaceholder")?.GetComponent<ExitDoorInteraction>();
+            var speeds = Object.FindFirstObjectByType<GameplaySpeedSettings>();
+            var capsule = GameObject.Find("PlayerCharacter")?.GetComponent<CharacterController>();
+            var character = GameObject.Find("PlayerCharacter")?.GetComponent<StarterAssets.ThirdPersonController>();
+            if (controller == null || hud == null || door == null || speeds == null || capsule == null || character == null)
+                throw new System.InvalidOperationException($"{scene.name} is missing flow, HUD, door, speed settings, or player.");
+
+            var flow = new SerializedObject(controller);
+            var exit = new SerializedObject(door);
+            int actualFloor = flow.FindProperty("floor").enumValueIndex;
+            string actualNextScene = flow.FindProperty("nextSceneName").stringValue;
+            string actualDoorScene = exit.FindProperty("nextSceneName").stringValue;
+            if (actualFloor != (int)floors[index]
+                || actualNextScene != destinations[index]
+                || actualDoorScene != destinations[index]
+                || speeds.playerWalkSpeed != 1f
+                || speeds.playerSprintSpeed != 3f
+                || speeds.monsterPatrolSpeed != 0.225f
+                || speeds.monsterChaseSpeed != 0.7f
+                || capsule.radius > 0.18f
+                || character.JumpHeight > 0f)
+                throw new System.InvalidOperationException($"{scene.name}: floor={actualFloor}, next={actualNextScene}, player={speeds.playerWalkSpeed}/{speeds.playerSprintSpeed}, monster={speeds.monsterPatrolSpeed}/{speeds.monsterChaseSpeed}, radius={capsule.radius}, jump={character.JumpHeight}.");
+
+            foreach (GameObject root in scene.GetRootGameObjects())
+                foreach (Transform child in root.GetComponentsInChildren<Transform>(true))
+                    if (child.name == "JumpButton")
+                        throw new System.InvalidOperationException($"{scene.name} still contains JumpButton.");
+
+            Debug.Log($"[GameLoopSetup] Validated {scene.name}: {floors[index]} → {destinations[index]}, HUD present, player=1/3, monster=0.225/0.7, radius={capsule.radius:0.##}, jump disabled.");
+        }
+    }
+
+    private static void CloneOfficeLevel(string sceneName)
+    {
+        string source = SceneRoot + "OfficeLevel1.unity";
+        string destination = SceneRoot + sceneName + ".unity";
+        Scene active = SceneManager.GetActiveScene();
+        if (active.path == source && active.isDirty)
+            EditorSceneManager.SaveScene(active);
+
+        File.Copy(Path.Combine(Application.dataPath, "Scenes/OfficeLevel1.unity"),
+            Path.Combine(Application.dataPath, "Scenes", sceneName + ".unity"), true);
+        AssetDatabase.ImportAsset(destination, ImportAssetOptions.ForceUpdate);
     }
 
     private static void EnsureGameplayScene(string sceneName, FloorId floor, string nextScene, FloorId nextFloor)
@@ -40,6 +182,7 @@ public static class SetupGameLoopScenes
         string path = SceneRoot + sceneName + ".unity";
         Scene scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
         EnsureEventSystem();
+        Lilo.Editor.SetupKeyboardBatteries.Run();
 
         var controllerGo = GameObject.Find("GameLoopSceneController") ?? new GameObject("GameLoopSceneController");
         var controller = controllerGo.GetComponent<GameLoopSceneController>() ?? controllerGo.AddComponent<GameLoopSceneController>();
@@ -49,6 +192,37 @@ public static class SetupGameLoopScenes
         controllerSerialized.FindProperty("nextSceneName").stringValue = nextScene;
         controllerSerialized.FindProperty("nextFloor").enumValueIndex = (int)nextFloor;
         controllerSerialized.ApplyModifiedPropertiesWithoutUndo();
+
+        var manager = GameObject.Find("GameManager")?.GetComponent<GameManager>();
+        if (manager != null)
+        {
+            var managerSerialized = new SerializedObject(manager);
+            managerSerialized.FindProperty("useConfiguredStartingFloor").boolValue = true;
+            managerSerialized.FindProperty("configuredStartingFloor").enumValueIndex = (int)floor;
+            managerSerialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        var speeds = Object.FindFirstObjectByType<GameplaySpeedSettings>();
+        if (speeds != null)
+            speeds.monsterPatrolSpeed = Mathf.Min(speeds.monsterPatrolSpeed, 0.9f);
+
+        var character = GameObject.Find("PlayerCharacter")?.GetComponent<StarterAssets.ThirdPersonController>();
+        if (character != null)
+        {
+            character.JumpHeight = 0f;
+            EditorUtility.SetDirty(character);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(character);
+        }
+
+        foreach (GameObject root in scene.GetRootGameObjects())
+            foreach (Transform child in root.GetComponentsInChildren<Transform>(true))
+                if (child.name == "JumpButton")
+                {
+                    Object.DestroyImmediate(child.gameObject);
+                    break;
+                }
+
+        EnsureGameplayHud();
 
         var doorGo = GameObject.Find("ExitDoorPlaceholder");
         if (doorGo == null)
@@ -151,22 +325,61 @@ public static class SetupGameLoopScenes
 
     private static void UpdateBuildSettings()
     {
-        var paths = new List<string> { SceneRoot + "MainMenu.unity" };
-        var enabledByPath = new Dictionary<string, bool>();
+        var paths = new List<string>
+        {
+            SceneRoot + "MainMenu.unity",
+            SceneRoot + "OfficeLevel1.unity",
+            SceneRoot + "OfficeLevel2.unity",
+            SceneRoot + "OfficeLevel3.unity",
+            SceneRoot + "GoodEnding.unity",
+            SceneRoot + "BadEnding.unity",
+        };
         foreach (var scene in EditorBuildSettings.scenes)
         {
-            enabledByPath[scene.path] = scene.enabled;
-            if (!paths.Contains(scene.path) && scene.path != SceneRoot + "MainMenu.unity") paths.Add(scene.path);
+            if (!paths.Contains(scene.path)) paths.Add(scene.path);
         }
-        paths.Add(SceneRoot + "GoodEnding.unity");
-        paths.Add(SceneRoot + "BadEnding.unity");
         var settings = new List<EditorBuildSettingsScene>();
         foreach (var path in paths)
-            settings.Add(new EditorBuildSettingsScene(path, path == SceneRoot + "MainMenu.unity"
-                || path == SceneRoot + "GoodEnding.unity"
-                || path == SceneRoot + "BadEnding.unity"
-                || !enabledByPath.TryGetValue(path, out var enabled) || enabled));
+            settings.Add(new EditorBuildSettingsScene(path, true));
         EditorBuildSettings.scenes = settings.ToArray();
+    }
+
+    private static void EnsureGameplayHud()
+    {
+        var old = GameObject.Find("GameplayHudCanvas");
+        if (old != null) Object.DestroyImmediate(old);
+
+        var canvas = CreateCanvas("GameplayHudCanvas");
+        canvas.sortingOrder = 100;
+        var hud = canvas.gameObject.AddComponent<GameplayHudController>();
+        var floor = CreateTextAt(canvas.transform, "FloorText", "FLOOR", 20,
+            new Vector2(0.18f, 0.95f), new Vector2(180, 45));
+        var lives = CreateTextAt(canvas.transform, "LivesText", "LIVES", 20,
+            new Vector2(0.5f, 0.95f), new Vector2(180, 45));
+        var battery = CreateTextAt(canvas.transform, "BatteryText", "BATTERY", 20,
+            new Vector2(0.78f, 0.95f), new Vector2(180, 45));
+        floor.raycastTarget = false;
+        lives.raycastTarget = false;
+        battery.raycastTarget = false;
+        var pause = CreateButton(canvas.transform, "PauseButton", "PAUSE", new Vector2(0.9f, 0.86f));
+        pause.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 48);
+
+        var panel = CreatePanel(canvas.transform, "PausePanel", PanelColor);
+        CreateTextAt(panel.transform, "PauseTitle", "PAUSED", 36,
+            new Vector2(0.5f, 0.65f), new Vector2(500, 80));
+        var resume = CreateButton(panel.transform, "ResumeButton", "RESUME", new Vector2(0.5f, 0.48f));
+        var menu = CreateButton(panel.transform, "MainMenuButton", "MAIN MENU", new Vector2(0.5f, 0.35f));
+
+        var serialized = new SerializedObject(hud);
+        serialized.FindProperty("floorText").objectReferenceValue = floor;
+        serialized.FindProperty("livesText").objectReferenceValue = lives;
+        serialized.FindProperty("batteryText").objectReferenceValue = battery;
+        serialized.FindProperty("pauseButton").objectReferenceValue = pause;
+        serialized.FindProperty("pausePanel").objectReferenceValue = panel.gameObject;
+        serialized.FindProperty("resumeButton").objectReferenceValue = resume;
+        serialized.FindProperty("mainMenuButton").objectReferenceValue = menu;
+        serialized.ApplyModifiedPropertiesWithoutUndo();
+        panel.gameObject.SetActive(false);
     }
 
     private static Canvas CreateCanvas(string name)

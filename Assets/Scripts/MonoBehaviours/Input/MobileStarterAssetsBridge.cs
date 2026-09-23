@@ -3,7 +3,6 @@ using Lilo.Config;
 using Lilo.MonoBehaviours;
 using StarterAssets;
 using UnityEngine;
-using UnityEngine.EventSystems;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -11,9 +10,10 @@ using UnityEngine.InputSystem;
 namespace Lilo.MonoBehaviours.Input
 {
     /// <summary>
-    /// Forwards the shared virtual joystick and jump button to the Starter Assets
-    /// character used by OfficeLevel1.
+    /// Forwards the shared virtual joystick to the Starter Assets character used
+    /// by OfficeLevel1.
     /// </summary>
+    [DefaultExecutionOrder(-100)]
     public sealed class MobileStarterAssetsBridge : MonoBehaviour
     {
         [SerializeField] private JoystickInputAdapter joystick;
@@ -23,6 +23,11 @@ namespace Lilo.MonoBehaviours.Input
         [SerializeField] private bool enableKeyboardInEditor = true;
 
         private ThirdPersonController _characterController;
+
+        private void Start()
+        {
+            DisableJump();
+        }
 
         private void Awake()
         {
@@ -41,14 +46,6 @@ namespace Lilo.MonoBehaviours.Input
                     _characterController = player.GetComponent<ThirdPersonController>();
             }
 
-            GameObject jumpButton = GameObject.Find("JumpButton");
-            if (jumpButton != null && playerInput != null)
-            {
-                MobileJumpButton jump = jumpButton.GetComponent<MobileJumpButton>();
-                if (jump == null)
-                    jump = jumpButton.AddComponent<MobileJumpButton>();
-                jump.SetTarget(playerInput);
-            }
         }
 
         private void Update()
@@ -70,7 +67,6 @@ namespace Lilo.MonoBehaviours.Input
             var movement = joystick != null
                 ? joystick.CurrentInput
                 : Lilo.Systems.Movement.MovementInput.Zero;
-            bool keyboardJump = false;
 #if ENABLE_INPUT_SYSTEM
             if (enableKeyboardInEditor && (Application.isEditor || Application.platform == RuntimePlatform.WindowsPlayer
                 || Application.platform == RuntimePlatform.OSXPlayer || Application.platform == RuntimePlatform.LinuxPlayer))
@@ -82,7 +78,6 @@ namespace Lilo.MonoBehaviours.Input
                     movement = new Lilo.Systems.Movement.MovementInput(keyboardDirection.normalized, magnitude);
                 }
 
-                keyboardJump = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
             }
 #endif
             GameConfig activeConfig = config != null ? config : GameManager.Instance?.Config;
@@ -98,17 +93,29 @@ namespace Lilo.MonoBehaviours.Input
             }
             float sprintThreshold = activeConfig != null ? activeConfig.sprintJoystickThreshold : 0.9f;
 
-            // Starter Assets normally treats a stick as digital unless analogMovement is enabled.
-            // Keep the analog magnitude and switch to the sprint speed only near full deflection.
-            playerInput.analogMovement = true;
+            // Any nonzero joystick deflection keeps the configured walk speed as the minimum.
+            // A near-full pull selects the faster sprint speed; the animator receives that same speed.
+            playerInput.analogMovement = false;
             bool keyboardSprint = false;
 #if ENABLE_INPUT_SYSTEM
             keyboardSprint = Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
 #endif
-            playerInput.SprintInput(keyboardSprint || movement.Magnitude >= sprintThreshold);
+            playerInput.SprintInput(movement.Magnitude > 0f
+                && (keyboardSprint || movement.Magnitude >= sprintThreshold));
             playerInput.MoveInput(movement.Direction * movement.Magnitude);
-            if (keyboardJump)
-                playerInput.JumpInput(true);
+            playerInput.JumpInput(false);
+        }
+
+        private void DisableJump()
+        {
+            if (_characterController != null)
+                _characterController.JumpHeight = 0f;
+#if ENABLE_INPUT_SYSTEM
+            GameObject player = GameObject.Find("PlayerCharacter");
+            var input = player != null ? player.GetComponentInChildren<PlayerInput>(true) : null;
+            input?.actions?.FindAction("Jump")?.Disable();
+#endif
+            playerInput?.JumpInput(false);
         }
 
 #if ENABLE_INPUT_SYSTEM
@@ -133,28 +140,6 @@ namespace Lilo.MonoBehaviours.Input
 
             _characterController.MoveSpeed = activeConfig.walkSpeed;
             _characterController.SprintSpeed = activeConfig.walkSpeed * activeConfig.sprintMultiplier;
-        }
-    }
-
-    public sealed class MobileJumpButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
-    {
-        private StarterAssetsInputs _target;
-
-        public void SetTarget(StarterAssetsInputs target)
-        {
-            _target = target;
-        }
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            if (_target != null)
-                _target.JumpInput(true);
-        }
-
-        public void OnPointerUp(PointerEventData eventData)
-        {
-            if (_target != null)
-                _target.JumpInput(false);
         }
     }
 }

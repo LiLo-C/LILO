@@ -9,7 +9,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -52,7 +51,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -96,7 +94,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --float-mode=Fast
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -124,7 +121,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -167,7 +163,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -211,7 +206,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --float-mode=Fast
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -254,7 +248,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -297,7 +290,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -341,7 +333,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --float-mode=Fast
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -384,7 +375,28 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
+--generate-static-linkage-methods
+--emit-version-symbol=True
+--key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
+--decode-folder=/Users/cindyram/Documents/Apple/LILO/Library/Burst
+--output=/Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/lib_burst_generated
+--pdb-search-paths=Temp/ManagedSymbols/
+
+--method=Unity.Jobs.IJobParallelForExtensions+ParallelForJobStruct`1[[UnityEngine.Splines.GetPosition, Unity.Splines, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Execute(UnityEngine.Splines.GetPosition&, Unity.Splines, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Jobs.LowLevel.Unsafe.JobRanges&, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--742b9ab1bc1447267d47d3f600d7ff7e
+--method=Unity.Jobs.IJobForExtensions+ForJobStruct`1[[UnityEngine.Rendering.Universal.ReflectionProbeMinMaxZJob, Unity.RenderPipelines.Universal.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Execute(UnityEngine.Rendering.Universal.ReflectionProbeMinMaxZJob&, Unity.RenderPipelines.Universal.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Jobs.LowLevel.Unsafe.JobRanges&, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--fbc079948c97a98cd097eb9cc996cc4a
+--method=Unity.Burst.BurstCompiler+BurstCompilerHelper, UnityEngine.BurstModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::IsBurstEnabled()--655783fc1759838dc6260f4374dad972
+--method=Unity.Jobs.IJobForExtensions+ForJobStruct`1[[UnityEngine.Rendering.Universal.TilingJob, Unity.RenderPipelines.Universal.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Execute(UnityEngine.Rendering.Universal.TilingJob&, Unity.RenderPipelines.Universal.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Jobs.LowLevel.Unsafe.JobRanges&, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--a6f5259e22ed809ef3937424c4bd686d
+--method=Unity.Jobs.IJobParallelForExtensions+ParallelForJobStruct`1[[UnityEngine.Rendering.UnifiedRayTracing.ComputeTerrainMeshJob, Unity.UnifiedRayTracing.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Execute(UnityEngine.Rendering.UnifiedRayTracing.ComputeTerrainMeshJob&, Unity.UnifiedRayTracing.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Jobs.LowLevel.Unsafe.JobRanges&, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--c2ea85586f916effc3761abaabdf200d
+--platform=iOS
+--minimum-os-version=26.0
+--backend=burst-llvm-21
+--target=ARMV8A_AARCH64
+--global-safety-checks-setting=Off
+--dump=Function
+--float-precision=Standard
+--target-framework=NetFramework
+--generate-link-xml=Temp/burst.link.xml
+--temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -428,7 +440,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --float-mode=Fast
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -447,7 +458,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -490,7 +500,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -533,7 +542,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -552,7 +560,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
@@ -595,32 +602,6 @@ Library: /Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/l
 --target-framework=NetFramework
 --generate-link-xml=Temp/burst.link.xml
 --temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
---generate-static-linkage-methods
---emit-version-symbol=True
---key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport
---decode-folder=/Users/cindyram/Documents/Apple/LILO/Library/Burst
---output=/Users/cindyram/Documents/Apple/LILO/Temp/BurstOutput/StaticLibraries/lib_burst_generated
---pdb-search-paths=Temp/ManagedSymbols/
-
---method=Unity.Jobs.IJobParallelForExtensions+ParallelForJobStruct`1[[UnityEngine.Splines.GetPosition, Unity.Splines, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Execute(UnityEngine.Splines.GetPosition&, Unity.Splines, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Jobs.LowLevel.Unsafe.JobRanges&, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--742b9ab1bc1447267d47d3f600d7ff7e
---method=Unity.Jobs.IJobForExtensions+ForJobStruct`1[[UnityEngine.Rendering.Universal.ReflectionProbeMinMaxZJob, Unity.RenderPipelines.Universal.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Execute(UnityEngine.Rendering.Universal.ReflectionProbeMinMaxZJob&, Unity.RenderPipelines.Universal.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Jobs.LowLevel.Unsafe.JobRanges&, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--fbc079948c97a98cd097eb9cc996cc4a
---method=Unity.Burst.BurstCompiler+BurstCompilerHelper, UnityEngine.BurstModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::IsBurstEnabled()--655783fc1759838dc6260f4374dad972
---method=Unity.Jobs.IJobForExtensions+ForJobStruct`1[[UnityEngine.Rendering.Universal.TilingJob, Unity.RenderPipelines.Universal.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Execute(UnityEngine.Rendering.Universal.TilingJob&, Unity.RenderPipelines.Universal.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Jobs.LowLevel.Unsafe.JobRanges&, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--a6f5259e22ed809ef3937424c4bd686d
---method=Unity.Burst.Intrinsics.X86, UnityEngine.BurstModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::DoSetCSRTrampoline(System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--4fe8e44ab4bafb9f15f717b9b88db693
---method=Unity.Burst.Intrinsics.X86, UnityEngine.BurstModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::DoGetCSRTrampoline()--07848e0cd378f6ef42c55533a841a050
---method=Unity.Jobs.IJobParallelForExtensions+ParallelForJobStruct`1[[UnityEngine.Rendering.UnifiedRayTracing.ComputeTerrainMeshJob, Unity.UnifiedRayTracing.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Execute(UnityEngine.Rendering.UnifiedRayTracing.ComputeTerrainMeshJob&, Unity.UnifiedRayTracing.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Jobs.LowLevel.Unsafe.JobRanges&, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--c2ea85586f916effc3761abaabdf200d
---platform=iOS
---minimum-os-version=26.0
---backend=burst-llvm-21
---target=ARMV8A_AARCH64
---global-safety-checks-setting=Off
---dump=Function
---float-precision=Standard
---target-framework=NetFramework
---generate-link-xml=Temp/burst.link.xml
---temp-folder=/Users/cindyram/Documents/Apple/LILO/Temp/Burst
---debug=Full
 --generate-static-linkage-methods
 --emit-version-symbol=True
 --key-folder=/Applications/Unity/Hub/Editor/6000.6.1f1/PlaybackEngines/iOSSupport

@@ -20,7 +20,15 @@ namespace Lilo.MonoBehaviours.Camera
 
         private void Start()
         {
+            if (player == null || cameraRig == null || trackedCamera == null || config == null)
+            {
+                Debug.LogError($"[CameraFollowController] Missing reference(s): player={player != null}, cameraRig={cameraRig != null}, trackedCamera={trackedCamera != null}, config={config != null}.", this);
+                enabled = false;
+                return;
+            }
+
             _currentPosition = new Vector2(player.position.x, player.position.z);
+            Debug.Log($"[CameraFollowController] Following '{player.name}' at {player.position}; rig starts at {cameraRig.position}, camera='{trackedCamera.name}', bounds={(levelBounds != null ? levelBounds.Bounds.ToString() : "unbounded")}, inset={config.cameraBoundsInset:0.##}.", this);
         }
 
         // INTERIM — replace with movement-and-camera/004's CameraRigController once it exists.

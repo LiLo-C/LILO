@@ -9,11 +9,11 @@ namespace Lilo.MonoBehaviours
     public sealed class GameplaySpeedSettings : MonoBehaviour
     {
         [Header("Player")]
-        [Min(0f)] public float playerWalkSpeed = 4f;
-        [Min(0f)] public float playerSprintSpeed = 6.4f;
+        [Min(0f)] public float playerWalkSpeed = 1f;
+        [Min(0f)] public float playerSprintSpeed = 3f;
 
         [Header("Monster")]
-        [Min(0f)] public float monsterPatrolSpeed = 4f;
-        [Min(0f)] public float monsterChaseSpeed = 2.8f;
+        [Min(0f)] public float monsterPatrolSpeed = 0.225f;
+        [Min(0f)] public float monsterChaseSpeed = 0.7f;
     }
 }

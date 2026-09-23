@@ -69,6 +69,8 @@ public static class SetupOfficeLevel1Mobile
             bridge.AddComponent<Lilo.MonoBehaviours.Input.MobileStarterAssetsBridge>();
         }
 
+        RemoveIfPresent(canvasTransform, "JumpButton");
+
         EditorSceneManager.MarkSceneDirty(office);
         EditorSceneManager.SaveScene(office);
         EditorSceneManager.CloseScene(source, true);
@@ -99,69 +101,6 @@ public static class SetupOfficeLevel1Mobile
             destinationScaler.matchWidthOrHeight = sourceScaler.matchWidthOrHeight;
             destinationScaler.referencePixelsPerUnit = sourceScaler.referencePixelsPerUnit;
         }
-    }
-
-    private static GameObject CreateCanvas()
-    {
-        var canvasObject = new GameObject(
-            "MobileControlsCanvas",
-            typeof(RectTransform),
-            typeof(Canvas),
-            typeof(CanvasScaler),
-            typeof(GraphicRaycaster));
-
-        var canvas = canvasObject.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.pixelPerfect = false;
-
-        var scaler = canvasObject.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(800f, 600f);
-        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-        scaler.matchWidthOrHeight = 0.5f;
-        return canvasObject;
-    }
-
-    private static void CreateJumpButton(Transform canvas)
-    {
-        var buttonObject = new GameObject("JumpButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-        buttonObject.transform.SetParent(canvas, false);
-
-        var rect = buttonObject.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(1f, 0.5f);
-        rect.anchorMax = new Vector2(1f, 0.5f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = new Vector2(-96f, -48f);
-        rect.sizeDelta = new Vector2(84f, 84f);
-
-        var image = buttonObject.GetComponent<Image>();
-        image.color = new Color(1f, 1f, 1f, 0.42f);
-        image.raycastTarget = true;
-
-        var button = buttonObject.GetComponent<Button>();
-        var colors = button.colors;
-        colors.normalColor = new Color(1f, 1f, 1f, 0.42f);
-        colors.highlightedColor = new Color(1f, 1f, 1f, 0.62f);
-        colors.pressedColor = new Color(1f, 1f, 1f, 0.82f);
-        colors.selectedColor = colors.highlightedColor;
-        button.colors = colors;
-
-        var labelObject = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-        labelObject.transform.SetParent(buttonObject.transform, false);
-        var labelRect = labelObject.GetComponent<RectTransform>();
-        labelRect.anchorMin = Vector2.zero;
-        labelRect.anchorMax = Vector2.one;
-        labelRect.offsetMin = Vector2.zero;
-        labelRect.offsetMax = Vector2.zero;
-
-        var label = labelObject.GetComponent<Text>();
-        label.text = "JUMP";
-        label.alignment = TextAnchor.MiddleCenter;
-        label.fontSize = 16;
-        label.fontStyle = FontStyle.Bold;
-        label.color = Color.white;
-        label.raycastTarget = false;
-        label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
     }
 
     private static GameObject FindInScene(Scene scene, string name)

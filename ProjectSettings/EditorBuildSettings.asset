@@ -14,18 +14,21 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/OfficeLevel2.unity
     guid: 7f34ab46baa0f4729954c57ca0d76efe
-  - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/DevTest_Movement.unity
-    guid: 22db3425d7d6840248db8d80ce9a96de
+    path: Assets/Scenes/OfficeLevel3.unity
+    guid: d5eebae608b3440fc92b27d00b9dbdb0
   - enabled: 1
     path: Assets/Scenes/GoodEnding.unity
     guid: 6195567712b1049f3836e253f37df83c
   - enabled: 1
     path: Assets/Scenes/BadEnding.unity
     guid: d7e57993840244ad483179860e853f17
+  - enabled: 1
+    path: Assets/Scenes/SampleScene.unity
+    guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/DevTest_Movement.unity
+    guid: 22db3425d7d6840248db8d80ce9a96de
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

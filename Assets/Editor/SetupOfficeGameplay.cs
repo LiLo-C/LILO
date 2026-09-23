@@ -30,17 +30,56 @@ public static class SetupOfficeGameplay
         var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
         EditorSettings.serializationMode = SerializationMode.ForceText;
         EnsureGameManager(config);
+        EnsureReadabilityFillLight(config);
         EnsurePlayerLighting(config);
+        EnsureCameraFollow();
         EnsureEnvironmentDimming();
         EnsureDebugOverlay();
         EnsureGameplayProps(config);
         EnsureNavMesh();
+        RemoveJumpButton();
 
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.ForceReserializeAssets(new[] { ScenePath });
         AssetDatabase.SaveAssets();
         Debug.Log("[OfficeGameplaySetup] OfficeLevel1 is wired for monster, exit, battery, light state, and catch loop.");
+    }
+
+    [MenuItem("LILO/Remove Office Jump Button")]
+    public static void RemoveJumpButtonFromOfficeLevel1()
+    {
+        var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+        RemoveJumpButton();
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+        Debug.Log("[OfficeGameplaySetup] Removed JumpButton from OfficeLevel1.");
+    }
+
+    [MenuItem("LILO/Repair Office Lighting")]
+    public static void RepairOfficeLighting()
+    {
+        var config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/Config/GameConfig.asset");
+        if (config == null)
+            throw new System.InvalidOperationException("Assets/Config/GameConfig.asset is missing.");
+
+        var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+        EnsureReadabilityFillLight(config);
+        EnsurePlayerLighting(config);
+        EnsureEnvironmentDimming();
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+        Debug.Log("[OfficeGameplaySetup] Restored OfficeLevel1 flashlight and readability fill lighting.");
+    }
+
+    [MenuItem("LILO/Repair Office Camera Follow")]
+    public static void RepairOfficeCameraFollow()
+    {
+        var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+        EnsureCameraFollow();
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+        Debug.Log("[OfficeGameplaySetup] Main Camera now follows PlayerCharacter.");
     }
 
     public static void Validate()
@@ -50,7 +89,7 @@ public static class SetupOfficeGameplay
         {
             "GameManager", "MonsterPlaceholder", "MonsterPatrolRoute", "MonsterSpawns",
             "MonsterSpawnObjectives", "ExitDoorPlaceholder", "BatteryPlaceholder", "NavMesh",
-            "MobileControlsCanvas", "MobileInputBridge", "JumpButton", "DebugOverlayText", "DebugToggleButton",
+            "MobileControlsCanvas", "MobileInputBridge", "DebugOverlayText", "DebugToggleButton",
             "EnvironmentLightDimmer", "PlayerFlashlight"
         };
         foreach (string name in required)
@@ -58,7 +97,16 @@ public static class SetupOfficeGameplay
             if (GameObject.Find(name) == null)
                 throw new System.InvalidOperationException($"OfficeLevel1 is missing '{name}'.");
         }
+        if (GameObject.Find("JumpButton") != null)
+            throw new System.InvalidOperationException("OfficeLevel1 should not contain a JumpButton.");
         Debug.Log("[OfficeGameplaySetup] Validation passed: gameplay slice objects are present.");
+    }
+
+    private static void RemoveJumpButton()
+    {
+        GameObject jumpButton = GameObject.Find("JumpButton");
+        if (jumpButton != null)
+            Object.DestroyImmediate(jumpButton);
     }
 
     private static void EnsureGameManager(GameConfig config)
@@ -204,6 +252,45 @@ public static class SetupOfficeGameplay
         var serialized = new SerializedObject(dimmer);
         serialized.FindProperty("disableEnvironmentLights").boolValue = true;
         serialized.FindProperty("disableBakedLightmaps").boolValue = true;
+        serialized.FindProperty("readabilityFillLight").objectReferenceValue =
+            GameObject.Find("ReadabilityFillLight")?.GetComponent<Light>();
+        serialized.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void EnsureReadabilityFillLight(GameConfig config)
+    {
+        var go = GameObject.Find("ReadabilityFillLight");
+        if (go == null)
+            go = new GameObject("ReadabilityFillLight");
+
+        var light = go.GetComponent<Light>();
+        if (light == null)
+            light = go.AddComponent<Light>();
+        light.type = LightType.Directional;
+        light.color = Color.white;
+        light.intensity = Mathf.Max(0f, config.readabilityFillIntensity);
+        light.shadows = LightShadows.None;
+        light.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+    }
+
+    private static void EnsureCameraFollow()
+    {
+        var player = GameObject.Find("PlayerCharacter");
+        if (player == null)
+            throw new System.InvalidOperationException("OfficeLevel1 is missing PlayerCharacter.");
+
+        var camera = UnityEngine.Camera.main;
+        if (camera == null)
+            camera = GameObject.Find("Main Camera")?.GetComponent<UnityEngine.Camera>();
+        if (camera == null)
+            throw new System.InvalidOperationException("OfficeLevel1 is missing its Main Camera.");
+
+        var follow = camera.GetComponent<global::CameraFollow>();
+        if (follow == null)
+            follow = camera.gameObject.AddComponent<global::CameraFollow>();
+
+        var serialized = new SerializedObject(follow);
+        serialized.FindProperty("target").objectReferenceValue = player.transform;
         serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
@@ -311,7 +398,8 @@ public static class SetupOfficeGameplay
         var serialized = new SerializedObject(rig);
         serialized.FindProperty("config").objectReferenceValue = config;
         serialized.FindProperty("flashlightLight").objectReferenceValue = light;
-        serialized.FindProperty("readabilityFillLight").objectReferenceValue = null;
+        serialized.FindProperty("readabilityFillLight").objectReferenceValue =
+            GameObject.Find("ReadabilityFillLight")?.GetComponent<Light>();
         serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 

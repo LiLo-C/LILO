@@ -11,14 +11,14 @@ namespace Lilo.Config
     public class GameConfig : ScriptableObject
     {
         [Header("17.1 Player")]
-        public float walkSpeed = 1.0f;
-        public float sprintMultiplier = 1.6f;
+        public float walkSpeed = 1f;
+        public float sprintMultiplier = 3f;
         [Tooltip("Feel value — TBD on device, not a fabricated final number.")]
         public float sprintJoystickThreshold = 0.9f;
         [Tooltip("Feel value — TBD on device, not a fabricated final number.")]
         public float interactionRadius = 60.0f;
         [Tooltip("Provisional current-scene world scale value; re-confirm on device before locking.")]
-        public float playerRadius = 0.5f;
+        public float playerRadius = 0.25f;
 
         [Header("Hiding (hiding/001)")]
         [Tooltip("Transition duration for entering/exiting hiding spots (seconds). Feel value.")]
@@ -38,7 +38,7 @@ namespace Lilo.Config
         [Tooltip("Carried over from prior on-device tuning — re-confirm.")]
         public float cameraFollowLerpFactor = 0.12f;
         [Tooltip("Carried over from prior on-device tuning — re-confirm.")]
-        public float cameraBoundsInset = 80f;
+        public float cameraBoundsInset = 0f;
 
         [Header("flashlight-and-battery/001+003+005+006 — feel content, carried over, re-confirm")]
         public float flashlightNormalRadius = 220f;
@@ -81,8 +81,8 @@ namespace Lilo.Config
         public MonsterTuningProfile monsterTuningFloor51 = new MonsterTuningProfile
         {
             monsterActive = true,
-            patrolSpeed = 1.0f,
-            chaseSpeed = 1.4f,
+            patrolSpeed = 0.225f,
+            chaseSpeed = 0.35f,
             investigateDuration = 4f,
             alertDuration = 2f,
             chaseHoldDuration = 3f,
@@ -91,8 +91,8 @@ namespace Lilo.Config
         public MonsterTuningProfile monsterTuningFloor50 = new MonsterTuningProfile
         {
             monsterActive = true,
-            patrolSpeed = 1.2f,
-            chaseSpeed = 1.5f,
+            patrolSpeed = 0.225f,
+            chaseSpeed = 0.375f,
             investigateDuration = 6f,
             alertDuration = 2f,
             chaseHoldDuration = 5f,
