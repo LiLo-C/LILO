@@ -52,7 +52,7 @@ namespace Lilo.MonoBehaviours.Battery
             foreach (var slot in _slots)
             {
                 if (slot == null) continue;
-                var rend = slot.GetComponent<MeshRenderer>();
+                Renderer rend = slot.GetComponent<MeshRenderer>();
                 if (rend == null) rend = slot.GetComponentInChildren<Renderer>();
                 slot.Configure(rend != null ? rend.sharedMaterial : null, glow);
                 slot.SetLoaded(false);
@@ -76,7 +76,7 @@ namespace Lilo.MonoBehaviours.Battery
             foreach (var slot in _slots)
             {
                 if (slot == null) continue;
-                var rend = slot.GetComponent<MeshRenderer>();
+                Renderer rend = slot.GetComponent<MeshRenderer>();
                 if (rend == null) rend = slot.GetComponentInChildren<Renderer>();
                 if (rend != null && rend.sharedMaterial != null)
                 {
