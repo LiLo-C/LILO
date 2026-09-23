@@ -65,6 +65,8 @@ namespace Lilo.Config
         public float batteryRespawnFloor50 = 60f;
         [Tooltip("Keyboards loaded with a battery per floor entry (e.g. 3 of 7, randomized). Keyboard floors use this instead of the loose-spawn caps above.")]
         public int keyboardBatteryCountPerFloor = 3;
+        [Tooltip("Lamp charge gained per keyboard take, as a fraction of full (0.15 = +15%). Clamped at full.")]
+        public float keyboardBatteryChargeFraction = 0.15f;
 
         [Header("17.3 Noise")]
         [Tooltip("Feel value — TBD on device; must be locked before Fase 2 per GDD Ch. 21.")]
@@ -188,6 +190,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(batteryRespawnFloor50), batteryRespawnFloor50.ToString(), "must be > 0"));
             if (keyboardBatteryCountPerFloor < 0)
                 failures.Add(new ConfigValidationFailure(nameof(keyboardBatteryCountPerFloor), keyboardBatteryCountPerFloor.ToString(), "must be >= 0"));
+            if (keyboardBatteryChargeFraction <= 0f || keyboardBatteryChargeFraction > 1f)
+                failures.Add(new ConfigValidationFailure(nameof(keyboardBatteryChargeFraction), keyboardBatteryChargeFraction.ToString(), "must be in (0, 1]"));
 
             // 17.3 Noise
             if (noiseBaseRadius <= 0f)

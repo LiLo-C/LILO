@@ -36,5 +36,18 @@ namespace Lilo.Systems.Battery
             }
             return picked;
         }
+
+        /// <summary>
+        /// Adds a take's worth of charge to the lamp, clamped at full.
+        /// Pure so the take-to-light math is unit-testable.
+        /// </summary>
+        public static float TopUpCharge(float currentCharge, float amount, float maxCharge)
+        {
+            if (maxCharge <= 0f) return 0f;
+            float result = currentCharge + amount;
+            if (result < 0f) return 0f;
+            if (result > maxCharge) return maxCharge;
+            return result;
+        }
     }
 }

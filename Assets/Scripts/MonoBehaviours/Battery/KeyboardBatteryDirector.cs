@@ -33,15 +33,6 @@ namespace Lilo.MonoBehaviours.Battery
             }
         }
 
-        public bool IsSpareFull
-        {
-            get
-            {
-                var state = GameManager.Instance?.State;
-                return state != null && state.SpareBatterySlotOccupied;
-            }
-        }
-
         private void Awake()
         {
             if (config == null)
@@ -120,7 +111,7 @@ namespace Lilo.MonoBehaviours.Battery
 
         private void Update()
         {
-            if (_player == null || IsSpareFull) return;
+            if (_player == null) return;
 
             var slot = NearestLoadedSlot(_player.position);
             if (slot != null)
@@ -150,15 +141,15 @@ namespace Lilo.MonoBehaviours.Battery
         public bool TryTake(KeyboardBatterySlot slot)
         {
             if (slot == null || !slot.IsLoaded) return false;
-            if (IsSpareFull)
-            {
-                Debug.Log("[BatteryKeyboards] Spare slot full — cannot take.");
-                return false;
-            }
 
+            // Keyboard takes charge the lamp directly: +fraction, clamped at full.
             var state = GameManager.Instance?.State;
-            if (state != null)
-                state.PickUpSpareBattery(config != null ? config.batteryDuration : 180f);
+            if (state != null && config != null)
+            {
+                float gain = config.keyboardBatteryChargeFraction * config.batteryDuration;
+                state.SetInstalledBatteryCharge(
+                    KeyboardBatteryRoster.TopUpCharge(state.InstalledBatteryCharge, gain, config.batteryDuration));
+            }
 
             slot.SetLoaded(false);
 

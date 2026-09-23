@@ -51,5 +51,24 @@ namespace Lilo.Tests.Battery
             Assert.Throws<ArgumentNullException>(() =>
                 KeyboardBatteryRoster.PickLoadedIndices(3, 7, null));
         }
+
+        [Test]
+        public void TopUpAddsFraction()
+        {
+            Assert.AreEqual(117f, KeyboardBatteryRoster.TopUpCharge(90f, 27f, 180f));
+        }
+
+        [Test]
+        public void TopUpClampsAtFull()
+        {
+            Assert.AreEqual(180f, KeyboardBatteryRoster.TopUpCharge(171f, 27f, 180f));
+            Assert.AreEqual(180f, KeyboardBatteryRoster.TopUpCharge(180f, 27f, 180f));
+        }
+
+        [Test]
+        public void TopUpGuardsDegenerateMax()
+        {
+            Assert.AreEqual(0f, KeyboardBatteryRoster.TopUpCharge(50f, 27f, 0f));
+        }
     }
 }
