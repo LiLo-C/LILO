@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Lilo.MonoBehaviours.Battery;
 using Lilo.MonoBehaviours.Hiding;
 using Lilo.Systems.Hiding;
 
@@ -12,6 +13,7 @@ namespace Lilo.MonoBehaviours.Hud
     public class ContextActionButton : MonoBehaviour
     {
         [SerializeField] private HidingController hidingController;
+        [SerializeField] private KeyboardBatteryDirector batteryDirector;
         [SerializeField] private Button actionButton;
         [SerializeField] private Text label;
         [SerializeField] private CanvasGroup canvasGroup;
@@ -60,13 +62,16 @@ namespace Lilo.MonoBehaviours.Hud
 
         private void ResolveController()
         {
-            if (hidingController != null)
-                return;
-            var player = GameObject.FindWithTag("Player");
-            if (player != null)
-                hidingController = player.GetComponent<HidingController>();
             if (hidingController == null)
-                hidingController = FindFirstObjectByType<HidingController>();
+            {
+                var player = GameObject.FindWithTag("Player");
+                if (player != null)
+                    hidingController = player.GetComponent<HidingController>();
+            }
+            if (hidingController == null)
+                hidingController = FindAnyObjectByType<HidingController>();
+            if (batteryDirector == null)
+                batteryDirector = FindAnyObjectByType<KeyboardBatteryDirector>();
         }
 
         private void OnHidingStateChanged(HidingState _)
@@ -88,7 +93,22 @@ namespace Lilo.MonoBehaviours.Hud
 
         private void Refresh()
         {
+            if (hidingController == null)
+            {
+                SetVisible(false);
+                return;
+            }
+
             string actionLabel = hidingController.CurrentActionLabel;
+
+            // A loaded battery in reach takes precedence over Hide, never over Exit.
+            if (hidingController.CurrentState != HidingState.Hidden && batteryDirector != null)
+            {
+                var slot = batteryDirector.NearestLoadedSlot(hidingController.transform.position);
+                if (slot != null)
+                    actionLabel = batteryDirector.IsSpareFull ? "Hands Full" : "Take";
+            }
+
             bool show = !string.IsNullOrEmpty(actionLabel);
 
             if (show)
@@ -105,9 +125,23 @@ namespace Lilo.MonoBehaviours.Hud
 
         public void OnButtonPressed()
         {
-            if (hidingController != null)
+            if (hidingController != null && hidingController.CanExit)
+                hidingController.TriggerContextAction();
+            else if (!HandleBatteryPress() && hidingController != null)
                 hidingController.TriggerContextAction();
             Refresh();
+        }
+
+        /// <summary>Takes a loaded battery in reach; consumes the press either way.</summary>
+        private bool HandleBatteryPress()
+        {
+            if (batteryDirector == null || hidingController == null) return false;
+
+            var slot = batteryDirector.NearestLoadedSlot(hidingController.transform.position);
+            if (slot == null) return false;
+
+            batteryDirector.TryTake(slot);
+            return true;
         }
 
         private void SetVisible(bool visible)
