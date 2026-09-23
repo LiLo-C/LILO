@@ -89,7 +89,7 @@ namespace Lilo.MonoBehaviours.Hud
 
         private void Refresh()
         {
-            string actionLabel = hidingController.CurrentActionLabel;
+            string actionLabel = hidingController != null ? hidingController.CurrentActionLabel : string.Empty;
             bool show = !string.IsNullOrEmpty(actionLabel);
 
             if (show)
