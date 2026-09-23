@@ -7,20 +7,23 @@ namespace Lilo.Editor
 {
     /// <summary>
     /// One-shot setup: turns every "keyboard" prop in the active scene into a
-    /// battery dispenser (KeyboardBatterySlot + BatteryVisual child) and ensures a
-    /// single KeyboardBatteryDirector exists. Run via menu LILO/Setup Keyboard
-    /// Batteries. Safe to re-run (idempotent).
+    /// battery dispenser (KeyboardBatterySlot with base/loaded materials) and
+    /// ensures a single KeyboardBatteryDirector exists. Loaded keyboards glow via
+    /// an emissive material. Run via menu LILO/Setup Keyboard Batteries.
+    /// Safe to re-run (idempotent).
     /// </summary>
     public static class SetupKeyboardBatteries
     {
-        private const string BatteryMatPath = "Assets/Materials/MonsterArenaBattery.mat";
+        private const string LoadedMatPath = "Assets/Resources/KeyboardBatteryLoaded.mat";
 
         [MenuItem("LILO/Setup Keyboard Batteries")]
         public static void Run()
         {
             var scene = EditorSceneManager.GetActiveScene();
-            int slots = 0;
+            Material loadedMat = EnsureLoadedMaterial();
+            if (loadedMat == null) return;
 
+            int slots = 0;
             foreach (var root in scene.GetRootGameObjects())
             {
                 foreach (var t in root.GetComponentsInChildren<Transform>(true))
@@ -28,13 +31,18 @@ namespace Lilo.Editor
                     if (!t.gameObject.name.Equals("keyboard", System.StringComparison.OrdinalIgnoreCase))
                         continue;
 
+                    // Legacy cube cell from the first pass — the keyboard itself glows now.
+                    var legacy = t.Find("BatteryVisual");
+                    if (legacy != null)
+                        Object.DestroyImmediate(legacy.gameObject);
+
                     var slot = t.gameObject.GetComponent<KeyboardBatterySlot>();
                     if (slot == null)
-                    {
                         slot = t.gameObject.AddComponent<KeyboardBatterySlot>();
-                        EditorUtility.SetDirty(t.gameObject);
-                    }
-                    EnsureBatteryVisual(t.gameObject);
+
+                    // Materials are self-resolved at runtime (base from the
+                    // renderer, loaded glow from Resources); nothing to assign.
+                    EditorUtility.SetDirty(t.gameObject);
                     slots++;
                 }
             }
@@ -45,7 +53,7 @@ namespace Lilo.Editor
                 return;
             }
 
-            var director = Object.FindFirstObjectByType<KeyboardBatteryDirector>();
+            var director = Object.FindAnyObjectByType<KeyboardBatteryDirector>();
             if (director == null)
             {
                 var go = new GameObject("KeyboardBatteryDirector");
@@ -55,26 +63,28 @@ namespace Lilo.Editor
             }
 
             EditorSceneManager.MarkSceneDirty(scene);
-            Debug.Log($"[BatteryKeyboards] Done. slots={slots} scene={scene.name}");
+            Debug.Log($"[BatteryKeyboards] Done. slots={slots} scene={scene.name} glow={LoadedMatPath}");
         }
 
-        private static void EnsureBatteryVisual(GameObject keyboard)
+        private static Material EnsureLoadedMaterial()
         {
-            var existing = keyboard.transform.Find("BatteryVisual");
-            if (existing != null) return;
+            var existing = AssetDatabase.LoadAssetAtPath<Material>(LoadedMatPath);
+            if (existing != null) return existing;
 
-            var visual = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            visual.name = "BatteryVisual";
-            visual.transform.SetParent(keyboard.transform, false);
-            visual.transform.localPosition = new Vector3(0f, 0.16f, 0f);
-            visual.transform.localScale = new Vector3(0.28f, 0.45f, 0.16f);
-            Object.DestroyImmediate(visual.GetComponent<Collider>());
+            var urpShader = Shader.Find("Universal Render Pipeline/Lit");
+            if (urpShader == null)
+            {
+                Debug.LogError("[BatteryKeyboards] URP/Lit shader not found.");
+                return null;
+            }
 
-            var mat = AssetDatabase.LoadAssetAtPath<Material>(BatteryMatPath);
-            if (mat != null)
-                visual.GetComponent<Renderer>().sharedMaterial = mat;
-
-            EditorUtility.SetDirty(keyboard);
+            var mat = new Material(urpShader) { name = "KeyboardBatteryLoaded" };
+            mat.color = new Color(0.12f, 0.12f, 0.14f);
+            mat.EnableKeyword("_EMISSION");
+            mat.SetColor("_EmissionColor", new Color(0.25f, 1f, 0.45f) * 1.6f);
+            AssetDatabase.CreateAsset(mat, LoadedMatPath);
+            Debug.Log($"[BatteryKeyboards] Created {LoadedMatPath}.");
+            return mat;
         }
     }
 }

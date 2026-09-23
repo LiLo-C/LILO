@@ -4,23 +4,31 @@ namespace Lilo.MonoBehaviours.Battery
 {
     /// <summary>
     /// Authoring component on a keyboard prop: holds at most one battery.
-    /// Loaded state is chosen per floor entry by <see cref="KeyboardBatteryDirector"/>;
-    /// the battery visual (a "BatteryVisual" child created by setup) toggles with it.
+    /// Loaded state is chosen per floor entry by <see cref="KeyboardBatteryDirector"/>
+    /// and signalled by swapping the keyboard mesh to an emissive "loaded"
+    /// material. Assigned by LILO/Setup Keyboard Batteries.
     /// </summary>
     public class KeyboardBatterySlot : MonoBehaviour
     {
         [Tooltip("Interaction distance threshold for taking this slot's battery.")]
         [SerializeField] private float interactionRadius = 2f;
+        [SerializeField] private Material baseMaterial;
+        [SerializeField] private Material loadedMaterial;
 
-        private GameObject _visual;
+        private Renderer _renderer;
 
         public bool IsLoaded { get; private set; }
         public float InteractionRadius => interactionRadius;
 
         private void Awake()
         {
-            var visual = transform.Find("BatteryVisual");
-            _visual = visual != null ? visual.gameObject : null;
+            _renderer = GetComponent<MeshRenderer>();
+            if (_renderer == null)
+                _renderer = GetComponentInChildren<Renderer>();
+            if (baseMaterial == null && _renderer != null)
+                baseMaterial = _renderer.sharedMaterial;
+            if (loadedMaterial == null)
+                loadedMaterial = Resources.Load<Material>("KeyboardBatteryLoaded");
             UpdateVisual();
         }
 
@@ -32,8 +40,11 @@ namespace Lilo.MonoBehaviours.Battery
 
         private void UpdateVisual()
         {
-            if (_visual != null)
-                _visual.SetActive(IsLoaded);
+            if (_renderer == null) return;
+
+            Material mat = IsLoaded && loadedMaterial != null ? loadedMaterial : baseMaterial;
+            if (mat != null)
+                _renderer.sharedMaterial = mat;
         }
     }
 }
