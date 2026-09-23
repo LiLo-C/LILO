@@ -12,17 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79b305c5320674b3c80bb0e94c24b3da, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: Assembly-CSharp::Lilo.Config.GameConfig
-  walkSpeed: 4
-  sprintMultiplier: 1.6
+  walkSpeed: 1
+  sprintMultiplier: 3
   sprintJoystickThreshold: 0.9
   interactionRadius: 60
-  playerRadius: 0.5
+  playerRadius: 0.25
+  hidingTransitionDuration: 0.5
   joystickDeadZone: 0.12
   joystickDiameter: 0.18
   joystickOpacity: 0.35
   joystickCenterOffset: {x: 32, y: 32}
   cameraFollowLerpFactor: 0.12
-  cameraBoundsInset: 80
+  cameraBoundsInset: 0
   flashlightNormalRadius: 12
   flashlightNormalIntensity: 1
   flashlightCompactDarknessIntensity: 0.2
@@ -48,16 +49,18 @@ MonoBehaviour:
   noiseHiding: 0
   monsterTuningFloor51:
     monsterActive: 1
-    patrolSpeed: 1
-    chaseSpeed: 0.7
+    patrolSpeed: 0.225
+    chaseSpeed: 0.175
     investigateDuration: 4
+    alertDuration: 2
     chaseHoldDuration: 3
     searchDuration: 6
   monsterTuningFloor50:
     monsterActive: 1
-    patrolSpeed: 1.2
-    chaseSpeed: 0.75
+    patrolSpeed: 0.225
+    chaseSpeed: 0.1875
     investigateDuration: 6
+    alertDuration: 2
     chaseHoldDuration: 5
     searchDuration: 8
   monsterActiveFloor52: 0

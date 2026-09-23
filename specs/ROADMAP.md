@@ -1,5 +1,27 @@
 # LILO — Spec Roadmap (Unity, one spec per small feature)
 
+## Current integration slice (2026-09-23)
+
+The spec tables below remain the long-term GDD contract. The playable Unity build currently
+uses `OfficeLevel1`, `OfficeLevel2`, and `OfficeLevel3` as temporary content copies while the
+authored `Floor52`, `Floor51`, and `Floor50` scenes are pending. Their runtime mapping is
+OfficeLevel1 → Floor52, OfficeLevel2 → Floor51, OfficeLevel3 → Floor50. MainMenu starts the
+first office level; exits advance through all three, then load GoodEnding. Death restarts the
+current office level or loads BadEnding when lives reach zero.
+
+| Workstream | Current scope | Owner/status |
+|---|---|---|
+| 2D visual assets | UI, story, and other 2D assets | Salwa — in progress |
+| Battery spawn system | Spawn registry, active caps, respawn and placement | Radit — in progress |
+| Three-floor integration | Copy OfficeLevel1 content into OfficeLevel2/3, flow, simple gameplay UI | Implemented; Unity scene validation passed |
+| Monster feedback | Patrol silent, Alert 3 short pulses, Chase 3-second pulse; slower patrol speed | Implemented; iPhone feel check pending |
+| Remaining authored content | Distinct floor layouts, keys/doors, narrative, audio, release QA | Pending; see sections 2–4 |
+
+`tasks.md` checkboxes are not a reliable implementation status yet: most are unchecked even
+where runtime code exists. Reconcile each feature's checklist against the scene and code before
+marking it complete. Content copies are temporary and do not complete the individual floor
+layout or placement specs.
+
 Source of truth for every spec below: [[LILO-GDD-v2-Production-Lock]] (v2.1) and
 [[constitution]] (v3.0.0). This roadmap is itself the shared contract every spec folder is
 written against — fixed names below MUST be reused verbatim, never reinvented per-spec.

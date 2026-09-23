@@ -87,7 +87,7 @@ namespace Lilo.MonoBehaviours.Flashlight
             }
 
             if (readabilityFillLight != null)
-                readabilityFillLight.intensity = config.readabilityFillIntensity;
+                readabilityFillLight.intensity = Mathf.Max(0f, config.readabilityFillIntensity);
         }
     }
 }

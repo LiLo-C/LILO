@@ -11,12 +11,18 @@ namespace Lilo.MonoBehaviours.Flashlight
     {
         [SerializeField] private bool disableEnvironmentLights = true;
         [SerializeField] private bool disableBakedLightmaps = true;
+        [SerializeField] private Light readabilityFillLight;
 
         private void Start()
         {
+            if (readabilityFillLight == null)
+                readabilityFillLight = GameObject.Find("ReadabilityFillLight")?.GetComponent<Light>();
+
             GameObject player = GameObject.Find("PlayerCharacter");
             foreach (Light light in FindObjectsByType<Light>(FindObjectsSortMode.None))
             {
+                if (light == readabilityFillLight)
+                    continue;
                 if (player != null && light.transform.IsChildOf(player.transform))
                     continue;
 

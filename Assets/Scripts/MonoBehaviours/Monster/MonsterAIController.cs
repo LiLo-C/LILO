@@ -374,6 +374,7 @@ namespace Lilo.MonoBehaviours.Monster
             if (_brain.State != _lastLoggedState)
             {
                 Debug.Log($"[Monster] {_lastLoggedState} -> {_brain.State} (target={_brain.Target})");
+                MonsterHaptics.OnStateChanged(_brain.State);
                 if (_brain.State == MonsterState.Chase && sfx != null)
                 {
                     sfx.PlayBehindYou();
@@ -475,6 +476,8 @@ namespace Lilo.MonoBehaviours.Monster
             if (_animator == null || _brain.State == MonsterState.Catch)
                 return;
             bool moving = _agent.velocity.magnitude > 0.15f;
+            // The movement tuning halves Monster speed; slow its walk cycle by the same ratio.
+            _animator.speed = moving ? 0.5f : 1f;
             if (!moving || _animator.IsInTransition(0))
                 return;
             // The pack's walk state auto-returns to idle, so re-fire while moving.
@@ -498,7 +501,11 @@ namespace Lilo.MonoBehaviours.Monster
         {
             _catchRunning = true;
             PlayerCaught?.Invoke();
-            if (_animator != null) _animator.SetTrigger("attack");
+            if (_animator != null)
+            {
+                _animator.speed = 1f;
+                _animator.SetTrigger("attack");
+            }
             if (_playerMovement != null) _playerMovement.enabled = false; // input stops (US4).
             if (_starterAssetsInput != null)
             {
@@ -527,6 +534,11 @@ namespace Lilo.MonoBehaviours.Monster
             SceneManager.LoadScene(respawnScene);
         }
 
+        private void OnDisable()
+        {
+            MonsterHaptics.Stop();
+        }
+
         private static string ResolveRespawnScene(GameState state)
         {
             // Keep the respawn tied to the persistent floor state. This prevents a
@@ -535,8 +547,9 @@ namespace Lilo.MonoBehaviours.Monster
             {
                 string floorScene = state.CurrentFloor switch
                 {
-                    FloorId.Floor50 => "OfficeLevel2",
-                    FloorId.Floor51 => "OfficeLevel1",
+                    FloorId.Floor50 => "OfficeLevel3",
+                    FloorId.Floor51 => "OfficeLevel2",
+                    FloorId.Floor52 => "OfficeLevel1",
                     _ => string.Empty,
                 };
 
