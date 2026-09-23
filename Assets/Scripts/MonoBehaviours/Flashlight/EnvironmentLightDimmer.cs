@@ -1,27 +1,44 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Lilo.MonoBehaviours.Flashlight
 {
-    /// <summary>Playtest-only environment dimmer; leaves the player flashlight untouched.</summary>
+    /// <summary>
+    /// Removes global/environment lighting so the player flashlight defines visibility.
+    /// Lights parented to the player are deliberately preserved.
+    /// </summary>
     public sealed class EnvironmentLightDimmer : MonoBehaviour
     {
-        [SerializeField, Range(0f, 1f)] private float intensityMultiplier = 0.2f;
-        [SerializeField, Range(0f, 1f)] private float ambientIntensityMultiplier = 0.15f;
+        [SerializeField] private bool disableEnvironmentLights = true;
         [SerializeField] private bool disableBakedLightmaps = true;
 
-        private void Awake()
+        private void Start()
         {
             GameObject player = GameObject.Find("PlayerCharacter");
             foreach (Light light in FindObjectsByType<Light>(FindObjectsSortMode.None))
             {
                 if (player != null && light.transform.IsChildOf(player.transform))
                     continue;
-                light.intensity *= intensityMultiplier;
+
+                if (disableEnvironmentLights)
+                    light.enabled = false;
             }
 
-            RenderSettings.ambientIntensity *= ambientIntensityMultiplier;
+            // Do not multiply an inherited scene value: it still leaves an even wash of
+            // light across every room. Set the global contribution explicitly to black.
+            RenderSettings.ambientMode = AmbientMode.Flat;
+            RenderSettings.ambientLight = Color.black;
+            RenderSettings.ambientSkyColor = Color.black;
+            RenderSettings.ambientEquatorColor = Color.black;
+            RenderSettings.ambientGroundColor = Color.black;
+            RenderSettings.ambientIntensity = 0f;
+            RenderSettings.reflectionIntensity = 0f;
+            RenderSettings.skybox = null;
+
             if (disableBakedLightmaps)
                 LightmapSettings.lightmaps = new LightmapData[0];
+
+            DynamicGI.UpdateEnvironment();
         }
     }
 }

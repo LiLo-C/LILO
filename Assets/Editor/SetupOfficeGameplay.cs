@@ -202,8 +202,7 @@ public static class SetupOfficeGameplay
         var dimmer = go.GetComponent<EnvironmentLightDimmer>();
         if (dimmer == null) dimmer = go.AddComponent<EnvironmentLightDimmer>();
         var serialized = new SerializedObject(dimmer);
-        serialized.FindProperty("intensityMultiplier").floatValue = 0.2f;
-        serialized.FindProperty("ambientIntensityMultiplier").floatValue = 0.15f;
+        serialized.FindProperty("disableEnvironmentLights").boolValue = true;
         serialized.FindProperty("disableBakedLightmaps").boolValue = true;
         serialized.ApplyModifiedPropertiesWithoutUndo();
     }
