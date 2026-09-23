@@ -6,8 +6,8 @@ using Lilo.Systems.Hiding;
 namespace Lilo.MonoBehaviours.Hud
 {
     /// <summary>
-    /// Context action button for iOS — shows "Hide"/"Exit" when near a hiding spot,
-    /// hidden otherwise. Proximity-driven, no keyboard.
+    /// Context action button for iOS hiding — shows Hide/Exit near a hiding
+    /// spot, hidden otherwise. Battery Take is proximity auto-pickup (no button).
     /// </summary>
     public class ContextActionButton : MonoBehaviour
     {
@@ -60,13 +60,14 @@ namespace Lilo.MonoBehaviours.Hud
 
         private void ResolveController()
         {
-            if (hidingController != null)
-                return;
-            var player = GameObject.FindWithTag("Player");
-            if (player != null)
-                hidingController = player.GetComponent<HidingController>();
             if (hidingController == null)
-                hidingController = FindFirstObjectByType<HidingController>();
+            {
+                var player = GameObject.FindWithTag("Player");
+                if (player != null)
+                    hidingController = player.GetComponent<HidingController>();
+            }
+            if (hidingController == null)
+                hidingController = FindAnyObjectByType<HidingController>();
         }
 
         private void OnHidingStateChanged(HidingState _)
@@ -88,7 +89,7 @@ namespace Lilo.MonoBehaviours.Hud
 
         private void Refresh()
         {
-            string actionLabel = hidingController.CurrentActionLabel;
+            string actionLabel = hidingController != null ? hidingController.CurrentActionLabel : string.Empty;
             bool show = !string.IsNullOrEmpty(actionLabel);
 
             if (show)

@@ -40,6 +40,8 @@ public static class SetupGameLoopScenes
         EnsureGameplayScene("OfficeLevel1", FloorId.Floor52, "OfficeLevel2", FloorId.Floor51);
         EnsureGameplayScene("OfficeLevel2", FloorId.Floor51, "OfficeLevel3", FloorId.Floor50);
         EnsureGameplayScene("OfficeLevel3", FloorId.Floor50, "GoodEnding", FloorId.Floor50);
+        SetOfficeOrthographicCameras();
+        ApplyOfficeTraversalAndSpeedTuning();
         UpdateBuildSettings();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -63,6 +65,10 @@ public static class SetupGameLoopScenes
             camera.orthographicSize = 10f;
             camera.transform.position = player.transform.position + new Vector3(0f, 13f, -14f);
             camera.transform.rotation = Quaternion.Euler(43f, 0f, 0f);
+            var follow = camera.GetComponent<global::CameraFollow>() ?? camera.gameObject.AddComponent<global::CameraFollow>();
+            var followSerialized = new SerializedObject(follow);
+            followSerialized.FindProperty("target").objectReferenceValue = player.transform;
+            followSerialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(camera);
             EditorUtility.SetDirty(camera.transform);
             PrefabUtility.RecordPrefabInstancePropertyModifications(camera);
@@ -176,6 +182,7 @@ public static class SetupGameLoopScenes
         string path = SceneRoot + sceneName + ".unity";
         Scene scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
         EnsureEventSystem();
+        Lilo.Editor.SetupKeyboardBatteries.Run();
 
         var controllerGo = GameObject.Find("GameLoopSceneController") ?? new GameObject("GameLoopSceneController");
         var controller = controllerGo.GetComponent<GameLoopSceneController>() ?? controllerGo.AddComponent<GameLoopSceneController>();

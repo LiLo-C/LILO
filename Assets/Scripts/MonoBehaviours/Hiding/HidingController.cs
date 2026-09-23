@@ -138,7 +138,7 @@ namespace Lilo.MonoBehaviours.Hiding
 
         private void RefreshSpots()
         {
-            _allSpots = FindObjectsByType<HidingSpot>(FindObjectsSortMode.None);
+            _allSpots = FindObjectsByType<HidingSpot>();
         }
 
         private void UpdateNearestSpot()
