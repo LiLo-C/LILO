@@ -80,11 +80,11 @@ namespace Lilo.Editor.iOS
             PlistElementDict root = plist.root;
             root.SetString("CFBundleDisplayName", "LILO");
             root.SetString("CFBundleName", "LILO");
-            root.SetString("CFBundleIdentifier", "com.LILO.VeryDisco.GameJam");
+            root.SetString("CFBundleIdentifier", Lilo.Editor.LiloApplicationIdentitySettings.IOSBundleIdentifier);
             root.SetString("LSApplicationCategoryType", "public.app-category.games");
             plist.WriteToFile(plistPath);
 
-            UnityEngine.Debug.Log("Applied LILO iOS identity: Games, LILO, com.LILO.VeryDisco.GameJam, version 1.0, build 1.");
+            UnityEngine.Debug.Log($"Applied LILO iOS identity: Games, LILO, {Lilo.Editor.LiloApplicationIdentitySettings.IOSBundleIdentifier}, version 1.0, build 1.");
         }
 
         private static string GetLocalTeamId()
