@@ -519,7 +519,9 @@ namespace Lilo.MonoBehaviours.Monster
             Debug.Log($"[Monster] Player caught — lives remaining: {state?.Lives ?? -1}.");
             yield return new WaitForSeconds(1.6f);
 
-            string respawnScene = ResolveRespawnScene(state);
+            string respawnScene = state != null && state.Lives <= 0
+                ? "BadEnding"
+                : ResolveRespawnScene(state);
             Debug.Log($"[Monster] Respawning on {respawnScene} for floor {state?.CurrentFloor.ToString() ?? "active scene"}.");
             Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();
             SceneManager.LoadScene(respawnScene);

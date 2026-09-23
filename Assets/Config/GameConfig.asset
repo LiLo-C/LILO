@@ -23,7 +23,7 @@ MonoBehaviour:
   joystickCenterOffset: {x: 32, y: 32}
   cameraFollowLerpFactor: 0.12
   cameraBoundsInset: 80
-  flashlightNormalRadius: 220
+  flashlightNormalRadius: 12
   flashlightNormalIntensity: 1
   flashlightCompactDarknessIntensity: 0.2
   lightRadiusEaseRate: 4
