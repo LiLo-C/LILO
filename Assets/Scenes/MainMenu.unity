@@ -604,6 +604,7 @@ MonoBehaviour:
   howToPlayPanel: {fileID: 1775374375}
   settingsPanel: {fileID: 834746814}
   soundSettings: {fileID: 834746815}
+  mainMenuBgm: {fileID: 8300000, guid: 69f5b58c29de4490db1af06f7b8029a1, type: 3}
 --- !u!114 &401489489
 MonoBehaviour:
   m_ObjectHideFlags: 0
