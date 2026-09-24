@@ -18,6 +18,7 @@ namespace Lilo.MonoBehaviours.Flashlight
 
         private float _displayedRadius;
         private float _standaloneCharge;
+        private bool _initialized;
 
         public FlashlightLightState CurrentState { get; private set; }
         public float ChargeFraction { get; private set; }
@@ -27,6 +28,20 @@ namespace Lilo.MonoBehaviours.Flashlight
 
         private void Start()
         {
+            InitializeLighting();
+        }
+
+        /// <summary>Sets up the held lamp before the intro suspends gameplay behaviours.</summary>
+        public void InitializeForCinematic()
+        {
+            InitializeLighting();
+        }
+
+        private void InitializeLighting()
+        {
+            if (_initialized)
+                return;
+
             ResolveConfig();
             if (config == null)
                 return;
@@ -35,7 +50,9 @@ namespace Lilo.MonoBehaviours.Flashlight
             _standaloneCharge = config.batteryDuration;
             _displayedRadius = config.flashlightNormalRadius;
             CurrentIntensity = LightStateSystem.GetTargetIntensity(1f, config);
+            ChargeFraction = 1f;
             ApplyLights();
+            _initialized = true;
         }
 
         private void Update()

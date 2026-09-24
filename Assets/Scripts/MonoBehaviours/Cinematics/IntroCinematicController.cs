@@ -106,6 +106,8 @@ namespace Lilo.MonoBehaviours.Cinematics
             if (_camera == null)
                 _camera = FindFirstObjectByType<UnityEngine.Camera>();
             _lightingRig = playerObject != null ? playerObject.GetComponent<LightingRig>() : null;
+            if (_lightingRig != null)
+                _lightingRig.InitializeForCinematic();
             _lamp = _lightingRig != null ? _lightingRig.PlayerFlashlight : null;
 
             if (_player == null || _camera == null || _lamp == null)
