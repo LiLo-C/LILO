@@ -7,5 +7,6 @@ namespace Lilo.Systems.Monster
         Sprint,
         Pulse,
         Hiding,
+        Heartbeat,
     }
 }

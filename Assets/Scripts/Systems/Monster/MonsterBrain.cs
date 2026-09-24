@@ -46,6 +46,7 @@ namespace Lilo.Systems.Monster
         public bool ArrivedAtTarget;
         public System.Random Rng;
         public bool IsPlayerHidden;
+        public bool HidingRevealed;
     }
 
     public struct MonsterBrainOutput
@@ -101,6 +102,16 @@ namespace Lilo.Systems.Monster
 
             float patrolSpeed = i.PatrolSpeed > 0f ? i.PatrolSpeed : i.Profile.patrolSpeed * i.WalkSpeed;
             float chaseSpeed = i.ChaseSpeed > 0f ? i.ChaseSpeed : i.Profile.chaseSpeed * i.WalkSpeed;
+
+            // A sustained heartbeat exposes the hiding place after the time limit.
+            // The monster knows the desk position even when sight is blocked.
+            if (i.HidingRevealed && s.State != MonsterState.Catch)
+            {
+                s.State = MonsterState.Chase;
+                s.Target = i.PlayerPosition;
+                s.LastKnown = i.PlayerPosition;
+                s.Timer = 0f;
+            }
 
             switch (s.State)
             {
@@ -173,9 +184,17 @@ namespace Lilo.Systems.Monster
                     break;
 
                 case MonsterState.Chase:
-                    if (!i.PlayerVisible)
+                    if (!i.PlayerVisible && !i.HidingRevealed)
                     {
-                        ReturnToPatrol(ref s, i);
+                        if (detected)
+                        {
+                            s.State = MonsterState.Investigate;
+                            s.Target = point;
+                            s.LastKnown = point;
+                            s.Timer = 0f;
+                        }
+                        else
+                            ReturnToPatrol(ref s, i);
                     }
                     else
                     {
@@ -223,8 +242,10 @@ namespace Lilo.Systems.Monster
             }
 
             MonsterState stateBeforeCatch = s.State;
-            if (!i.IsPlayerHidden && s.State == MonsterState.Chase && i.PlayerVisible
-                && DistXZ(i.MonsterPosition, i.PlayerPosition) < i.CatchRadius)
+            float catchRadius = i.HidingRevealed ? Mathf.Max(i.CatchRadius, 2f) : i.CatchRadius;
+            if ((!i.IsPlayerHidden || i.HidingRevealed) && s.State == MonsterState.Chase
+                && (i.PlayerVisible || i.HidingRevealed)
+                && DistXZ(i.MonsterPosition, i.PlayerPosition) < catchRadius)
             {
                 s.State = MonsterState.Catch;
                 s.CatchFired = true;

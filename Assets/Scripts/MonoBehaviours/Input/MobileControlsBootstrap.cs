@@ -84,6 +84,7 @@ namespace Lilo.MonoBehaviours.Input
                 joystick.Initialize(config, joystick.transform as RectTransform, joystick.transform.Find("JoystickHandle") as RectTransform);
 
             EnsureBatterySwapButton(canvasObject.transform);
+            Lilo.MonoBehaviours.Hiding.OfficeHidingBootstrap.Ensure(player, canvasObject.transform);
             EnsureEventSystem();
             EnsureBridge(canvasObject.transform, joystick);
         }

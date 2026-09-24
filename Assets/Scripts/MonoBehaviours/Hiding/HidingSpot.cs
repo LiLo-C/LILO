@@ -1,5 +1,6 @@
 using UnityEngine;
 using Lilo.Systems.Hiding;
+using Lilo.MonoBehaviours.Battery;
 
 namespace Lilo.MonoBehaviours.Hiding
 {
@@ -18,12 +19,24 @@ namespace Lilo.MonoBehaviours.Hiding
         [Tooltip("Interaction distance threshold for entering this spot.")]
         [SerializeField] private float interactionRadius = 2.0f;
 
+        [Tooltip("A highlighted battery keyboard blocks hiding at this desk.")]
+        [SerializeField] private KeyboardBatterySlot keyboardSlot;
+
         public bool IsOccupied { get; private set; }
+        public bool IsAvailable => !IsOccupied && (keyboardSlot == null || !keyboardSlot.IsLoaded);
 
         public float InteractionRadius => interactionRadius;
 
         public Vector3 HidePosition => hideAnchor != null ? hideAnchor.position : transform.position;
         public Vector3 ExitPosition => exitAnchor != null ? exitAnchor.position : transform.position + transform.forward;
+
+        public void Configure(KeyboardBatterySlot slot, Transform hide, Transform exit, float radius)
+        {
+            keyboardSlot = slot;
+            hideAnchor = hide;
+            exitAnchor = exit;
+            interactionRadius = radius;
+        }
 
         public HidingSpotData ToData()
         {

@@ -4,12 +4,11 @@ using UnityEngine.Rendering;
 namespace Lilo.MonoBehaviours.Flashlight
 {
     /// <summary>
-    /// Removes global/environment lighting so the player flashlight defines visibility.
-    /// Lights parented to the player are deliberately preserved.
+    /// Removes every scene light except the battery-controlled player lamp, so no static
+    /// environment source can remain lit beside it.
     /// </summary>
     public sealed class EnvironmentLightDimmer : MonoBehaviour
     {
-        [SerializeField] private bool disableEnvironmentLights = true;
         [SerializeField] private bool disableBakedLightmaps = true;
         [SerializeField] private Light readabilityFillLight;
 
@@ -19,15 +18,25 @@ namespace Lilo.MonoBehaviours.Flashlight
                 readabilityFillLight = GameObject.Find("ReadabilityFillLight")?.GetComponent<Light>();
 
             GameObject player = GameObject.Find("PlayerCharacter");
+            Light playerLamp = player != null
+                ? player.GetComponent<LightingRig>()?.PlayerFlashlight
+                : null;
+            if (playerLamp == null && player != null)
+                playerLamp = player.transform.Find("PlayerFlashlight")?.GetComponent<Light>();
+
             foreach (Light light in FindObjectsByType<Light>(FindObjectsSortMode.None))
             {
-                if (light == readabilityFillLight)
+                bool isPlayerLamp = light == playerLamp
+                    || (player != null
+                        && light.gameObject.name == "PlayerFlashlight"
+                        && light.transform.IsChildOf(player.transform));
+                if (isPlayerLamp)
+                {
+                    light.enabled = true;
                     continue;
-                if (player != null && light.transform.IsChildOf(player.transform))
-                    continue;
+                }
 
-                if (disableEnvironmentLights)
-                    light.enabled = false;
+                light.enabled = false;
             }
 
             // Do not multiply an inherited scene value: it still leaves an even wash of

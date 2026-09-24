@@ -2,6 +2,7 @@ using Lilo.Config;
 using Lilo.MonoBehaviours.Audio;
 using Lilo.MonoBehaviours.Input;
 using Lilo.Systems.Movement;
+using Lilo.MonoBehaviours.Hiding;
 using UnityEngine;
 
 namespace Lilo.MonoBehaviours.Player
@@ -30,7 +31,7 @@ namespace Lilo.MonoBehaviours.Player
             }
 
             var gameState = GameManager.Instance?.State;
-            if (gameState != null && gameState.IsHiding)
+            if ((gameState != null && gameState.IsHiding) || HidingController.IsPlayerMovementLocked)
             {
                 IsSprinting = false;
                 return;

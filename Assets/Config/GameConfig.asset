@@ -29,7 +29,7 @@ MonoBehaviour:
   flashlightCompactDarknessIntensity: 0.2
   lightRadiusEaseRate: 4
   shadowsEnabled: 1
-  readabilityFillIntensity: 0.15
+  readabilityFillIntensity: 0
   batteryDuration: 180
   batterySlots: 1
   lightStateFlickerStart: 0.3
