@@ -20,6 +20,8 @@ namespace Lilo.UI
 
         private bool _transitioning;
         private AudioSource _musicSource;
+        private int _lastLayoutWidth;
+        private int _lastLayoutHeight;
 
         private void Awake()
         {
@@ -30,6 +32,102 @@ namespace Lilo.UI
             if (settingsButton != null) settingsButton.onClick.AddListener(OpenSettings);
             if (howToPlayPanel != null) howToPlayPanel.SetActive(false);
             if (settingsPanel != null) settingsPanel.SetActive(false);
+        }
+
+        private void Start()
+        {
+            ApplyResponsiveMenuLayout();
+        }
+
+        private void Update()
+        {
+            if (Application.isMobilePlatform
+                && (Screen.width != _lastLayoutWidth || Screen.height != _lastLayoutHeight))
+                ApplyResponsiveMenuLayout();
+        }
+
+        private void ApplyResponsiveMenuLayout()
+        {
+            _lastLayoutWidth = Screen.width;
+            _lastLayoutHeight = Screen.height;
+
+            Canvas canvas = GetComponent<Canvas>();
+            CanvasScaler scaler = GetComponent<CanvasScaler>();
+            if (scaler != null)
+            {
+                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                scaler.referenceResolution = new Vector2(1920f, 1080f);
+                scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+                scaler.matchWidthOrHeight = 0.5f;
+            }
+            Canvas.ForceUpdateCanvases();
+
+            Transform menu = transform.Find("MenuPanel");
+            if (menu == null)
+                return;
+
+            bool phone = Application.isMobilePlatform && Mathf.Min(Screen.width, Screen.height) < 1400;
+            float scale = Mathf.Max(0.01f, canvas != null ? canvas.scaleFactor : 1f);
+            float buttonWidth = (phone ? 280f : 250f) / scale;
+            float buttonHeight = (phone ? 60f : 56f) / scale;
+            float step = (phone ? 78f : 76f) / scale;
+            float groupCenterY = (phone ? 0f : -55f) / scale;
+
+            SetMenuButton(menu, "StartButton", buttonWidth, buttonHeight, groupCenterY + step);
+            SetMenuButton(menu, "HowToPlayButton", buttonWidth, buttonHeight, groupCenterY);
+            SetMenuButton(menu, "SettingsButton", buttonWidth, buttonHeight, groupCenterY - step);
+
+            SetDecorativeText(menu, "Title", !phone, 44f / scale, 155f / scale, 56f / scale, scale);
+            SetDecorativeText(menu, "Subtitle", !phone, 18f / scale, 105f / scale, 28f / scale, scale);
+            SetDecorativeText(menu, "Credits", !phone, 12f / scale, 0f, 30f / scale, scale);
+
+            int buttonFontSize = Mathf.RoundToInt((phone ? 18f : 17f) / scale);
+            foreach (string buttonName in new[] { "StartButton", "HowToPlayButton", "SettingsButton" })
+            {
+                Transform button = menu.Find(buttonName);
+                Text label = button != null ? button.GetComponentInChildren<Text>(true) : null;
+                if (label != null)
+                    label.fontSize = buttonFontSize;
+            }
+        }
+
+        private static void SetMenuButton(Transform menu, string name, float width, float height, float y)
+        {
+            RectTransform rect = menu.Find(name) as RectTransform;
+            if (rect == null)
+                return;
+
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(width, height);
+            rect.anchoredPosition = new Vector2(0f, y);
+        }
+
+        private static void SetDecorativeText(Transform menu, string name, bool visible,
+            float fontSize, float y, float height, float canvasScale)
+        {
+            Transform item = menu.Find(name);
+            if (item == null)
+                return;
+
+            item.gameObject.SetActive(visible);
+            if (!visible)
+                return;
+
+            RectTransform rect = item as RectTransform;
+            if (rect != null)
+            {
+                rect.anchorMin = rect.anchorMax = name == "Credits"
+                    ? new Vector2(0.5f, 0.08f)
+                    : new Vector2(0.5f, 0.5f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.sizeDelta = new Vector2(600f / canvasScale, height);
+                rect.anchoredPosition = new Vector2(0f, y);
+            }
+
+            Text text = item.GetComponent<Text>();
+            if (text != null)
+                text.fontSize = Mathf.RoundToInt(fontSize);
         }
 
         private void OnEnable()

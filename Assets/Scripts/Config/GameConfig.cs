@@ -27,7 +27,7 @@ namespace Lilo.Config
         [Header("15.3 Joystick presentation (movement-and-camera/001)")]
         [Tooltip("Feel value — no prior tuning, pending on-device pass. 0 is a placeholder, not a locked default.")]
         public float joystickDeadZone = 0f;
-        [Tooltip("Fraction of screen height (0–1). 0.35 = 35% of screen height. Scales across all devices.")]
+        [Tooltip("Fraction of rendered screen height (0–1); the joystick converts pixels to canvas units and uses a smaller fraction on tablets.")]
         public float joystickDiameter = 0.18f;
         [Tooltip("Feel value — no prior tuning, pending on-device pass.")]
         public float joystickOpacity = 0f;

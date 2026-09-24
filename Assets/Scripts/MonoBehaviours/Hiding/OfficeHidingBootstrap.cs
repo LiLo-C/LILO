@@ -88,8 +88,12 @@ namespace Lilo.MonoBehaviours.Hiding
             rect.anchorMin = new Vector2(1f, 0.23f);
             rect.anchorMax = rect.anchorMin;
             rect.pivot = new Vector2(1f, 0.5f);
-            rect.anchoredPosition = new Vector2(-36f, 0f);
-            rect.sizeDelta = new Vector2(150f, 64f);
+            Canvas rootCanvas = canvas.GetComponentInParent<Canvas>();
+            float canvasScale = Mathf.Max(0.01f, rootCanvas != null ? rootCanvas.scaleFactor : 1f);
+            bool tablet = Mathf.Min(Screen.width, Screen.height) >= 1400;
+            float controlScale = tablet ? 0.82f : 1f;
+            rect.anchoredPosition = new Vector2(-22f / canvasScale, 0f);
+            rect.sizeDelta = new Vector2(132f, 52f) * controlScale / canvasScale;
 
             Image image = root.GetComponent<Image>();
             image.color = new Color(0.12f, 0.25f, 0.31f, 0.96f);
@@ -106,7 +110,7 @@ namespace Lilo.MonoBehaviours.Hiding
             Text label = labelObject.GetComponent<Text>();
             label.text = "HIDE";
             label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            label.fontSize = 17;
+            label.fontSize = Mathf.RoundToInt(14f * controlScale / canvasScale);
             label.alignment = TextAnchor.MiddleCenter;
             label.color = Color.white;
             label.raycastTarget = false;

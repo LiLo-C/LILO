@@ -74,6 +74,16 @@ namespace Lilo.MonoBehaviours.Input
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 100;
 
+            CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
+            if (scaler != null)
+            {
+                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                scaler.referenceResolution = new Vector2(1920f, 1080f);
+                scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+                scaler.matchWidthOrHeight = 0.5f;
+            }
+            Canvas.ForceUpdateCanvases();
+
             if (canvasObject.GetComponent<GraphicRaycaster>() == null)
                 canvasObject.AddComponent<GraphicRaycaster>();
 
@@ -122,7 +132,13 @@ namespace Lilo.MonoBehaviours.Input
             Text label = labelObject.GetComponent<Text>();
             label.text = "CHANGE BATTERY";
             label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            label.fontSize = 16;
+            Canvas rootCanvas = canvas.GetComponentInParent<Canvas>();
+            float canvasScale = Mathf.Max(0.01f, rootCanvas != null ? rootCanvas.scaleFactor : 1f);
+            bool tablet = Mathf.Min(Screen.width, Screen.height) >= 1400;
+            float tabletScale = tablet ? 0.82f : 1f;
+            rect.sizeDelta = new Vector2(132f, 52f) * tabletScale / canvasScale;
+            rect.anchoredPosition = new Vector2(-22f / canvasScale, 0f);
+            label.fontSize = Mathf.RoundToInt(14f * tabletScale / canvasScale);
             label.alignment = TextAnchor.MiddleCenter;
             label.color = Color.white;
             label.raycastTarget = false;
@@ -141,7 +157,7 @@ namespace Lilo.MonoBehaviours.Input
 
             CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(800f, 600f);
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
             return canvasObject;

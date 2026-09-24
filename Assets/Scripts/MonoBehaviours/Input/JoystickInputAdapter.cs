@@ -163,8 +163,9 @@ namespace Lilo.MonoBehaviours.Input
         }
 
         /// <summary>
-        /// Sizes the joystick from GameConfig and enforces Apple HIG minimums.
-        /// joystickDiameter is a screen-height fraction (0–1), so it scales on every device.
+        /// Sizes the joystick from GameConfig and enforces a minimum touch target.
+        /// The config fraction is measured in rendered screen pixels, then converted
+        /// to canvas-local units to avoid CanvasScaler multiplying the size twice.
         /// </summary>
         public void ApplyPresentation()
         {
@@ -173,14 +174,16 @@ namespace Lilo.MonoBehaviours.Input
                 return;
             config = cfg;
 
-            // joystickDiameter is a fraction of screen height (0.35 = 35%).
-            float fraction = cfg.joystickDiameter > 0f ? cfg.joystickDiameter : 0.35f;
-            float screenHeight = Screen.height;
-            float diameter = screenHeight * fraction;
+            float fraction = cfg.joystickDiameter > 0f ? cfg.joystickDiameter : 0.14f;
+            bool tablet = Mathf.Min(Screen.width, Screen.height) >= 1400;
+            if (tablet)
+                fraction *= 0.8f;
+            float canvasScale = Mathf.Max(0.01f, _parentCanvas != null ? _parentCanvas.scaleFactor : 1f);
+            float diameterPixels = Screen.height * fraction;
 
             // Apple HIG: minimum 44pt touch target. At ~2x scale, 44pt ≈ 88px.
-            float minDiameter = MinTouchTargetPt * 2f;
-            diameter = Mathf.Max(diameter, minDiameter);
+            float minDiameterPixels = MinTouchTargetPt * 2f;
+            float diameter = Mathf.Max(diameterPixels, minDiameterPixels) / canvasScale;
 
             radius = diameter * 0.5f;
 
@@ -188,7 +191,8 @@ namespace Lilo.MonoBehaviours.Input
             {
                 background.sizeDelta = new Vector2(diameter, diameter);
                 // Keep joystick fully visible — offset from bottom-left edge by half diameter + margin
-                background.anchoredPosition = new Vector2(radius + ScreenMargin, radius + ScreenMargin)
+                float margin = ScreenMargin / canvasScale;
+                background.anchoredPosition = new Vector2(radius + margin, radius + margin)
                     + cfg.joystickCenterOffset;
             }
             if (handle != null)
