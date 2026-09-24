@@ -27,6 +27,8 @@ namespace Lilo.MonoBehaviours.Audio
         private AudioSource _stingSource;
         private readonly List<int> _bag = new List<int>();
         private float _timer;
+        private Transform _player;
+        private bool _started;
 
         private static AmbienceDirector _instance;
 
@@ -52,22 +54,39 @@ namespace Lilo.MonoBehaviours.Audio
             _stingSource.loop = false;
             _stingSource.volume = stingVolume;
 
-            if (roomTone != null)
-            {
-                _bedSource.clip = roomTone;
-                _bedSource.Play();
-            }
-            else
-            {
-                Debug.LogWarning("[Ambience] No room tone assigned — bed silent.");
-            }
-
             RefillBag();
             _timer = Random.Range(minGapSeconds, maxGapSeconds);
         }
 
         private void Update()
         {
+            // Ambience belongs to the run, not the menu: start only after the
+            // player has spawned. Re-resolves after floor restarts, since the
+            // director outlives scenes but the player does not.
+            if (_player == null)
+            {
+                var playerGo = GameObject.FindWithTag("Player");
+                if (playerGo == null)
+                    playerGo = GameObject.Find("PlayerCharacter");
+                if (playerGo == null || !playerGo.activeInHierarchy)
+                    return;
+                _player = playerGo.transform;
+            }
+
+            if (!_started)
+            {
+                _started = true;
+                if (roomTone != null)
+                {
+                    _bedSource.clip = roomTone;
+                    _bedSource.Play();
+                }
+                else
+                {
+                    Debug.LogWarning("[Ambience] No room tone assigned — bed silent.");
+                }
+                return;
+            }
             if (_bag.Count == 0) return;
 
             _timer -= Time.deltaTime;
