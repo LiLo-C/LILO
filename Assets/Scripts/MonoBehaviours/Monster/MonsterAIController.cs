@@ -59,10 +59,11 @@ namespace Lilo.MonoBehaviours.Monster
         /// Emitters call this on the scene's single MonsterAIController; until those
         /// specs land nothing emits and movement noise is the only channel.
         /// </summary>
-        public void EmitPulse(Vector3 position, float radius, float ttl = 0.25f)
+        public void EmitPulse(Vector3 position, float radius, float ttl = 0.25f,
+            Lilo.Systems.Monster.NoiseSource source = Lilo.Systems.Monster.NoiseSource.Pulse)
         {
             if (radius > 0f)
-                _pulses.Add(new PendingPulse(position, radius, Time.time + ttl));
+                _pulses.Add(new PendingPulse(position, radius, Time.time + ttl, source));
         }
 
         public MonsterState CurrentState => _brain.State;
@@ -81,11 +82,14 @@ namespace Lilo.MonoBehaviours.Monster
             public Vector3 Position;
             public float Radius;
             public float Expiry;
-            public PendingPulse(Vector3 position, float radius, float expiry)
+            public Lilo.Systems.Monster.NoiseSource Source;
+            public PendingPulse(Vector3 position, float radius, float expiry,
+                Lilo.Systems.Monster.NoiseSource source)
             {
                 Position = position;
                 Radius = radius;
                 Expiry = expiry;
+                Source = source;
             }
         }
 
@@ -359,15 +363,15 @@ namespace Lilo.MonoBehaviours.Monster
                         : Lilo.Systems.Monster.NoiseSource.Walk;
 
             _pulses.RemoveAll(p => Time.time > p.Expiry);
-            if (!hiding)
+            float largestPulse = 0f;
+            foreach (var pulse in _pulses)
             {
-                float largestPulse = 0f;
-                foreach (var pulse in _pulses)
-                    largestPulse = Mathf.Max(largestPulse, pulse.Radius);
+                if (pulse.Radius <= largestPulse) continue;
+                largestPulse = pulse.Radius;
                 if (largestPulse > CurrentNoiseRadius)
                 {
                     CurrentNoiseRadius = largestPulse;
-                    CurrentNoiseSource = Lilo.Systems.Monster.NoiseSource.Pulse;
+                    CurrentNoiseSource = pulse.Source;
                 }
             }
             List<NoisePulse> pulses = null;
@@ -376,6 +380,15 @@ namespace Lilo.MonoBehaviours.Monster
                 _pulsesBuffer.Clear();
                 foreach (var p in _pulses) _pulsesBuffer.Add(new NoisePulse { Position = p.Position, Radius = p.Radius });
                 pulses = _pulsesBuffer;
+            }
+            if (ScratchMarkTrail.TryGetLatestNear(transform.position, out Vector3 scratchMark))
+            {
+                if (pulses == null)
+                {
+                    _pulsesBuffer.Clear();
+                    pulses = _pulsesBuffer;
+                }
+                pulses.Add(new NoisePulse { Position = scratchMark, Radius = 8f });
             }
 
             bool arrived = !(_agent.pathPending)
@@ -396,13 +409,14 @@ namespace Lilo.MonoBehaviours.Monster
                 PatrolSpeed = speedSettings != null ? speedSettings.monsterPatrolSpeed : 0f,
                 ChaseSpeed = speedSettings != null ? speedSettings.monsterChaseSpeed : 0f,
                 ChaseTriggerDistance = config.chaseTriggerDistance,
-                PlayerVisible = !hiding && CanSeePlayer(playerPos), // hiding defeats sight (spec 001); brain logic untouched
+                PlayerVisible = !hiding && CanSeePlayer(playerPos),
                 SearchRadius = config.searchRadius,
                 CatchRadius = config.catchRadius,
                 Waypoints = _waypoints,
                 ArrivedAtTarget = arrived || consumedForce,
                 Rng = _rng,
                 IsPlayerHidden = hiding,
+                HidingRevealed = hiding && HidingController.IsPlayerExposed,
             };
             MonsterBrainOutput output = MonsterBrain.Step(ref _brain, input);
 
@@ -432,8 +446,12 @@ namespace Lilo.MonoBehaviours.Monster
             if (!_agent.isStopped)
             {
                 _agent.speed = output.Speed;
-                if ((_agent.destination - output.MoveTarget).sqrMagnitude > 0.01f)
-                    _agent.SetDestination(output.MoveTarget);
+                Vector3 destination = output.MoveTarget;
+                if (input.HidingRevealed
+                    && NavMesh.SamplePosition(destination, out NavMeshHit reachableDesk, 2.5f, NavMesh.AllAreas))
+                    destination = reachableDesk.position;
+                if ((_agent.destination - destination).sqrMagnitude > 0.01f)
+                    _agent.SetDestination(destination);
             }
 
             // Stuck safeguard (spec 002 edge cases): never stall forever.

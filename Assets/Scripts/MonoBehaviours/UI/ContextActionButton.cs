@@ -22,6 +22,8 @@ namespace Lilo.MonoBehaviours.Hud
         {
             if (canvasGroup == null)
                 canvasGroup = GetComponent<CanvasGroup>();
+            if (label == null)
+                label = GetComponentInChildren<Text>(true);
             SetVisible(false);
         }
 

@@ -2,6 +2,7 @@ using Lilo.MonoBehaviours.Input;
 using Lilo.Config;
 using Lilo.MonoBehaviours;
 using StarterAssets;
+using Lilo.MonoBehaviours.Hiding;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -57,7 +58,7 @@ namespace Lilo.MonoBehaviours.Input
                 return;
 
             var gameState = GameManager.Instance?.State;
-            if (gameState != null && gameState.IsHiding)
+            if ((gameState != null && gameState.IsHiding) || HidingController.IsPlayerMovementLocked)
             {
                 playerInput.MoveInput(Vector2.zero);
                 playerInput.SprintInput(false);

@@ -7,5 +7,6 @@ namespace Lilo.Systems.Debug
         Sprint,
         Pulse,
         Hiding,
+        Heartbeat,
     }
 }

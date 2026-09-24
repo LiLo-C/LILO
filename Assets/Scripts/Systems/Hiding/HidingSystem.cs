@@ -104,6 +104,8 @@ namespace Lilo.Systems.Hiding
         public void ForceExit()
         {
             bool wasNotVisible = CurrentState != HidingState.Visible;
+            if (CurrentSpot.IsValid)
+                CurrentPlayerPosition = CurrentSpot.ExitAnchor;
             CurrentSpot = CurrentSpot.WithOccupied(false);
             TransitionTimer = 0f;
             CurrentState = HidingState.Visible;
