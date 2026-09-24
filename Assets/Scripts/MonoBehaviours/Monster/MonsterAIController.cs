@@ -442,10 +442,11 @@ namespace Lilo.MonoBehaviours.Monster
                 return;
             }
 
-            _agent.isStopped = output.Speed < 0.01f;
+            float movementSpeed = output.Speed * config.monsterSpeedMultiplier;
+            _agent.isStopped = movementSpeed < 0.01f;
             if (!_agent.isStopped)
             {
-                _agent.speed = output.Speed;
+                _agent.speed = movementSpeed;
                 Vector3 destination = output.MoveTarget;
                 if (input.HidingRevealed
                     && NavMesh.SamplePosition(destination, out NavMeshHit reachableDesk, 2.5f, NavMesh.AllAreas))
@@ -529,8 +530,8 @@ namespace Lilo.MonoBehaviours.Monster
             if (!HasPlayableAnimator() || _brain.State == MonsterState.Catch)
                 return;
             bool moving = _agent.velocity.magnitude > 0.15f;
-            // The movement tuning halves Monster speed; slow its walk cycle by the same ratio.
-            _animator.speed = moving ? 0.5f : 1f;
+            // Match the walk cycle to the multiplier applied to NavMesh movement.
+            _animator.speed = moving ? 0.5f * config.monsterSpeedMultiplier : 1f;
             if (!moving || _animator.IsInTransition(0))
                 return;
             // The pack's walk state auto-returns to idle, so re-fire while moving.

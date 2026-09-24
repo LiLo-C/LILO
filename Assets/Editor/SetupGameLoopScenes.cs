@@ -102,7 +102,7 @@ public static class SetupGameLoopScenes
             EditorUtility.SetDirty(speeds);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
-            Debug.Log($"[OfficeTuning] {sceneName}: player=1/3, monster=0.5/1.5 (50% of walk/sprint), collider radius={controller.radius}.");
+            Debug.Log($"[OfficeTuning] {sceneName}: player=1/3, monster base=0.5/1.5, runtime multiplier from GameConfig, collider radius={controller.radius}.");
         }
 
         var config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/Config/GameConfig.asset");
@@ -160,7 +160,7 @@ public static class SetupGameLoopScenes
                     if (child.name == "JumpButton")
                         throw new System.InvalidOperationException($"{scene.name} still contains JumpButton.");
 
-            Debug.Log($"[GameLoopSetup] Validated {scene.name}: {floors[index]} → {destinations[index]}, HUD present, player={speeds.playerWalkSpeed:0.##}/{speeds.playerSprintSpeed:0.##}, monster={speeds.monsterPatrolSpeed:0.##}/{speeds.monsterChaseSpeed:0.##} (50%), radius={capsule.radius:0.##}, jump disabled.");
+            Debug.Log($"[GameLoopSetup] Validated {scene.name}: {floors[index]} → {destinations[index]}, HUD present, player={speeds.playerWalkSpeed:0.##}/{speeds.playerSprintSpeed:0.##}, monster base={speeds.monsterPatrolSpeed:0.##}/{speeds.monsterChaseSpeed:0.##}, runtime multiplier from GameConfig, radius={capsule.radius:0.##}, jump disabled.");
         }
     }
 
