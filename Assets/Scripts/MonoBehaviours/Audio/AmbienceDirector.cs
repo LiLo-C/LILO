@@ -20,8 +20,8 @@ namespace Lilo.MonoBehaviours.Audio
         [SerializeField] private AudioClip[] stings = new AudioClip[0];
         [SerializeField, Range(0f, 1f)] private float stingVolume = 0.9f;
         [Tooltip("Seconds between stings.")]
-        [SerializeField] private float minGapSeconds = 18f;
-        [SerializeField] private float maxGapSeconds = 38f;
+        [SerializeField] private float minGapSeconds = 8f;
+        [SerializeField] private float maxGapSeconds = 18f;
 
         private AudioSource _bedSource;
         private AudioSource _stingSource;
