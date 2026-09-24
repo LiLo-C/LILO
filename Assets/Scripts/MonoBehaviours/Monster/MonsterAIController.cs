@@ -173,6 +173,8 @@ namespace Lilo.MonoBehaviours.Monster
             _animator = GetComponentInChildren<Animator>(true);
             if (_animator == null)
                 Debug.LogWarning("[Monster] No Animator under monster; using the visible placeholder without animation.");
+            else if (_animator.runtimeAnimatorController == null)
+                Debug.LogWarning($"[Monster] Animator '{_animator.name}' has no Animator Controller; monster movement will continue without animation.", _animator);
 
             if (!EnsureNavMesh())
                 return;
@@ -526,7 +528,7 @@ namespace Lilo.MonoBehaviours.Monster
 
         private void DriveAnimator()
         {
-            if (_animator == null || _brain.State == MonsterState.Catch)
+            if (!HasPlayableAnimator() || _brain.State == MonsterState.Catch)
                 return;
             bool moving = _agent.velocity.magnitude > 0.15f;
             // The movement tuning halves Monster speed; slow its walk cycle by the same ratio.
@@ -541,20 +543,29 @@ namespace Lilo.MonoBehaviours.Monster
         /// <summary>Reserved: no gameplay source damages the monster yet.</summary>
         public void TriggerDamaged()
         {
-            if (_animator != null) _animator.SetTrigger("damaged");
+            if (HasPlayableAnimator()) _animator.SetTrigger("damaged");
         }
 
         /// <summary>Reserved: the monster never dies (spec 007 kills the player, not it).</summary>
         public void TriggerDeath()
         {
-            if (_animator != null) _animator.SetTrigger("death");
+            if (HasPlayableAnimator()) _animator.SetTrigger("death");
+        }
+
+        private bool HasPlayableAnimator()
+        {
+            return _animator != null
+                && _animator.isActiveAndEnabled
+                && _animator.gameObject.activeInHierarchy
+                && _animator.runtimeAnimatorController != null
+                && _animator.isInitialized;
         }
 
         private IEnumerator CatchSequence()
         {
             _catchRunning = true;
             PlayerCaught?.Invoke();
-            if (_animator != null)
+            if (HasPlayableAnimator())
             {
                 _animator.speed = 1f;
                 _animator.SetTrigger("attack");
