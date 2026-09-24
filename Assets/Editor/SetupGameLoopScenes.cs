@@ -97,12 +97,12 @@ public static class SetupGameLoopScenes
             PrefabUtility.RecordPrefabInstancePropertyModifications(controller);
             speeds.playerWalkSpeed = 1f;
             speeds.playerSprintSpeed = 3f;
-            speeds.monsterPatrolSpeed = 0.225f;
-            speeds.monsterChaseSpeed = 0.7f;
+            speeds.monsterPatrolSpeed = speeds.playerWalkSpeed * 0.5f;
+            speeds.monsterChaseSpeed = speeds.playerSprintSpeed * 0.5f;
             EditorUtility.SetDirty(speeds);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
-            Debug.Log($"[OfficeTuning] {sceneName}: player=1/3, monster=0.225/0.7, collider radius={controller.radius}.");
+            Debug.Log($"[OfficeTuning] {sceneName}: player=1/3, monster=0.5/1.5 (50% of walk/sprint), collider radius={controller.radius}.");
         }
 
         var config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/Config/GameConfig.asset");
@@ -111,10 +111,10 @@ public static class SetupGameLoopScenes
             config.walkSpeed = 1f;
             config.sprintMultiplier = 3f;
             config.playerRadius = 0.25f;
-            config.monsterTuningFloor51.patrolSpeed = 0.225f;
-            config.monsterTuningFloor51.chaseSpeed = 0.175f;
-            config.monsterTuningFloor50.patrolSpeed = 0.225f;
-            config.monsterTuningFloor50.chaseSpeed = 0.1875f;
+            config.monsterTuningFloor51.patrolSpeed = 0.5f;
+            config.monsterTuningFloor51.chaseSpeed = 1.5f;
+            config.monsterTuningFloor50.patrolSpeed = 0.5f;
+            config.monsterTuningFloor50.chaseSpeed = 1.5f;
             EditorUtility.SetDirty(config);
             AssetDatabase.SaveAssets();
         }
@@ -149,8 +149,8 @@ public static class SetupGameLoopScenes
                 || actualDoorScene != destinations[index]
                 || speeds.playerWalkSpeed != 1f
                 || speeds.playerSprintSpeed != 3f
-                || speeds.monsterPatrolSpeed != 0.225f
-                || speeds.monsterChaseSpeed != 0.7f
+                || speeds.monsterPatrolSpeed != speeds.playerWalkSpeed * 0.5f
+                || speeds.monsterChaseSpeed != speeds.playerSprintSpeed * 0.5f
                 || capsule.radius > 0.18f
                 || character.JumpHeight > 0f)
                 throw new System.InvalidOperationException($"{scene.name}: floor={actualFloor}, next={actualNextScene}, player={speeds.playerWalkSpeed}/{speeds.playerSprintSpeed}, monster={speeds.monsterPatrolSpeed}/{speeds.monsterChaseSpeed}, radius={capsule.radius}, jump={character.JumpHeight}.");
@@ -160,7 +160,7 @@ public static class SetupGameLoopScenes
                     if (child.name == "JumpButton")
                         throw new System.InvalidOperationException($"{scene.name} still contains JumpButton.");
 
-            Debug.Log($"[GameLoopSetup] Validated {scene.name}: {floors[index]} → {destinations[index]}, HUD present, player=1/3, monster=0.225/0.7, radius={capsule.radius:0.##}, jump disabled.");
+            Debug.Log($"[GameLoopSetup] Validated {scene.name}: {floors[index]} → {destinations[index]}, HUD present, player={speeds.playerWalkSpeed:0.##}/{speeds.playerSprintSpeed:0.##}, monster={speeds.monsterPatrolSpeed:0.##}/{speeds.monsterChaseSpeed:0.##} (50%), radius={capsule.radius:0.##}, jump disabled.");
         }
     }
 
@@ -204,7 +204,11 @@ public static class SetupGameLoopScenes
 
         var speeds = Object.FindFirstObjectByType<GameplaySpeedSettings>();
         if (speeds != null)
-            speeds.monsterPatrolSpeed = Mathf.Min(speeds.monsterPatrolSpeed, 0.9f);
+        {
+            speeds.monsterPatrolSpeed = speeds.playerWalkSpeed * 0.5f;
+            speeds.monsterChaseSpeed = speeds.playerSprintSpeed * 0.5f;
+            EditorUtility.SetDirty(speeds);
+        }
 
         var character = GameObject.Find("PlayerCharacter")?.GetComponent<StarterAssets.ThirdPersonController>();
         if (character != null)
@@ -292,6 +296,8 @@ public static class SetupGameLoopScenes
         menuSerialized.FindProperty("howToPlayPanel").objectReferenceValue = howPanel.gameObject;
         menuSerialized.FindProperty("settingsPanel").objectReferenceValue = settingsPanel.gameObject;
         menuSerialized.FindProperty("soundSettings").objectReferenceValue = sound;
+        menuSerialized.FindProperty("mainMenuBgm").objectReferenceValue =
+            AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sfx/main-menu.mp3");
         menuSerialized.ApplyModifiedPropertiesWithoutUndo();
         var soundSerialized = new SerializedObject(sound);
         soundSerialized.FindProperty("master").objectReferenceValue = sliders[0];

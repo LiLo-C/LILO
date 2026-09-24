@@ -64,6 +64,7 @@ namespace Lilo.Editor.iOS
 
             project.WriteToFile(projectPath);
             WriteApplicationIdentity(report.summary.outputPath);
+            WriteUnityRuntimeMinimumOSVersion(report.summary.outputPath);
         }
 
         private static void WriteApplicationIdentity(string buildPath)
@@ -84,7 +85,27 @@ namespace Lilo.Editor.iOS
             root.SetString("LSApplicationCategoryType", "public.app-category.games");
             plist.WriteToFile(plistPath);
 
-            UnityEngine.Debug.Log($"Applied LILO iOS identity: Games, LILO, {Lilo.Editor.LiloApplicationIdentitySettings.IOSBundleIdentifier}, version 1.0, build 1.");
+            UnityEngine.Debug.Log($"Applied LILO iOS identity: Games, LILO, {Lilo.Editor.LiloApplicationIdentitySettings.IOSBundleIdentifier}.");
+        }
+
+        private static void WriteUnityRuntimeMinimumOSVersion(string buildPath)
+        {
+            // Unity's bundled plist can still say iOS 15 while Xcode links the
+            // framework binary for the app's iOS 26 deployment target. App Store
+            // Connect rejects that binary/plist mismatch with ITMS-90208.
+            string plistPath = Path.Combine(buildPath, "Frameworks", "UnityRuntime.framework", "Info.plist");
+            if (!File.Exists(plistPath))
+            {
+                UnityEngine.Debug.LogWarning($"Could not find UnityRuntime Info.plist at {plistPath}.");
+                return;
+            }
+
+            string minimumVersion = PlayerSettings.iOS.targetOSVersionString;
+            var plist = new PlistDocument();
+            plist.ReadFromFile(plistPath);
+            plist.root.SetString("MinimumOSVersion", minimumVersion);
+            plist.WriteToFile(plistPath);
+            UnityEngine.Debug.Log($"Set UnityRuntime.framework MinimumOSVersion to {minimumVersion}.");
         }
 
         private static string GetLocalTeamId()

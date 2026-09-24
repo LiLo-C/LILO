@@ -13,7 +13,9 @@ namespace Lilo.MonoBehaviours
         [Min(0f)] public float playerSprintSpeed = 3f;
 
         [Header("Monster")]
-        [Min(0f)] public float monsterPatrolSpeed = 0.225f;
-        [Min(0f)] public float monsterChaseSpeed = 0.7f;
+        [Tooltip("Monster patrol speed as a fraction of Eddie's walk speed.")]
+        [Min(0f)] public float monsterPatrolSpeed = 0.5f;
+        [Tooltip("Monster chase speed as a fraction of Eddie's sprint speed.")]
+        [Min(0f)] public float monsterChaseSpeed = 1.5f;
     }
 }

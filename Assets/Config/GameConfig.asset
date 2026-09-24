@@ -51,16 +51,16 @@ MonoBehaviour:
   noiseHiding: 0
   monsterTuningFloor51:
     monsterActive: 1
-    patrolSpeed: 0.225
-    chaseSpeed: 0.175
+    patrolSpeed: 0.5
+    chaseSpeed: 1.5
     investigateDuration: 4
     alertDuration: 2
     chaseHoldDuration: 3
     searchDuration: 6
   monsterTuningFloor50:
     monsterActive: 1
-    patrolSpeed: 0.225
-    chaseSpeed: 0.1875
+    patrolSpeed: 0.5
+    chaseSpeed: 1.5
     investigateDuration: 6
     alertDuration: 2
     chaseHoldDuration: 5

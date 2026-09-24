@@ -1,3 +1,4 @@
+using System.Collections;
 using Lilo.MonoBehaviours;
 using Lilo.Systems.GameLoop;
 using UnityEngine;
@@ -14,17 +15,73 @@ namespace Lilo.UI
         [SerializeField] private GameObject howToPlayPanel;
         [SerializeField] private GameObject settingsPanel;
         [SerializeField] private SoundSettingsPanel soundSettings;
+        [SerializeField] private AudioClip mainMenuBgm;
+        [SerializeField, Min(0f)] private float mainMenuFadeInSeconds = 5f;
 
         private bool _transitioning;
+        private AudioSource _musicSource;
 
         private void Awake()
         {
             SoundSettingsStore.Apply();
+            StartMainMenuMusic();
             if (startButton != null) startButton.onClick.AddListener(StartRun);
             if (howToPlayButton != null) howToPlayButton.onClick.AddListener(OpenHowToPlay);
             if (settingsButton != null) settingsButton.onClick.AddListener(OpenSettings);
             if (howToPlayPanel != null) howToPlayPanel.SetActive(false);
             if (settingsPanel != null) settingsPanel.SetActive(false);
+        }
+
+        private void OnEnable()
+        {
+            if (_musicSource == null || _musicSource.isPlaying) return;
+
+            _musicSource.volume = 0f;
+            _musicSource.Play();
+            StartCoroutine(FadeInMainMenuMusic());
+        }
+
+        private void OnDisable()
+        {
+            if (_musicSource != null && _musicSource.isPlaying)
+                _musicSource.Stop();
+        }
+
+        private void StartMainMenuMusic()
+        {
+            if (mainMenuBgm == null) return;
+
+            if (FindFirstObjectByType<AudioListener>() == null)
+                gameObject.AddComponent<AudioListener>();
+
+            _musicSource = gameObject.AddComponent<AudioSource>();
+            _musicSource.clip = mainMenuBgm;
+            _musicSource.loop = true;
+            _musicSource.playOnAwake = false;
+            _musicSource.spatialBlend = 0f;
+            _musicSource.volume = 0f;
+            _musicSource.Play();
+            StartCoroutine(FadeInMainMenuMusic());
+        }
+
+        private IEnumerator FadeInMainMenuMusic()
+        {
+            if (mainMenuFadeInSeconds <= 0f)
+            {
+                _musicSource.volume = SoundSettingsStore.Music;
+                yield break;
+            }
+
+            float elapsed = 0f;
+            while (elapsed < mainMenuFadeInSeconds && _musicSource != null)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                _musicSource.volume = Mathf.Lerp(0f, SoundSettingsStore.Music, elapsed / mainMenuFadeInSeconds);
+                yield return null;
+            }
+
+            if (_musicSource != null)
+                _musicSource.volume = SoundSettingsStore.Music;
         }
 
         public void StartRun()
@@ -33,7 +90,7 @@ namespace Lilo.UI
             _transitioning = true;
             SetButtons(false);
             GameManager.Instance?.BeginNewRun();
-            SceneManager.LoadScene("OfficeLevel1");
+            SceneManager.LoadScene("IntroCinematic");
         }
 
         public void OpenHowToPlay()
