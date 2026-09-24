@@ -612,6 +612,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Hiding.HidingController
   config: {fileID: 0}
+  maxHideSeconds: 20
+  heartbeatStartSeconds: 5
+  heartbeatMaxNoiseRadius: 12
 --- !u!1 &293294392
 GameObject:
   m_ObjectHideFlags: 0
@@ -2316,6 +2319,7 @@ MonoBehaviour:
   hideAnchor: {fileID: 1471881309}
   exitAnchor: {fileID: 496855092}
   interactionRadius: 2.5
+  keyboardSlot: {fileID: 0}
 --- !u!1 &1215767699
 GameObject:
   m_ObjectHideFlags: 0
@@ -2916,7 +2920,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Hud.ContextActionButton
   hidingController: {fileID: 0}
-  batteryDirector: {fileID: 0}
   actionButton: {fileID: 0}
   label: {fileID: 0}
   canvasGroup: {fileID: 0}
@@ -3076,7 +3079,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lilo.MonoBehaviours.Audio.SfxController
   behindYouClip: {fileID: 8300000, guid: b3c07c12ea07c4fce9924c2e7932ef70, type: 3}
   horrorChaseClip: {fileID: 8300000, guid: 4a5774741176f46f198e80a7ed036ae5, type: 3}
-  batteryPickupClip: {fileID: 0}
+  batteryPickupClip: {fileID: 8300000, guid: 5ec0b61f4d6c742bab0f6190f5ba1635, type: 3}
   volume: 1
 --- !u!4 &1510416365
 Transform:
