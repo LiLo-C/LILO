@@ -250,7 +250,6 @@ public static class SetupOfficeGameplay
         var dimmer = go.GetComponent<EnvironmentLightDimmer>();
         if (dimmer == null) dimmer = go.AddComponent<EnvironmentLightDimmer>();
         var serialized = new SerializedObject(dimmer);
-        serialized.FindProperty("disableEnvironmentLights").boolValue = true;
         serialized.FindProperty("disableBakedLightmaps").boolValue = true;
         serialized.FindProperty("readabilityFillLight").objectReferenceValue =
             GameObject.Find("ReadabilityFillLight")?.GetComponent<Light>();
@@ -380,8 +379,10 @@ public static class SetupOfficeGameplay
         {
             flashlight = new GameObject("PlayerFlashlight").transform;
             flashlight.SetParent(player.transform, false);
-            flashlight.localPosition = new Vector3(0f, 1.25f, 0.35f);
         }
+        // Keep the omnidirectional source beside the held lamp prop instead of aiming it forward.
+        flashlight.localPosition = new Vector3(-0.3f, 0.85f, 0.15f);
+        flashlight.localRotation = Quaternion.identity;
 
         var light = flashlight.GetComponent<Light>();
         if (light == null)

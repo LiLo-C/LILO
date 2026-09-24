@@ -27,33 +27,19 @@ namespace Lilo.Systems.Flashlight
         public static float GetTargetRadius(float chargeFraction, GameConfig config)
         {
             float charge = Mathf.Clamp01(chargeFraction);
-            FlashlightLightState state = GetState(charge, config);
             float compactRadius = config.flashlightNormalRadius * config.compactDarknessRadius;
-
-            switch (state)
-            {
-                case FlashlightLightState.Normal:
-                case FlashlightLightState.Flickering:
-                    return config.flashlightNormalRadius;
-
-                case FlashlightLightState.CompactDarkness:
-                    return compactRadius;
-
-                case FlashlightLightState.Critical:
-                default:
-                    // Continuous narrowing: normalRadius at charge==criticalStart, compactRadius as charge->0 (FR-006).
-                    float t = config.lightStateCriticalStart > 0f ? charge / config.lightStateCriticalStart : 0f;
-                    return Mathf.Lerp(compactRadius, config.flashlightNormalRadius, t);
-            }
+            // Battery loss affects the usable beam across the whole charge range, rather than
+            // keeping full reach until the critical state. The compact floor only matters while
+            // charge remains; a zero-charge light has no useful beam.
+            return Mathf.Lerp(compactRadius, config.flashlightNormalRadius, charge);
         }
 
         public static float GetTargetIntensity(float chargeFraction, GameConfig config)
         {
             float charge = Mathf.Clamp01(chargeFraction);
-            float normal = config.flashlightNormalIntensity;
-            float compact = config.flashlightCompactDarknessIntensity;
-
-            return Mathf.Lerp(compact, normal, charge);
+            // Zero charge must mean zero emitted light. A nonzero darkness floor made the lamp
+            // continue illuminating the player and room after the HUD reached 0%.
+            return config.flashlightNormalIntensity * charge;
         }
     }
 }
