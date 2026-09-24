@@ -15,6 +15,7 @@ namespace Lilo.MonoBehaviours.Audio
         [SerializeField, Range(0f, 1f)] private float volume = 0.8f;
 
         private AudioSource _source;
+        private AudioSource _horrorChaseSource;
         private AudioClip _generatedBatteryPickupClip;
 
         private void Awake()
@@ -22,6 +23,13 @@ namespace Lilo.MonoBehaviours.Audio
             _source = gameObject.AddComponent<AudioSource>();
             _source.playOnAwake = false;
             _source.spatialBlend = 0f; // 2D
+
+            // Keep the chase sound on its own source so it can stop immediately
+            // without cutting off one-shot effects such as the chase sting.
+            _horrorChaseSource = gameObject.AddComponent<AudioSource>();
+            _horrorChaseSource.playOnAwake = false;
+            _horrorChaseSource.spatialBlend = 0f;
+            _horrorChaseSource.loop = false;
         }
 
         public void PlayBehindYou()
@@ -32,8 +40,21 @@ namespace Lilo.MonoBehaviours.Audio
 
         public void PlayHorrorChase()
         {
-            if (horrorChaseClip != null)
-                _source.PlayOneShot(horrorChaseClip, volume * SoundSettingsStore.Effects);
+            if (horrorChaseClip == null || _horrorChaseSource == null)
+                return;
+
+            if (_horrorChaseSource.clip != horrorChaseClip)
+                _horrorChaseSource.clip = horrorChaseClip;
+
+            _horrorChaseSource.volume = volume * SoundSettingsStore.Effects;
+            if (!_horrorChaseSource.isPlaying)
+                _horrorChaseSource.Play();
+        }
+
+        public void StopHorrorChase()
+        {
+            if (_horrorChaseSource != null && _horrorChaseSource.isPlaying)
+                _horrorChaseSource.Stop();
         }
 
         public void PlayBatteryPickup()

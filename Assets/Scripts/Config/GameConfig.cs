@@ -81,8 +81,8 @@ namespace Lilo.Config
         public MonsterTuningProfile monsterTuningFloor51 = new MonsterTuningProfile
         {
             monsterActive = true,
-            patrolSpeed = 0.225f,
-            chaseSpeed = 0.35f,
+            patrolSpeed = 0.5f,
+            chaseSpeed = 1.5f,
             investigateDuration = 4f,
             alertDuration = 2f,
             chaseHoldDuration = 3f,
@@ -91,8 +91,8 @@ namespace Lilo.Config
         public MonsterTuningProfile monsterTuningFloor50 = new MonsterTuningProfile
         {
             monsterActive = true,
-            patrolSpeed = 0.225f,
-            chaseSpeed = 0.375f,
+            patrolSpeed = 0.5f,
+            chaseSpeed = 1.5f,
             investigateDuration = 6f,
             alertDuration = 2f,
             chaseHoldDuration = 5f,

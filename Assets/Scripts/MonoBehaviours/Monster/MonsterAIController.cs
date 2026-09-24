@@ -431,10 +431,8 @@ namespace Lilo.MonoBehaviours.Monster
                     sfx.PlayBehindYou();
                     sfx.PlayHorrorChase();
                 }
-                else if (_brain.State == MonsterState.Catch && sfx != null)
-                {
-                    sfx.PlayHorrorChase();
-                }
+                else
+                    sfx?.StopHorrorChase();
                 _lastLoggedState = _brain.State;
             }
 
