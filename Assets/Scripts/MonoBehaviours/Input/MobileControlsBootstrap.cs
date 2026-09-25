@@ -101,8 +101,12 @@ namespace Lilo.MonoBehaviours.Input
 
         private static void EnsureBatterySwapButton(Transform canvas)
         {
-            if (canvas.Find("BatterySwapButton") != null)
+            Transform existing = canvas.Find("BatterySwapButton");
+            if (existing != null)
+            {
+                SizeBatterySwapButton(existing, canvas);
                 return;
+            }
 
             GameObject buttonObject = new GameObject(
                 "BatterySwapButton",
@@ -132,18 +136,35 @@ namespace Lilo.MonoBehaviours.Input
             Text label = labelObject.GetComponent<Text>();
             label.text = "CHANGE BATTERY";
             label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            Canvas rootCanvas = canvas.GetComponentInParent<Canvas>();
-            float canvasScale = Mathf.Max(0.01f, rootCanvas != null ? rootCanvas.scaleFactor : 1f);
-            bool tablet = Mathf.Min(Screen.width, Screen.height) >= 1400;
-            float tabletScale = tablet ? 0.82f : 1f;
-            rect.sizeDelta = new Vector2(132f, 52f) * tabletScale / canvasScale;
-            rect.anchoredPosition = new Vector2(-22f / canvasScale, 0f);
-            label.fontSize = Mathf.RoundToInt(14f * tabletScale / canvasScale);
             label.alignment = TextAnchor.MiddleCenter;
             label.color = Color.white;
             label.raycastTarget = false;
 
             buttonObject.AddComponent<Lilo.MonoBehaviours.UI.BatterySwapButton>();
+            SizeBatterySwapButton(buttonObject.transform, canvas);
+        }
+
+        private static void SizeBatterySwapButton(Transform button, Transform canvas)
+        {
+            RectTransform rect = button as RectTransform;
+            if (rect == null) return;
+            Canvas rootCanvas = canvas.GetComponentInParent<Canvas>();
+            float scale = Mathf.Max(0.01f, rootCanvas != null ? rootCanvas.scaleFactor : 1f);
+            float shortSide = Mathf.Min(Screen.width, Screen.height);
+            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0.42f);
+            rect.pivot = new Vector2(1f, 0.5f);
+            rect.anchoredPosition = new Vector2(-Mathf.Max(24f, shortSide * 0.025f) / scale, 0f);
+            rect.sizeDelta = new Vector2(Mathf.Clamp(shortSide * 0.32f, 300f, 460f),
+                Mathf.Clamp(shortSide * 0.095f, 100f, 136f)) * 1.5f / scale;
+            Text label = button.GetComponentInChildren<Text>(true);
+            if (label != null)
+            {
+                label.fontSize = Mathf.RoundToInt(Mathf.Clamp(shortSide * 0.029f, 30f, 43f) * 1.5f / scale);
+                label.rectTransform.anchorMin = Vector2.zero;
+                label.rectTransform.anchorMax = Vector2.one;
+                label.rectTransform.offsetMin = Vector2.zero;
+                label.rectTransform.offsetMax = Vector2.zero;
+            }
         }
 
         private static GameObject CreateCanvas()

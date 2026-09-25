@@ -41,8 +41,7 @@ namespace Lilo.UI
 
         private void Update()
         {
-            if (Application.isMobilePlatform
-                && (Screen.width != _lastLayoutWidth || Screen.height != _lastLayoutHeight))
+            if (Screen.width != _lastLayoutWidth || Screen.height != _lastLayoutHeight)
                 ApplyResponsiveMenuLayout();
         }
 
@@ -66,29 +65,85 @@ namespace Lilo.UI
             if (menu == null)
                 return;
 
-            bool phone = Application.isMobilePlatform && Mathf.Min(Screen.width, Screen.height) < 1400;
+            float shortSide = Mathf.Min(Screen.width, Screen.height);
+            bool phone = shortSide < 1400f;
             float scale = Mathf.Max(0.01f, canvas != null ? canvas.scaleFactor : 1f);
-            float buttonWidth = (phone ? 280f : 250f) / scale;
-            float buttonHeight = (phone ? 60f : 56f) / scale;
-            float step = (phone ? 78f : 76f) / scale;
-            float groupCenterY = (phone ? 0f : -55f) / scale;
+            float buttonWidthPixels = Mathf.Clamp(shortSide * (phone ? 0.36f : 0.27f), 350f, 550f);
+            float buttonHeightPixels = Mathf.Clamp(shortSide * (phone ? 0.10f : 0.065f), 96f, 140f);
+            float buttonWidth = buttonWidthPixels * 1.5f / scale;
+            float buttonHeight = buttonHeightPixels * 1.5f / scale;
+            float step = (buttonHeightPixels * 1.5f + 30f) / scale;
+            float groupCenterY = (phone ? 0f : -shortSide * 0.04f) / scale;
 
             SetMenuButton(menu, "StartButton", buttonWidth, buttonHeight, groupCenterY + step);
             SetMenuButton(menu, "HowToPlayButton", buttonWidth, buttonHeight, groupCenterY);
             SetMenuButton(menu, "SettingsButton", buttonWidth, buttonHeight, groupCenterY - step);
 
-            SetDecorativeText(menu, "Title", !phone, 44f / scale, 155f / scale, 56f / scale, scale);
-            SetDecorativeText(menu, "Subtitle", !phone, 18f / scale, 105f / scale, 28f / scale, scale);
-            SetDecorativeText(menu, "Credits", !phone, 12f / scale, 0f, 30f / scale, scale);
+            SetDecorativeText(menu, "Title", !phone, 64f / scale, shortSide * 0.22f / scale, 90f / scale, scale);
+            SetDecorativeText(menu, "Subtitle", !phone, 30f / scale, shortSide * 0.15f / scale, 48f / scale, scale);
+            SetDecorativeText(menu, "Credits", !phone, 24f / scale, 0f, 64f / scale, scale);
 
-            int buttonFontSize = Mathf.RoundToInt((phone ? 18f : 17f) / scale);
+            int buttonFontSize = Mathf.RoundToInt(Mathf.Clamp(shortSide * 0.035f, 34f, 48f) * 1.5f / scale);
             foreach (string buttonName in new[] { "StartButton", "HowToPlayButton", "SettingsButton" })
             {
                 Transform button = menu.Find(buttonName);
                 Text label = button != null ? button.GetComponentInChildren<Text>(true) : null;
                 if (label != null)
+                {
                     label.fontSize = buttonFontSize;
+                    RectTransform labelRect = label.rectTransform;
+                    labelRect.anchorMin = Vector2.zero;
+                    labelRect.anchorMax = Vector2.one;
+                    labelRect.offsetMin = Vector2.zero;
+                    labelRect.offsetMax = Vector2.zero;
+                }
             }
+
+            LayoutOverlays(shortSide, scale, buttonWidth, buttonHeight, buttonFontSize);
+        }
+
+        private void LayoutOverlays(float shortSide, float scale, float buttonWidth, float buttonHeight, int buttonFontSize)
+        {
+            Transform how = howToPlayPanel != null ? howToPlayPanel.transform : null;
+            Transform settings = settingsPanel != null ? settingsPanel.transform : null;
+            SetOverlayButton(how, "CloseHowToPlay", buttonWidth, buttonHeight, buttonFontSize);
+            SetOverlayButton(settings, "CloseSettings", buttonWidth, buttonHeight, buttonFontSize);
+            SetOverlayText(how, "HowToPlayText", Mathf.RoundToInt(Mathf.Clamp(shortSide * 0.028f, 30f, 42f) * 1.5f / scale),
+                Mathf.Min(Screen.width * 0.82f, 1500f) / scale, shortSide * 0.48f / scale);
+            SetOverlayText(settings, "SettingsTitle", Mathf.RoundToInt(Mathf.Clamp(shortSide * 0.04f, 42f, 64f) * 1.5f / scale),
+                700f / scale, 90f / scale);
+
+            foreach (string name in new[] { "MASTER", "MUSIC", "EFFECTS", "AMBIENCE" })
+            {
+                SetOverlayText(settings, name + "Label", Mathf.RoundToInt(Mathf.Clamp(shortSide * 0.025f, 28f, 40f) * 1.5f / scale),
+                    260f / scale, 70f / scale);
+                RectTransform slider = settings != null ? settings.Find(name + "Slider") as RectTransform : null;
+                if (slider != null)
+                    slider.sizeDelta = new Vector2(Mathf.Clamp(shortSide * 0.32f, 360f, 600f) * 1.5f / scale,
+                        Mathf.Clamp(shortSide * 0.035f, 38f, 65f) * 1.5f / scale);
+            }
+        }
+
+        private static void SetOverlayButton(Transform panel, string name, float width, float height, int fontSize)
+        {
+            RectTransform rect = panel != null ? panel.Find(name) as RectTransform : null;
+            if (rect == null) return;
+            rect.sizeDelta = new Vector2(width, height);
+            Text label = rect.GetComponentInChildren<Text>(true);
+            if (label == null) return;
+            label.fontSize = fontSize;
+            label.rectTransform.anchorMin = Vector2.zero;
+            label.rectTransform.anchorMax = Vector2.one;
+            label.rectTransform.offsetMin = Vector2.zero;
+            label.rectTransform.offsetMax = Vector2.zero;
+        }
+
+        private static void SetOverlayText(Transform panel, string name, int fontSize, float width, float height)
+        {
+            Text label = panel != null ? panel.Find(name)?.GetComponent<Text>() : null;
+            if (label == null) return;
+            label.fontSize = fontSize;
+            label.rectTransform.sizeDelta = new Vector2(width, height);
         }
 
         private static void SetMenuButton(Transform menu, string name, float width, float height, float y)

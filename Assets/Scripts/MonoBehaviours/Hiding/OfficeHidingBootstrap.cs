@@ -78,8 +78,12 @@ namespace Lilo.MonoBehaviours.Hiding
 
         private static void EnsureButton(Transform canvas)
         {
-            if (canvas.Find("ContextActionButton") != null)
+            Transform existing = canvas.Find("ContextActionButton");
+            if (existing != null)
+            {
+                SizeButton(existing, canvas);
                 return;
+            }
 
             var root = new GameObject("ContextActionButton", typeof(RectTransform),
                 typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(CanvasGroup));
@@ -88,12 +92,6 @@ namespace Lilo.MonoBehaviours.Hiding
             rect.anchorMin = new Vector2(1f, 0.23f);
             rect.anchorMax = rect.anchorMin;
             rect.pivot = new Vector2(1f, 0.5f);
-            Canvas rootCanvas = canvas.GetComponentInParent<Canvas>();
-            float canvasScale = Mathf.Max(0.01f, rootCanvas != null ? rootCanvas.scaleFactor : 1f);
-            bool tablet = Mathf.Min(Screen.width, Screen.height) >= 1400;
-            float controlScale = tablet ? 0.82f : 1f;
-            rect.anchoredPosition = new Vector2(-22f / canvasScale, 0f);
-            rect.sizeDelta = new Vector2(132f, 52f) * controlScale / canvasScale;
 
             Image image = root.GetComponent<Image>();
             image.color = new Color(0.12f, 0.25f, 0.31f, 0.96f);
@@ -110,12 +108,35 @@ namespace Lilo.MonoBehaviours.Hiding
             Text label = labelObject.GetComponent<Text>();
             label.text = "HIDE";
             label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            label.fontSize = Mathf.RoundToInt(14f * controlScale / canvasScale);
             label.alignment = TextAnchor.MiddleCenter;
             label.color = Color.white;
             label.raycastTarget = false;
 
             root.AddComponent<ContextActionButton>();
+            SizeButton(root.transform, canvas);
+        }
+
+        private static void SizeButton(Transform button, Transform canvas)
+        {
+            RectTransform rect = button as RectTransform;
+            if (rect == null) return;
+            Canvas rootCanvas = canvas.GetComponentInParent<Canvas>();
+            float scale = Mathf.Max(0.01f, rootCanvas != null ? rootCanvas.scaleFactor : 1f);
+            float shortSide = Mathf.Min(Screen.width, Screen.height);
+            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0.20f);
+            rect.pivot = new Vector2(1f, 0.5f);
+            rect.anchoredPosition = new Vector2(-Mathf.Max(24f, shortSide * 0.025f) / scale, 0f);
+            rect.sizeDelta = new Vector2(Mathf.Clamp(shortSide * 0.24f, 250f, 360f),
+                Mathf.Clamp(shortSide * 0.095f, 100f, 136f)) * 1.5f / scale;
+            Text label = button.GetComponentInChildren<Text>(true);
+            if (label != null)
+            {
+                label.fontSize = Mathf.RoundToInt(Mathf.Clamp(shortSide * 0.03f, 30f, 43f) * 1.5f / scale);
+                label.rectTransform.anchorMin = Vector2.zero;
+                label.rectTransform.anchorMax = Vector2.one;
+                label.rectTransform.offsetMin = Vector2.zero;
+                label.rectTransform.offsetMax = Vector2.zero;
+            }
         }
     }
 }
