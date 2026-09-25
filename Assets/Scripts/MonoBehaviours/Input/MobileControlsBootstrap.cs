@@ -1,5 +1,6 @@
 using Lilo.Config;
 using Lilo.MonoBehaviours;
+using Lilo.MonoBehaviours.Interaction;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -23,10 +24,10 @@ namespace Lilo.MonoBehaviours.Input
         /// </summary>
         public static void PrepareForSceneReload()
         {
-            foreach (JoystickInputAdapter joystick in Object.FindObjectsByType<JoystickInputAdapter>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (JoystickInputAdapter joystick in Object.FindObjectsByType<JoystickInputAdapter>(FindObjectsInactive.Include))
                 joystick.CancelTouch();
 
-            foreach (GraphicRaycaster raycaster in Object.FindObjectsByType<GraphicRaycaster>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (GraphicRaycaster raycaster in Object.FindObjectsByType<GraphicRaycaster>(FindObjectsInactive.Include))
             {
                 if (raycaster.transform.root.name == CanvasName)
                     raycaster.enabled = false;
@@ -57,22 +58,41 @@ namespace Lilo.MonoBehaviours.Input
 
         private static void EnsureControls()
         {
-            if (!Application.isEditor && !Application.isMobilePlatform)
-                return;
-
             GameObject player = GameObject.Find("PlayerCharacter");
-            if (player == null || player.GetComponent<StarterAssets.StarterAssetsInputs>() == null)
+            if (player == null)
                 return;
 
-            GameConfig config = GameManager.Instance != null ? GameManager.Instance.Config : null;
+            if (player.GetComponent<PlayerXRayOutline>() == null)
+                player.AddComponent<PlayerXRayOutline>();
+
+            AccessKeyBootstrap.Ensure();
+
             GameObject canvasObject = GameObject.Find(CanvasName);
             if (canvasObject == null)
                 canvasObject = CreateCanvas();
+            if (canvasObject.GetComponent<GameplayGuidanceHud>() == null)
+                canvasObject.AddComponent<GameplayGuidanceHud>();
 
+            if (!Application.isEditor && !Application.isMobilePlatform)
+                return;
+            if (player.GetComponent<StarterAssets.StarterAssetsInputs>() == null)
+                return;
+
+            GameConfig config = GameManager.Instance != null ? GameManager.Instance.Config : null;
             Canvas canvas = canvasObject.GetComponent<Canvas>();
             canvas.enabled = true;
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 100;
+
+            CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
+            if (scaler != null)
+            {
+                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                scaler.referenceResolution = new Vector2(1920f, 1080f);
+                scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+                scaler.matchWidthOrHeight = 0.5f;
+            }
+            Canvas.ForceUpdateCanvases();
 
             if (canvasObject.GetComponent<GraphicRaycaster>() == null)
                 canvasObject.AddComponent<GraphicRaycaster>();
@@ -83,51 +103,12 @@ namespace Lilo.MonoBehaviours.Input
             else
                 joystick.Initialize(config, joystick.transform as RectTransform, joystick.transform.Find("JoystickHandle") as RectTransform);
 
-            EnsureBatterySwapButton(canvasObject.transform);
+            Transform oldBatteryButton = canvasObject.transform.Find("BatterySwapButton");
+            if (oldBatteryButton != null)
+                Object.Destroy(oldBatteryButton.gameObject);
             Lilo.MonoBehaviours.Hiding.OfficeHidingBootstrap.Ensure(player, canvasObject.transform);
             EnsureEventSystem();
             EnsureBridge(canvasObject.transform, joystick);
-        }
-
-        private static void EnsureBatterySwapButton(Transform canvas)
-        {
-            if (canvas.Find("BatterySwapButton") != null)
-                return;
-
-            GameObject buttonObject = new GameObject(
-                "BatterySwapButton",
-                typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(CanvasGroup));
-            buttonObject.transform.SetParent(canvas, false);
-
-            RectTransform rect = buttonObject.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(1f, 0.35f);
-            rect.anchorMax = new Vector2(1f, 0.35f);
-            rect.pivot = new Vector2(1f, 0.5f);
-            rect.anchoredPosition = new Vector2(-36f, 0f);
-            rect.sizeDelta = new Vector2(150f, 64f);
-
-            Image image = buttonObject.GetComponent<Image>();
-            image.color = new Color(0.12f, 0.32f, 0.5f, 0.96f);
-            Button button = buttonObject.GetComponent<Button>();
-            button.targetGraphic = image;
-
-            GameObject labelObject = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-            labelObject.transform.SetParent(buttonObject.transform, false);
-            RectTransform labelRect = labelObject.GetComponent<RectTransform>();
-            labelRect.anchorMin = Vector2.zero;
-            labelRect.anchorMax = Vector2.one;
-            labelRect.offsetMin = Vector2.zero;
-            labelRect.offsetMax = Vector2.zero;
-
-            Text label = labelObject.GetComponent<Text>();
-            label.text = "CHANGE BATTERY";
-            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            label.fontSize = 16;
-            label.alignment = TextAnchor.MiddleCenter;
-            label.color = Color.white;
-            label.raycastTarget = false;
-
-            buttonObject.AddComponent<Lilo.MonoBehaviours.UI.BatterySwapButton>();
         }
 
         private static GameObject CreateCanvas()
@@ -141,7 +122,7 @@ namespace Lilo.MonoBehaviours.Input
 
             CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(800f, 600f);
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
             return canvasObject;
@@ -192,7 +173,7 @@ namespace Lilo.MonoBehaviours.Input
 
         private static void EnsureBridge(Transform canvas, JoystickInputAdapter joystick)
         {
-            MobileStarterAssetsBridge bridge = Object.FindFirstObjectByType<MobileStarterAssetsBridge>();
+            MobileStarterAssetsBridge bridge = Object.FindAnyObjectByType<MobileStarterAssetsBridge>();
             if (bridge == null)
             {
                 GameObject bridgeObject = new GameObject("MobileInputBridge");

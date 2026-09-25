@@ -151,7 +151,7 @@ namespace Lilo.MonoBehaviours.Hiding
                 if (rushedEntry)
                 {
                     if (_monster == null)
-                        _monster = FindFirstObjectByType<MonsterAIController>();
+                        _monster = FindAnyObjectByType<MonsterAIController>();
                     if (_monster != null)
                     {
                         float radius = config != null
@@ -264,7 +264,7 @@ namespace Lilo.MonoBehaviours.Hiding
             _heartbeatSource.PlayOneShot(_heartbeatClip, Mathf.Lerp(0.25f, 0.9f, urgency) * SoundSettingsStore.Effects);
 
             if (_monster == null)
-                _monster = FindFirstObjectByType<MonsterAIController>();
+                _monster = FindAnyObjectByType<MonsterAIController>();
             if (_monster != null && _activeSpot != null)
             {
                 float radius = Mathf.Lerp(1f, heartbeatMaxNoiseRadius, urgency);

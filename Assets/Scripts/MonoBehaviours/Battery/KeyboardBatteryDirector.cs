@@ -10,8 +10,8 @@ namespace Lilo.MonoBehaviours.Battery
     /// <summary>
     /// Thin MonoBehaviour adapter over <see cref="KeyboardBatteryRoster"/>: on floor
     /// entry, loads a configured number of keyboard slots with batteries (3 of 7)
-    /// and serves Take requests with spare-slot, SFX, and noise-pulse handling
-    /// mirrored from BatteryPickup.
+    /// and serves Take requests with charge, SFX, and noise-pulse handling
+    /// consistent with BatteryPickup.
     /// </summary>
     public class KeyboardBatteryDirector : MonoBehaviour
     {
@@ -147,8 +147,7 @@ namespace Lilo.MonoBehaviours.Battery
             if (state != null && config != null)
             {
                 float gain = config.keyboardBatteryChargeFraction * config.batteryDuration;
-                state.SetInstalledBatteryCharge(
-                    KeyboardBatteryRoster.TopUpCharge(state.InstalledBatteryCharge, gain, config.batteryDuration));
+                state.AddInstalledBatteryCharge(gain, config.batteryDuration);
             }
 
             slot.SetLoaded(false);

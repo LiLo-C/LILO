@@ -37,9 +37,10 @@ namespace Lilo.Systems.Flashlight
         public static float GetTargetIntensity(float chargeFraction, GameConfig config)
         {
             float charge = Mathf.Clamp01(chargeFraction);
-            // Zero charge must mean zero emitted light. A nonzero darkness floor made the lamp
-            // continue illuminating the player and room after the HUD reached 0%.
-            return config.flashlightNormalIntensity * charge;
+            // Preserve a small readability floor at 0% battery while still dimming smoothly
+            // with charge. Compact Darkness remains dim enough to signal an empty lamp.
+            return Mathf.Lerp(config.flashlightCompactDarknessIntensity,
+                config.flashlightNormalIntensity, charge);
         }
     }
 }

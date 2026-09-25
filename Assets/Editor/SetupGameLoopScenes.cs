@@ -88,7 +88,7 @@ public static class SetupGameLoopScenes
             Scene scene = EditorSceneManager.OpenScene(SceneRoot + sceneName + ".unity", OpenSceneMode.Single);
             var player = GameObject.Find("PlayerCharacter");
             var controller = player != null ? player.GetComponent<CharacterController>() : null;
-            var speeds = Object.FindFirstObjectByType<GameplaySpeedSettings>();
+            var speeds = Object.FindAnyObjectByType<GameplaySpeedSettings>();
             if (controller == null || speeds == null)
                 throw new System.InvalidOperationException($"{sceneName} is missing Player CharacterController or GameplaySpeedSettings.");
 
@@ -102,7 +102,7 @@ public static class SetupGameLoopScenes
             EditorUtility.SetDirty(speeds);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
-            Debug.Log($"[OfficeTuning] {sceneName}: player=1/3, monster=0.5/1.5 (50% of walk/sprint), collider radius={controller.radius}.");
+            Debug.Log($"[OfficeTuning] {sceneName}: player=1/3, monster base=0.5/1.5, runtime multiplier from GameConfig, collider radius={controller.radius}.");
         }
 
         var config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/Config/GameConfig.asset");
@@ -133,7 +133,7 @@ public static class SetupGameLoopScenes
             var controller = GameObject.Find("GameLoopSceneController")?.GetComponent<GameLoopSceneController>();
             var hud = GameObject.Find("GameplayHudCanvas")?.GetComponent<GameplayHudController>();
             var door = GameObject.Find("ExitDoorPlaceholder")?.GetComponent<ExitDoorInteraction>();
-            var speeds = Object.FindFirstObjectByType<GameplaySpeedSettings>();
+            var speeds = Object.FindAnyObjectByType<GameplaySpeedSettings>();
             var capsule = GameObject.Find("PlayerCharacter")?.GetComponent<CharacterController>();
             var character = GameObject.Find("PlayerCharacter")?.GetComponent<StarterAssets.ThirdPersonController>();
             if (controller == null || hud == null || door == null || speeds == null || capsule == null || character == null)
@@ -160,7 +160,7 @@ public static class SetupGameLoopScenes
                     if (child.name == "JumpButton")
                         throw new System.InvalidOperationException($"{scene.name} still contains JumpButton.");
 
-            Debug.Log($"[GameLoopSetup] Validated {scene.name}: {floors[index]} → {destinations[index]}, HUD present, player={speeds.playerWalkSpeed:0.##}/{speeds.playerSprintSpeed:0.##}, monster={speeds.monsterPatrolSpeed:0.##}/{speeds.monsterChaseSpeed:0.##} (50%), radius={capsule.radius:0.##}, jump disabled.");
+            Debug.Log($"[GameLoopSetup] Validated {scene.name}: {floors[index]} → {destinations[index]}, HUD present, player={speeds.playerWalkSpeed:0.##}/{speeds.playerSprintSpeed:0.##}, monster base={speeds.monsterPatrolSpeed:0.##}/{speeds.monsterChaseSpeed:0.##}, runtime multiplier from GameConfig, radius={capsule.radius:0.##}, jump disabled.");
         }
     }
 
@@ -202,7 +202,7 @@ public static class SetupGameLoopScenes
             managerSerialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        var speeds = Object.FindFirstObjectByType<GameplaySpeedSettings>();
+        var speeds = Object.FindAnyObjectByType<GameplaySpeedSettings>();
         if (speeds != null)
         {
             speeds.monsterPatrolSpeed = speeds.playerWalkSpeed * 0.5f;
@@ -406,7 +406,7 @@ public static class SetupGameLoopScenes
 
     private static void EnsureEventSystem()
     {
-        if (Object.FindFirstObjectByType<EventSystem>() == null) CreateEventSystem();
+        if (Object.FindAnyObjectByType<EventSystem>() == null) CreateEventSystem();
     }
 
     private static Image CreatePanel(Transform parent, string name, Color color)

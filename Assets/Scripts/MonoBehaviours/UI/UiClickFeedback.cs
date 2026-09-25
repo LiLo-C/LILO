@@ -81,7 +81,7 @@ namespace Lilo.MonoBehaviours.UI
 
         private static void InstallOnLoadedObjects()
         {
-            foreach (Canvas canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (Canvas canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include))
             {
                 if (!canvas.isRootCanvas || canvas.renderMode == RenderMode.WorldSpace)
                     continue;
@@ -90,13 +90,13 @@ namespace Lilo.MonoBehaviours.UI
                     canvas.gameObject.AddComponent<ResponsiveCanvasAdapter>();
             }
 
-            foreach (Button button in FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (Button button in FindObjectsByType<Button>(FindObjectsInactive.Include))
             {
                 if (button.GetComponent<UiButtonClickHook>() == null)
                     button.gameObject.AddComponent<UiButtonClickHook>();
             }
 
-            foreach (Selectable selectable in FindObjectsByType<Selectable>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (Selectable selectable in FindObjectsByType<Selectable>(FindObjectsInactive.Include))
             {
                 if (selectable is Button || selectable.GetComponent<UiButtonClickHook>() != null)
                     continue;
