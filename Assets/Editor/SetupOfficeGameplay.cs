@@ -126,8 +126,8 @@ public static class SetupOfficeGameplay
             var profile = config.GetMonsterProfile(FloorId.Floor51);
             speedSettings.playerWalkSpeed = config.walkSpeed;
             speedSettings.playerSprintSpeed = config.walkSpeed * config.sprintMultiplier;
-            speedSettings.monsterPatrolSpeed = config.walkSpeed * profile.patrolSpeed;
-            speedSettings.monsterChaseSpeed = config.walkSpeed * profile.chaseSpeed;
+            speedSettings.monsterPatrolSpeed = speedSettings.playerWalkSpeed * 0.5f;
+            speedSettings.monsterChaseSpeed = speedSettings.playerSprintSpeed * 0.5f;
         }
         var serialized = new SerializedObject(manager);
         serialized.FindProperty("config").objectReferenceValue = config;
