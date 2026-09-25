@@ -22,7 +22,6 @@ namespace Lilo.MonoBehaviours
         private float _respawnMessageUntil;
         private SfxController _sfx;
         private string _lastVoiceHint;
-        private bool _needAwayPlayed;
 
         private const string NeedAwayHint = "I need to find a way to get out.";
         private const string NeedAccessKeyHint = "I need to find the access key first.";
@@ -123,9 +122,7 @@ namespace Lilo.MonoBehaviours
                     ? _sfx != null && _sfx.PlayLifeVoiceOverForSubtitle(hint)
                     : hint switch
                     {
-                        NeedAwayHint when !_needAwayPlayed
-                            => _sfx != null && _sfx.PlayNeedAwayVoiceOver(),
-                        NeedAwayHint => true,
+                        NeedAwayHint => _sfx != null && _sfx.PlayNeedAwayVoiceOver(),
                         NeedAccessKeyHint => _sfx != null && _sfx.PlayNeedAccessKeyVoiceOver(),
                         NeedBatteryHint => _sfx != null && _sfx.PlayBatteryRunsOutVoiceOver(),
                         _ => true,
@@ -134,7 +131,6 @@ namespace Lilo.MonoBehaviours
                 {
                     if (hint == NeedAwayHint)
                     {
-                        _needAwayPlayed = true;
                         if (!_panel.activeSelf)
                         {
                             _text.text = hint;
