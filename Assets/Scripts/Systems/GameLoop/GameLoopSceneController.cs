@@ -18,16 +18,13 @@ namespace Lilo.Systems.GameLoop
 
         private void Awake()
         {
+            SoundSettingsStore.Apply();
             if (role == GameLoopSceneRole.Gameplay)
             {
                 GameManager.Instance?.State?.AdvanceToFloor(floor);
                 var exit = FindAnyObjectByType<ExitDoorInteraction>();
                 if (exit != null)
                     exit.ConfigureTransition(nextSceneName, !string.IsNullOrEmpty(nextSceneName), nextFloor);
-            }
-            else if (role == GameLoopSceneRole.MainMenu)
-            {
-                SoundSettingsStore.Apply();
             }
         }
     }
