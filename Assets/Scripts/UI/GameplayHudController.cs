@@ -17,12 +17,14 @@ namespace Lilo.UI
         [SerializeField] private Button resumeButton;
         [SerializeField] private Button mainMenuButton;
 
+        private Image _floorFlag;
         private bool _paused;
         private int _layoutWidth;
         private int _layoutHeight;
 
         private void Awake()
         {
+            SetupFloorFlag();
             pauseButton?.onClick.AddListener(Pause);
             resumeButton?.onClick.AddListener(Resume);
             mainMenuButton?.onClick.AddListener(ReturnToMainMenu);
@@ -44,7 +46,7 @@ namespace Lilo.UI
             {
                 int floorNumber = state.CurrentFloor == FloorId.Floor52 ? 52 :
                     state.CurrentFloor == FloorId.Floor51 ? 51 : 50;
-                floorText.text = $"FLOOR {floorNumber}";
+                floorText.text = _floorFlag != null ? floorNumber.ToString() : $"FLOOR {floorNumber}";
             }
             if (batteryText != null)
             {
@@ -64,11 +66,26 @@ namespace Lilo.UI
             float scale = Mathf.Max(0.01f, canvas.scaleFactor);
             float shortSide = Mathf.Min(Screen.width, Screen.height);
             float hudFont = Mathf.Clamp(shortSide * 0.032f, 32f, 48f) * 1.5f;
-            foreach (Text label in new[] { floorText, batteryText })
+            if (_floorFlag != null)
             {
-                if (label == null) continue;
-                label.fontSize = Mathf.RoundToInt(hudFont / scale);
-                label.rectTransform.sizeDelta = new Vector2(420f, 76f) * 1.5f / scale;
+                float flagWidth = Mathf.Clamp(shortSide * 0.16f, 110f, 160f) / scale;
+                float flagHeight = flagWidth * (98f / 88f);
+                RectTransform flagRect = _floorFlag.rectTransform;
+                flagRect.anchoredPosition = new Vector2(20f / scale, -20f / scale);
+                flagRect.sizeDelta = new Vector2(flagWidth, flagHeight);
+
+                RectTransform numberRect = floorText.rectTransform;
+                numberRect.anchorMin = new Vector2(0f, 1f);
+                numberRect.anchorMax = new Vector2(0f, 1f);
+                numberRect.pivot = new Vector2(0f, 1f);
+                numberRect.anchoredPosition = new Vector2(flagWidth * 0.92f, -flagHeight * 0.25f);
+                numberRect.sizeDelta = new Vector2(flagWidth * 0.65f, flagHeight * 0.55f);
+                floorText.fontSize = Mathf.RoundToInt(flagWidth * 0.34f);
+            }
+            if (batteryText != null)
+            {
+                batteryText.fontSize = Mathf.RoundToInt(hudFont / scale);
+                batteryText.rectTransform.sizeDelta = new Vector2(420f, 76f) * 1.5f / scale;
             }
             SizeButton(pauseButton, Mathf.Clamp(shortSide * 0.22f, 230f, 320f),
                 Mathf.Clamp(shortSide * 0.085f, 90f, 124f), hudFont * 0.9f, scale);
@@ -85,6 +102,37 @@ namespace Lilo.UI
             float menuHeight = Mathf.Clamp(shortSide * 0.1f, 96f, 140f);
             SizeButton(resumeButton, menuWidth, menuHeight, hudFont, scale);
             SizeButton(mainMenuButton, menuWidth, menuHeight, hudFont, scale);
+        }
+
+        private void SetupFloorFlag()
+        {
+            if (floorText == null) return;
+            Sprite sprite = Resources.Load<Sprite>("FloorFlag");
+            Canvas canvas = floorText.canvas;
+            if (sprite == null || canvas == null) return;
+
+            var badge = new GameObject("FloorFlagBadge", typeof(RectTransform), typeof(Image));
+            badge.transform.SetParent(canvas.transform, false);
+            RectTransform badgeRect = (RectTransform)badge.transform;
+            badgeRect.anchorMin = new Vector2(0f, 1f);
+            badgeRect.anchorMax = new Vector2(0f, 1f);
+            badgeRect.pivot = new Vector2(0f, 1f);
+
+            _floorFlag = badge.GetComponent<Image>();
+            _floorFlag.sprite = sprite;
+            _floorFlag.preserveAspect = true;
+            _floorFlag.raycastTarget = false;
+
+            RectTransform numberRect = floorText.rectTransform;
+            numberRect.SetParent(badgeRect, false);
+            numberRect.anchorMin = new Vector2(0f, 1f);
+            numberRect.anchorMax = new Vector2(0f, 1f);
+            numberRect.pivot = new Vector2(0f, 1f);
+            floorText.alignment = TextAnchor.MiddleCenter;
+            floorText.color = new Color(0.09f, 0.11f, 0.12f, 1f);
+            floorText.raycastTarget = false;
+            floorText.transform.SetAsLastSibling();
+            _floorFlag.transform.SetAsFirstSibling();
         }
 
         private static void SizeButton(Button button, float width, float height, float fontPixels, float scale)

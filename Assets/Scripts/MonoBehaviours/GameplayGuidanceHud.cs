@@ -122,7 +122,7 @@ namespace Lilo.MonoBehaviours
             labelRect.offsetMax = new Vector2(-18f, -4f);
 
             _text = label.GetComponent<Text>();
-            _text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _text.font = Lilo.UI.GameUIFont.Get();
             _text.alignment = TextAnchor.MiddleCenter;
             _text.color = new Color(0.95f, 0.94f, 0.89f, 1f);
             _text.horizontalOverflow = HorizontalWrapMode.Wrap;
