@@ -133,7 +133,7 @@ namespace Lilo.MonoBehaviours.Monster
                     sfx = sfxGo.GetComponent<SfxController>();
             }
             if (speedSettings == null)
-                speedSettings = FindFirstObjectByType<GameplaySpeedSettings>();
+                speedSettings = FindAnyObjectByType<GameplaySpeedSettings>();
             FloorId activeFloor = GameManager.Instance != null
                 ? GameManager.Instance.State.CurrentFloor
                 : floorProfile;

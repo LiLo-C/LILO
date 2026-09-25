@@ -46,7 +46,7 @@ MonoBehaviour:
   batteryMaxActiveFloor50: 1
   batteryRespawnFloor50: 60
   keyboardBatteryCountPerFloor: 3
-  keyboardBatteryChargeFraction: 0.15
+  keyboardBatteryChargeFraction: 0.25
   noiseBaseRadius: 4
   noiseWalk: 1
   noiseSprint: 3

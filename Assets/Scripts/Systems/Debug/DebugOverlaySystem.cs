@@ -17,8 +17,6 @@ namespace Lilo.Systems.Debug
         public float LightRadius;
         public float LightIntensity;
         public float BatteryFraction;
-        public bool SpareOccupied;
-        public float SpareChargeFraction;
         public bool MonsterAvailable;
         public MonsterState MonsterState;
         public float MonsterDistance;
@@ -58,11 +56,8 @@ namespace Lilo.Systems.Debug
             string monster = snapshot.MonsterAvailable
                 ? $"{snapshot.MonsterState}  d={snapshot.MonsterDistance:0.0}"
                 : "—";
-            string spare = snapshot.SpareOccupied
-                ? $"{snapshot.SpareChargeFraction * 100f:0}%"
-                : "—";
             return $"LIGHT    {snapshot.LightState}  r={snapshot.LightRadius:0.0}  i={snapshot.LightIntensity:0.00}\n"
-                + $"BATTERY  {snapshot.BatteryFraction * 100f:0}%  spare {spare}\n"
+                + $"BATTERY  {snapshot.BatteryFraction * 100f:0}%\n"
                 + $"MONSTER  {monster}\n"
                 + $"NOISE    {snapshot.NoiseRadius:0.0}  {snapshot.NoiseSource}";
         }

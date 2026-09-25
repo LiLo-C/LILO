@@ -204,7 +204,7 @@ namespace Lilo.UI
         {
             if (mainMenuBgm == null) return;
 
-            if (FindFirstObjectByType<AudioListener>() == null)
+            if (FindAnyObjectByType<AudioListener>() == null)
                 gameObject.AddComponent<AudioListener>();
 
             _musicSource = gameObject.AddComponent<AudioSource>();

@@ -81,14 +81,6 @@ namespace Lilo.MonoBehaviours.Flashlight
             float newCharge = BatteryDrainSystem.Drain(currentCharge, Time.deltaTime, config.batteryDuration);
             if (gm != null && gm.State != null)
             {
-                // 008 (auto variant): lamp empty + spare carried refills immediately
-                // so taken batteries always extend light. No action button needed.
-                if (newCharge <= 0f && gm.State.SpareBatterySlotOccupied)
-                {
-                    gm.State.InstallSpareBattery(config.batteryDuration);
-                    newCharge = config.batteryDuration;
-                    Debug.Log("[Battery] Spare installed — charge refilled.");
-                }
                 gm.State.SetInstalledBatteryCharge(newCharge);
             }
             else

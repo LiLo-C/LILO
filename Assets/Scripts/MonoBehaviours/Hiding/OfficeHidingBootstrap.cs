@@ -17,7 +17,7 @@ namespace Lilo.MonoBehaviours.Hiding
 
             int spots = 0;
             foreach (KeyboardBatterySlot slot in Object.FindObjectsByType<KeyboardBatterySlot>(
-                         FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                         FindObjectsInactive.Exclude))
             {
                 Transform cubicle = slot.transform.parent;
                 if (cubicle == null || !cubicle.name.StartsWith("Cubicle-", System.StringComparison.OrdinalIgnoreCase))

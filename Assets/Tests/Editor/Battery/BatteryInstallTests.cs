@@ -6,8 +6,7 @@ using Lilo.State;
 namespace Lilo.Tests.Battery
 {
     /// <summary>
-    /// Proves a taken battery actually extends light: pickup fills the spare,
-    /// install consumes it and refills the installed charge (spec 008).
+    /// Proves collected batteries directly add charge and cannot overfill the lamp.
     /// </summary>
     public class BatteryInstallTests
     {
@@ -28,27 +27,21 @@ namespace Lilo.Tests.Battery
         }
 
         [Test]
-        public void TakeThenInstallRefillsEmptyLamp()
+        public void BatteryAddsTwentyFivePercentToInstalledCharge()
         {
             _state.SetInstalledBatteryCharge(0f);
-            _state.PickUpSpareBattery(_config.batteryDuration);
+            _state.AddInstalledBatteryCharge(_config.batteryDuration * 0.25f, _config.batteryDuration);
 
-            Assert.IsTrue(_state.SpareBatterySlotOccupied);
-
-            _state.InstallSpareBattery(_config.batteryDuration);
-
-            Assert.AreEqual(_config.batteryDuration, _state.InstalledBatteryCharge);
-            Assert.IsFalse(_state.SpareBatterySlotOccupied);
-            Assert.AreEqual(0f, _state.SpareBatteryCharge);
+            Assert.AreEqual(_config.batteryDuration * 0.25f, _state.InstalledBatteryCharge);
         }
 
         [Test]
-        public void PickupFillsSpareWithFullCharge()
+        public void BatteryChargeIsClampedAtFull()
         {
-            _state.PickUpSpareBattery(_config.batteryDuration);
+            _state.SetInstalledBatteryCharge(_config.batteryDuration * 0.9f);
+            _state.AddInstalledBatteryCharge(_config.batteryDuration * 0.25f, _config.batteryDuration);
 
-            Assert.IsTrue(_state.SpareBatterySlotOccupied);
-            Assert.AreEqual(_config.batteryDuration, _state.SpareBatteryCharge);
+            Assert.AreEqual(_config.batteryDuration, _state.InstalledBatteryCharge);
         }
     }
 }

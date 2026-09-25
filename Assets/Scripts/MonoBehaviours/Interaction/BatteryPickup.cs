@@ -58,18 +58,10 @@ namespace Lilo.MonoBehaviours.Interaction
             _pickedUp = true;
 
             var state = GameManager.Instance?.State;
-            if (state != null)
-            {
-                if (state.SpareBatterySlotOccupied)
-                {
-                    Debug.Log("[Battery] Spare slot full — cannot pick up.");
-                    _pickedUp = false;
-                    return;
-                }
-                state.PickUpSpareBattery(config != null ? config.batteryDuration : 180f);
-            }
+            if (state != null && config != null)
+                state.AddInstalledBatteryCharge(config.batteryDuration * 0.25f, config.batteryDuration);
 
-            Debug.Log($"[Battery] Picked up.");
+            Debug.Log("[Battery] Picked up — restored 25% charge.");
             if (sfx != null) sfx.PlayBatteryPickup();
 
             if (monster != null && config != null)
