@@ -464,18 +464,19 @@ namespace Lilo.MonoBehaviours.Monster
                 HidingRevealed = hiding && HidingController.IsPlayerExposed,
             };
             MonsterBrainOutput output = MonsterBrain.Step(ref _brain, input);
-
             if (_brain.State != _lastLoggedState)
             {
                 Debug.Log($"[Monster] {_lastLoggedState} -> {_brain.State} (target={_brain.Target})");
                 MonsterHaptics.OnStateChanged(_brain.State);
                 if (_brain.State == MonsterState.Chase && sfx != null)
                 {
-                    sfx.PlayBehindYou();
-                    sfx.PlayHorrorChase();
+                    sfx.PlayBehindYou(transform.position);
+                    sfx.PlayChaseBgm();
                 }
                 else
-                    sfx?.StopHorrorChase();
+                {
+                    sfx?.StopChaseBgm();
+                }
                 _lastLoggedState = _brain.State;
             }
 
@@ -709,6 +710,7 @@ namespace Lilo.MonoBehaviours.Monster
                 ? "BadEnding"
                 : ResolveRespawnScene(state);
             Debug.Log($"[Monster] Respawning on {respawnScene} for floor {state?.CurrentFloor.ToString() ?? "active scene"}.");
+            state?.MarkLifeVoiceOverReady();
             Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();
             SceneManager.LoadScene(respawnScene);
         }

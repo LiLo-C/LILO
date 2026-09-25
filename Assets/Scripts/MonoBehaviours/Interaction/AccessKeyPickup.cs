@@ -49,7 +49,7 @@ namespace Lilo.MonoBehaviours.Interaction
 
             _collected = true;
             Debug.Log($"[AccessKey] Collected key for {state.CurrentFloor}.");
-            if (sfx != null) sfx.PlayBatteryPickup();
+            if (sfx != null) sfx.PlayKeyPickup();
             if (monster != null && config != null)
                 monster.EmitPulse(transform.position, config.noiseInteract);
             gameObject.SetActive(false);

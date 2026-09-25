@@ -14,6 +14,7 @@ namespace Lilo.MonoBehaviours.Audio
     {
         [Header("Bed (always on)")]
         [SerializeField] private AudioClip roomTone;
+        [SerializeField] private AudioSource bedSource;
         [SerializeField, Range(0f, 1f)] private float bedVolume = 0.6f;
 
         [Header("One-shots (shuffle-bag, random gaps)")]
@@ -27,8 +28,11 @@ namespace Lilo.MonoBehaviours.Audio
         private AudioSource _stingSource;
         private readonly List<int> _bag = new List<int>();
         private float _timer;
+        private float _nextBedPlayAttempt;
+        private float _nextRoomToneLoadAttempt;
         private Transform _player;
         private bool _started;
+        private bool _warnedMissingRoomTone;
 
         private static AmbienceDirector _instance;
 
@@ -42,17 +46,27 @@ namespace Lilo.MonoBehaviours.Audio
             _instance = this;
             DontDestroyOnLoad(gameObject);
 
-            _bedSource = gameObject.AddComponent<AudioSource>();
+            _bedSource = bedSource != null ? bedSource : GetComponent<AudioSource>();
+            if (_bedSource == null)
+            {
+                Debug.LogError("[Ambience] No bed AudioSource is assigned.", this);
+                enabled = false;
+                return;
+            }
+
             _bedSource.playOnAwake = false;
             _bedSource.spatialBlend = 0f;
             _bedSource.loop = true;
             _bedSource.volume = bedVolume;
 
-            _stingSource = gameObject.AddComponent<AudioSource>();
-            _stingSource.playOnAwake = false;
-            _stingSource.spatialBlend = 0f;
-            _stingSource.loop = false;
-            _stingSource.volume = stingVolume;
+            if (HasStings())
+            {
+                _stingSource = gameObject.AddComponent<AudioSource>();
+                _stingSource.playOnAwake = false;
+                _stingSource.spatialBlend = 0f;
+                _stingSource.loop = false;
+                _stingSource.volume = stingVolume;
+            }
 
             RefillBag();
             _timer = Random.Range(minGapSeconds, maxGapSeconds);
@@ -76,17 +90,14 @@ namespace Lilo.MonoBehaviours.Audio
             if (!_started)
             {
                 _started = true;
-                if (roomTone != null)
-                {
-                    _bedSource.clip = roomTone;
-                    _bedSource.Play();
-                }
-                else
+                if (roomTone == null && !_warnedMissingRoomTone)
                 {
                     Debug.LogWarning("[Ambience] No room tone assigned — bed silent.");
+                    _warnedMissingRoomTone = true;
                 }
-                return;
             }
+
+            TryStartBed();
             if (_bag.Count == 0) return;
 
             _timer -= Time.deltaTime;
@@ -118,6 +129,42 @@ namespace Lilo.MonoBehaviours.Audio
                 if (stings[i] != null)
                     _bag.Add(i);
             }
+        }
+
+        private bool HasStings()
+        {
+            if (stings == null) return false;
+            for (int i = 0; i < stings.Length; i++)
+            {
+                if (stings[i] != null) return true;
+            }
+            return false;
+        }
+
+        private void TryStartBed()
+        {
+            if (roomTone == null || _bedSource == null || _bedSource.isPlaying)
+                return;
+
+            if (roomTone.loadState == AudioDataLoadState.Unloaded)
+            {
+                if (Time.unscaledTime < _nextRoomToneLoadAttempt)
+                    return;
+
+                roomTone.LoadAudioData();
+                _nextRoomToneLoadAttempt = Time.unscaledTime + 1f;
+                return;
+            }
+
+            if (roomTone.loadState != AudioDataLoadState.Loaded)
+                return;
+
+            if (Time.unscaledTime < _nextBedPlayAttempt)
+                return;
+
+            _bedSource.clip = roomTone;
+            _bedSource.Play();
+            _nextBedPlayAttempt = Time.unscaledTime + 1f;
         }
     }
 }

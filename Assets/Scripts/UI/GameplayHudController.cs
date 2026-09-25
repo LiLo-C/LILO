@@ -46,6 +46,9 @@ namespace Lilo.UI
                     state.CurrentFloor == FloorId.Floor51 ? 51 : 50;
                 floorText.text = $"FLOOR {floorNumber}";
             }
+            if (livesText != null)
+                livesText.text = $"LIVES {state.Lives}";
+
             if (batteryText != null)
             {
                 float duration = GameManager.Instance.Config != null ? GameManager.Instance.Config.batteryDuration : 1f;
