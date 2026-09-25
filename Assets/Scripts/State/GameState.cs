@@ -22,6 +22,7 @@ namespace Lilo.State
         public FloorId CurrentFloor { get; private set; }
         public bool IsHiding { get; private set; }
         public RunOutcome Outcome { get; private set; }
+        public string RespawnMessage { get; private set; }
 
         public float InstalledBatteryCharge { get; private set; }
 
@@ -40,6 +41,7 @@ namespace Lilo.State
             CurrentFloor = FloorId.Floor52;
             IsHiding = false;
             Outcome = RunOutcome.InProgress;
+            RespawnMessage = string.Empty;
             InstalledBatteryCharge = config.batteryDuration;
             _keyInventory.Clear();
         }
@@ -55,6 +57,15 @@ namespace Lilo.State
         public void AdvanceToFloor(FloorId nextFloor) => CurrentFloor = nextFloor;
 
         public void LoseLife() => Lives = System.Math.Max(0, Lives - 1);
+
+        public void SetRespawnMessage(string message) => RespawnMessage = message ?? string.Empty;
+
+        public string ConsumeRespawnMessage()
+        {
+            string message = RespawnMessage;
+            RespawnMessage = string.Empty;
+            return message;
+        }
 
         public void SetHiding(bool hiding) => IsHiding = hiding;
 
