@@ -93,6 +93,20 @@ namespace Lilo.MonoBehaviours
                     hint = NeedBatteryHint;
             }
 
+            // This reminder is tied to elapsed time since spawn, not whichever
+            // contextual hint happens to be on screen when the minute passes.
+            if (!_needAwayPlayed && !_hasFoundDoor && Time.unscaledTime >= _needAwayVoiceAt)
+            {
+                if (_sfx == null)
+                    _sfx = Object.FindAnyObjectByType<SfxController>();
+
+                if (_sfx != null && _sfx.PlayNeedAwayVoiceOver())
+                {
+                    _needAwayPlayed = true;
+                    hint = NeedAwayHint;
+                }
+            }
+
             if (!string.IsNullOrWhiteSpace(_respawnMessage))
             {
                 if (Time.unscaledTime < _respawnMessageUntil)
