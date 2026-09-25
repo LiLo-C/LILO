@@ -12,7 +12,7 @@ namespace Lilo.State
 
     /// <summary>
     /// Plain data object (no MonoBehaviour) holding everything that must survive a scene change:
-    /// lives, current floor, checkpoint, key inventory, battery slot, hiding state, run outcome.
+    /// lives, current floor, checkpoint, key inventory, installed battery charge, hiding state, run outcome.
     /// Owned by exactly one GameManager. Consumers mutate it only through the named operations
     /// below — never replace the instance (spec 002 FR-003).
     /// </summary>
@@ -24,8 +24,6 @@ namespace Lilo.State
         public RunOutcome Outcome { get; private set; }
 
         public float InstalledBatteryCharge { get; private set; }
-        public bool SpareBatterySlotOccupied { get; private set; }
-        public float SpareBatteryCharge { get; private set; }
 
         private readonly HashSet<string> _keyInventory = new HashSet<string>();
         public IReadOnlyCollection<string> KeyInventory => _keyInventory;
@@ -43,8 +41,6 @@ namespace Lilo.State
             IsHiding = false;
             Outcome = RunOutcome.InProgress;
             InstalledBatteryCharge = config.batteryDuration;
-            SpareBatterySlotOccupied = false;
-            SpareBatteryCharge = 0f;
             _keyInventory.Clear();
         }
 
@@ -53,8 +49,6 @@ namespace Lilo.State
         {
             IsHiding = false;
             InstalledBatteryCharge = config.batteryDuration;
-            SpareBatterySlotOccupied = false;
-            SpareBatteryCharge = 0f;
             _keyInventory.Clear();
         }
 
@@ -66,20 +60,16 @@ namespace Lilo.State
 
         public void SetInstalledBatteryCharge(float charge) => InstalledBatteryCharge = charge;
 
-        public void PickUpSpareBattery(float charge)
+        public void AddInstalledBatteryCharge(float charge, float maximumCharge)
         {
-            SpareBatterySlotOccupied = true;
-            SpareBatteryCharge = charge;
-        }
-
-        public void InstallSpareBattery(float fullChargeDuration)
-        {
-            InstalledBatteryCharge = fullChargeDuration;
-            SpareBatterySlotOccupied = false;
-            SpareBatteryCharge = 0f;
+            InstalledBatteryCharge = (float)System.Math.Min(
+                System.Math.Max(0d, maximumCharge),
+                System.Math.Max(0d, InstalledBatteryCharge + charge));
         }
 
         public bool AddKey(string keyId) => _keyInventory.Add(keyId);
+
+        public bool HasKey(string keyId) => _keyInventory.Contains(keyId);
 
         public bool RemoveKey(string keyId) => _keyInventory.Remove(keyId);
 

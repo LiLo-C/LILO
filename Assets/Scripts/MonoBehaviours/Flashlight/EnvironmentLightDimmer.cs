@@ -24,7 +24,7 @@ namespace Lilo.MonoBehaviours.Flashlight
             if (playerLamp == null && player != null)
                 playerLamp = player.transform.Find("PlayerFlashlight")?.GetComponent<Light>();
 
-            foreach (Light light in FindObjectsByType<Light>(FindObjectsSortMode.None))
+            foreach (Light light in FindObjectsByType<Light>())
             {
                 bool isPlayerLamp = light == playerLamp
                     || (player != null

@@ -26,7 +26,7 @@ MonoBehaviour:
   cameraBoundsInset: 0
   flashlightNormalRadius: 12
   flashlightNormalIntensity: 1
-  flashlightCompactDarknessIntensity: 0.2
+  flashlightCompactDarknessIntensity: 0.5
   lightRadiusEaseRate: 4
   shadowsEnabled: 1
   readabilityFillIntensity: 0
@@ -46,18 +46,18 @@ MonoBehaviour:
   batteryMaxActiveFloor50: 1
   batteryRespawnFloor50: 60
   keyboardBatteryCountPerFloor: 3
-  keyboardBatteryChargeFraction: 0.15
+  keyboardBatteryChargeFraction: 0.25
   noiseBaseRadius: 4
   noiseWalk: 1
   noiseSprint: 3
   noiseInteract: 2
   noiseBatterySwap: 1.5
   noiseHiding: 0
-  monsterSpeedMultiplier: 1.25
+  monsterSpeedMultiplier: 2.0
   monsterTuningFloor51:
     monsterActive: 1
     patrolSpeed: 0.5
-    chaseSpeed: 1.5
+    chaseSpeed: 1.49
     investigateDuration: 4
     alertDuration: 2
     chaseHoldDuration: 3
@@ -65,7 +65,7 @@ MonoBehaviour:
   monsterTuningFloor50:
     monsterActive: 1
     patrolSpeed: 0.5
-    chaseSpeed: 1.5
+    chaseSpeed: 1.49
     investigateDuration: 6
     alertDuration: 2
     chaseHoldDuration: 5
@@ -81,7 +81,7 @@ MonoBehaviour:
   lives: 3
   floorCount: 3
   checkpointPerFloor: 1
-  lockedDoorsFloor52: 0
+  lockedDoorsFloor52: 1
   lockedDoorsFloor51: 1
   lockedDoorsFloor50: 3
   targetFloorDuration: 300

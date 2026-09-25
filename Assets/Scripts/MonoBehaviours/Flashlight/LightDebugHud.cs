@@ -24,10 +24,8 @@ namespace Lilo.MonoBehaviours.Flashlight
             if (label == null || _rig == null)
                 return;
 
-            GameManager manager = GameManager.Instance;
             float percent = _rig.ChargeFraction * 100f;
-            int spare = manager != null && manager.State != null && manager.State.SpareBatterySlotOccupied ? 1 : 0;
-            label.text = $"BATTERY {percent:0}%\nLIGHT {_rig.CurrentState}\nINTENSITY {_rig.CurrentIntensity:0.00}\nRADIUS {_rig.DisplayedRadius:0.0}\nSPARE {spare}/1";
+            label.text = $"BATTERY {percent:0}%\nLIGHT {_rig.CurrentState}\nINTENSITY {_rig.CurrentIntensity:0.00}\nRADIUS {_rig.DisplayedRadius:0.0}";
         }
     }
 }
