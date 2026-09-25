@@ -228,6 +228,9 @@ namespace Lilo.MonoBehaviours.Audio
 
         public bool PlayNeedAwayVoiceOver()
         {
+            if (_source != null && _source.isPlaying)
+                return false;
+
             return PlayVoiceOver(needAwayVoiceOverClip);
         }
 

@@ -33,7 +33,6 @@ namespace Lilo.MonoBehaviours
                 State = new GameState(config);
             else
                 State.StartNewRun(config);
-            GameplayGuidanceHud.ResetRunVoiceOverState();
         }
 
         private void Awake()
@@ -51,7 +50,6 @@ namespace Lilo.MonoBehaviours
 
             GameConfigLoader.LoadAndValidate(config);
             State = new GameState(config);
-            GameplayGuidanceHud.ResetRunVoiceOverState();
             if (useConfiguredStartingFloor)
                 State.AdvanceToFloor(configuredStartingFloor);
         }

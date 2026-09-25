@@ -22,10 +22,9 @@ namespace Lilo.MonoBehaviours
         private float _respawnMessageUntil;
         private SfxController _sfx;
         private string _lastVoiceHint;
-
-        private static bool _needAwayPlayed;
-        private static bool _hasFoundDoor;
-        private static float _needAwayVoiceAt;
+        private bool _needAwayPlayed;
+        private bool _hasFoundDoor;
+        private float _needAwayVoiceAt;
 
         private const string NeedAwayHint = "I need to find a way to get out.";
         private const string NeedAccessKeyHint = "I need to find the access key first.";
@@ -33,6 +32,7 @@ namespace Lilo.MonoBehaviours
 
         private void Awake()
         {
+            _needAwayVoiceAt = Time.unscaledTime + 60f;
             _player = GameObject.Find("PlayerCharacter")?.transform;
             _doors = FindObjectsByType<ExitDoorInteraction>();
             _respawnMessage = GameManager.Instance?.State?.ConsumeRespawnMessage();
@@ -41,13 +41,6 @@ namespace Lilo.MonoBehaviours
             _sfx = GameObject.Find("SfxController")?.GetComponent<SfxController>();
             CreateLabel();
             ApplyLayout();
-        }
-
-        public static void ResetRunVoiceOverState()
-        {
-            _needAwayPlayed = false;
-            _hasFoundDoor = false;
-            _needAwayVoiceAt = Time.unscaledTime + 60f;
         }
 
         private void Update()
@@ -144,7 +137,15 @@ namespace Lilo.MonoBehaviours
                 if (voiceRequested)
                 {
                     if (hint == NeedAwayHint)
+                    {
                         _needAwayPlayed = true;
+                        if (!_panel.activeSelf)
+                        {
+                            _text.text = hint;
+                            _panel.SetActive(true);
+                            _hideAt = Time.unscaledTime + 5f;
+                        }
+                    }
                     _lastVoiceHint = hint;
                     if (isLifeSubtitle)
                         GameManager.Instance?.State?.ClearPendingLifeVoiceOver();
@@ -173,7 +174,7 @@ namespace Lilo.MonoBehaviours
             labelRect.offsetMax = new Vector2(-18f, -4f);
 
             _text = label.GetComponent<Text>();
-            _text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _text.font = Lilo.UI.GameUIFont.Get();
             _text.alignment = TextAnchor.MiddleCenter;
             _text.color = new Color(0.95f, 0.94f, 0.89f, 1f);
             _text.horizontalOverflow = HorizontalWrapMode.Wrap;
