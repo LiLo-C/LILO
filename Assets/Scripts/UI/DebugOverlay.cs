@@ -21,26 +21,25 @@ namespace Lilo.UI
 
         private void Awake()
         {
-#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
-            gameObject.SetActive(false);
-            return;
-#endif
+            if (!Application.isEditor && !Debug.isDebugBuild)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
             if (label == null) label = GetComponent<Text>();
             GameObject player = GameObject.Find("PlayerCharacter");
             if (player != null)
             {
                 _rig = player.GetComponent<LightingRig>();
             }
-            _monster = FindFirstObjectByType<MonsterAIController>();
+            _monster = FindAnyObjectByType<MonsterAIController>();
             _config = GameManager.Instance != null ? GameManager.Instance.Config : null;
             if (label != null) label.enabled = visibleOnStart;
         }
 
         private void Update()
         {
-#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
-            return;
-#else
+            if (!Application.isEditor && !Debug.isDebugBuild) return;
             if (label == null || !_enabledLabel()) return;
             if (_rig == null)
             {
@@ -48,7 +47,7 @@ namespace Lilo.UI
                 if (player != null) _rig = player.GetComponent<LightingRig>();
             }
             if (_monster == null)
-                _monster = FindFirstObjectByType<MonsterAIController>();
+                _monster = FindAnyObjectByType<MonsterAIController>();
             if (_config == null && GameManager.Instance != null)
                 _config = GameManager.Instance.Config;
 
@@ -59,9 +58,6 @@ namespace Lilo.UI
                 LightRadius = _rig != null ? _rig.DisplayedRadius : 0f,
                 LightIntensity = _rig != null ? _rig.CurrentIntensity : 0f,
                 BatteryFraction = _rig != null ? _rig.ChargeFraction : 0f,
-                SpareOccupied = state != null && state.SpareBatterySlotOccupied,
-                SpareChargeFraction = state != null && _config != null && _config.batteryDuration > 0f
-                    ? state.SpareBatteryCharge / _config.batteryDuration : 0f,
                 MonsterAvailable = _monster != null && _monster.isActiveAndEnabled,
                 MonsterState = _monster != null ? _monster.CurrentState : MonsterState.Patrol,
                 MonsterDistance = _monster != null ? _monster.DistanceToPlayer : -1f,
@@ -70,7 +66,6 @@ namespace Lilo.UI
                 IsHiding = state != null && state.IsHiding,
             };
             label.text = DebugOverlaySystem.Format(snapshot);
-#endif
         }
 
         private bool _enabledLabel() => label != null && label.enabled;

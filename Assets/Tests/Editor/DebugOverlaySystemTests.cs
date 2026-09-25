@@ -37,8 +37,6 @@ namespace Lilo.Tests
                 LightRadius = 220f,
                 LightIntensity = 1f,
                 BatteryFraction = 0.84f,
-                SpareOccupied = true,
-                SpareChargeFraction = 1f,
                 MonsterAvailable = true,
                 MonsterState = MonsterState.Chase,
                 MonsterDistance = 6.2f,

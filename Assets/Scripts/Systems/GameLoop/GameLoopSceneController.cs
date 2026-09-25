@@ -21,7 +21,7 @@ namespace Lilo.Systems.GameLoop
             if (role == GameLoopSceneRole.Gameplay)
             {
                 GameManager.Instance?.State?.AdvanceToFloor(floor);
-                var exit = FindFirstObjectByType<ExitDoorInteraction>();
+                var exit = FindAnyObjectByType<ExitDoorInteraction>();
                 if (exit != null)
                     exit.ConfigureTransition(nextSceneName, !string.IsNullOrEmpty(nextSceneName), nextFloor);
             }

@@ -23,6 +23,26 @@ namespace Lilo.MonoBehaviours.Interaction
 
         private Transform _player;
         private bool _triggered;
+        private bool _blockedMessageShown;
+
+        public float InteractionRadius => interactRadius;
+        public bool RequiresAccessKey
+        {
+            get
+            {
+                var manager = GameManager.Instance;
+                return manager != null && manager.Config != null && manager.State != null
+                    && manager.Config.GetLockedDoorCount(manager.State.CurrentFloor) > 0;
+            }
+        }
+        public bool HasRequiredAccessKey
+        {
+            get
+            {
+                var state = GameManager.Instance?.State;
+                return state != null && state.HasKey(AccessKeyPickup.KeyIdForFloor(state.CurrentFloor));
+            }
+        }
 
         public void ConfigureTransition(string sceneName, bool advance, FloorId destinationFloor)
         {
@@ -59,8 +79,20 @@ namespace Lilo.MonoBehaviours.Interaction
             float dist = Vector2.Distance(exitXZ, playerXZ);
             if (dist <= interactRadius)
             {
-                _triggered = true;
                 var state = GameManager.Instance?.State;
+                string requiredKeyId = state != null ? AccessKeyPickup.KeyIdForFloor(state.CurrentFloor) : string.Empty;
+                bool requiresKey = RequiresAccessKey;
+                if (requiresKey && (state == null || !state.HasKey(requiredKeyId)))
+                {
+                    if (!_blockedMessageShown)
+                    {
+                        Debug.Log("[ExitDoor] Locked — find this floor's access key first.", this);
+                        _blockedMessageShown = true;
+                    }
+                    return;
+                }
+
+                _triggered = true;
 
                 if (!string.IsNullOrEmpty(nextSceneName))
                 {
@@ -74,6 +106,8 @@ namespace Lilo.MonoBehaviours.Interaction
 
                     if (state != null && advanceToNextFloor)
                         state.AdvanceToFloor(nextFloor);
+                    if (state != null && requiresKey)
+                        state.RemoveKey(requiredKeyId);
                     if (state != null && nextSceneName == "GoodEnding")
                         state.SetOutcome(RunOutcome.GoodEnding);
                     Debug.Log($"[ExitDoor] Player escaped — loading {nextSceneName}.");
@@ -84,6 +118,8 @@ namespace Lilo.MonoBehaviours.Interaction
 
                 if (state != null)
                     state.SetOutcome(RunOutcome.GoodEnding);
+                if (state != null && requiresKey)
+                    state.RemoveKey(requiredKeyId);
                 Debug.Log("[ExitDoor] Player escaped — GoodEnding recorded for the playable slice.");
                 enabled = false;
             }
