@@ -85,8 +85,7 @@ namespace Lilo.UI
             labelRect.offsetMax = Vector2.zero;
             _sfxLabel = labelTransform.GetComponent<Text>();
             _sfxLabel.text = "SFX: ON";
-            if (_sfxLabel.font == null)
-                _sfxLabel.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            _sfxLabel.font = GameUIFont.Get();
             _sfxLabel.fontSize = 32;
             _sfxLabel.color = Color.white;
             _sfxLabel.alignment = TextAnchor.MiddleLeft;
