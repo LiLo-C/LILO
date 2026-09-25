@@ -140,14 +140,16 @@ namespace Lilo.MonoBehaviours.Cinematics
 
             if (lightFlickerClip != null && _lampSfxSource != null)
             {
-                // Keep the first two light pulses aligned with the first two sounds in the clip.
+                // Match all three pulses in the intro sound clip with visible lamp flickers.
                 PlayLampFlickerSfx();
                 yield return new WaitForSecondsRealtime(0.12f);
                 yield return SetLampFor(0.65f, 0.28f);
                 yield return SetLampFor(0f, 0.42f);
                 yield return SetLampFor(0.3f, 0.32f);
-                _lampSfxSource.Stop(); // Stop before the clip's third pulse.
                 yield return SetLampFor(0f, 0.3f);
+                yield return new WaitForSecondsRealtime(0.18f);
+                yield return SetLampFor(0.65f, 0.24f);
+                yield return SetLampFor(0f, 0.22f);
             }
             yield return SetLampFor(1f, 1.2f);
 
