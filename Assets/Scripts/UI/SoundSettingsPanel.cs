@@ -6,13 +6,32 @@ namespace Lilo.UI
 {
     public sealed class SoundSettingsPanel : MonoBehaviour
     {
+        [SerializeField] private Toggle sfxToggle;
         private Toggle _sfxToggle;
         private Text _sfxLabel;
+        private SwitchToggle _switchToggle;
 
         private void Awake()
         {
             HideOldVolumeControls();
-            CreateSfxToggle();
+            if (sfxToggle == null)
+            {
+                Transform toggleTransform = transform.Find("SfxToggle");
+                if (toggleTransform != null)
+                    sfxToggle = toggleTransform.GetComponent<Toggle>();
+            }
+            if (sfxToggle == null)
+                CreateSfxToggle();
+
+            _sfxToggle = sfxToggle;
+            if (_sfxToggle != null)
+            {
+                _sfxToggle.onValueChanged.AddListener(SetSfxEnabled);
+                _sfxToggle.TryGetComponent<SwitchToggle>(out _switchToggle);
+                Transform labelTransform = _sfxToggle.transform.Find("SfxToggleLabel");
+                if (labelTransform != null)
+                    _sfxLabel = labelTransform.GetComponent<Text>();
+            }
             Refresh();
         }
 
@@ -20,6 +39,7 @@ namespace Lilo.UI
         {
             if (_sfxToggle != null)
                 _sfxToggle.SetIsOnWithoutNotify(SoundSettingsStore.SfxEnabled);
+            _switchToggle?.Snap(SoundSettingsStore.SfxEnabled);
             UpdateSfxLabel(SoundSettingsStore.SfxEnabled);
         }
 
@@ -39,9 +59,6 @@ namespace Lilo.UI
 
         private void CreateSfxToggle()
         {
-            if (transform.Find("SfxToggle") != null)
-                return;
-
             var row = new GameObject("SfxToggle", typeof(RectTransform));
             row.transform.SetParent(transform, false);
             var rowRect = (RectTransform)row.transform;
@@ -91,11 +108,11 @@ namespace Lilo.UI
             _sfxLabel.alignment = TextAnchor.MiddleLeft;
             _sfxLabel.raycastTarget = false;
 
-            _sfxToggle = row.AddComponent<Toggle>();
+            sfxToggle = row.AddComponent<Toggle>();
+            _sfxToggle = sfxToggle;
             _sfxToggle.targetGraphic = background;
             _sfxToggle.graphic = checkmark;
             _sfxToggle.transition = Selectable.Transition.ColorTint;
-            _sfxToggle.onValueChanged.AddListener(SetSfxEnabled);
         }
 
         private void SetSfxEnabled(bool enabled)

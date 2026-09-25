@@ -14,19 +14,25 @@ namespace Lilo.MonoBehaviours.Audio
     {
         [Header("Bed (always on)")]
         [SerializeField] private AudioClip roomTone;
+        [SerializeField] private AudioSource bedSource;
         [SerializeField, Range(0f, 1f)] private float bedVolume = 0.6f;
 
         [Header("One-shots (shuffle-bag, random gaps)")]
         [SerializeField] private AudioClip[] stings = new AudioClip[0];
         [SerializeField, Range(0f, 1f)] private float stingVolume = 0.9f;
         [Tooltip("Seconds between stings.")]
-        [SerializeField] private float minGapSeconds = 18f;
-        [SerializeField] private float maxGapSeconds = 38f;
+        [SerializeField] private float minGapSeconds = 8f;
+        [SerializeField] private float maxGapSeconds = 18f;
 
         private AudioSource _bedSource;
         private AudioSource _stingSource;
         private readonly List<int> _bag = new List<int>();
         private float _timer;
+        private float _nextBedPlayAttempt;
+        private float _nextRoomToneLoadAttempt;
+        private Transform _player;
+        private bool _started;
+        private bool _warnedMissingRoomTone;
 
         private static AmbienceDirector _instance;
 
@@ -40,26 +46,26 @@ namespace Lilo.MonoBehaviours.Audio
             _instance = this;
             DontDestroyOnLoad(gameObject);
 
-            _bedSource = gameObject.AddComponent<AudioSource>();
+            _bedSource = bedSource != null ? bedSource : GetComponent<AudioSource>();
+            if (_bedSource == null)
+            {
+                // Older scenes create this source at runtime. Keep that setup
+                // working while newer scenes can assign it in the editor.
+                _bedSource = gameObject.AddComponent<AudioSource>();
+            }
+
             _bedSource.playOnAwake = false;
             _bedSource.spatialBlend = 0f;
             _bedSource.loop = true;
             _bedSource.volume = bedVolume;
 
-            _stingSource = gameObject.AddComponent<AudioSource>();
-            _stingSource.playOnAwake = false;
-            _stingSource.spatialBlend = 0f;
-            _stingSource.loop = false;
-            _stingSource.volume = stingVolume;
-
-            if (roomTone != null)
+            if (HasStings())
             {
-                _bedSource.clip = roomTone;
-                _bedSource.Play();
-            }
-            else
-            {
-                Debug.LogWarning("[Ambience] No room tone assigned — bed silent.");
+                _stingSource = gameObject.AddComponent<AudioSource>();
+                _stingSource.playOnAwake = false;
+                _stingSource.spatialBlend = 0f;
+                _stingSource.loop = false;
+                _stingSource.volume = stingVolume;
             }
 
             RefillBag();
@@ -68,6 +74,30 @@ namespace Lilo.MonoBehaviours.Audio
 
         private void Update()
         {
+            // Ambience belongs to the run, not the menu: start only after the
+            // player has spawned. Re-resolves after floor restarts, since the
+            // director outlives scenes but the player does not.
+            if (_player == null)
+            {
+                var playerGo = GameObject.FindWithTag("Player");
+                if (playerGo == null)
+                    playerGo = GameObject.Find("PlayerCharacter");
+                if (playerGo == null || !playerGo.activeInHierarchy)
+                    return;
+                _player = playerGo.transform;
+            }
+
+            if (!_started)
+            {
+                _started = true;
+                if (roomTone == null && !_warnedMissingRoomTone)
+                {
+                    Debug.LogWarning("[Ambience] No room tone assigned — bed silent.");
+                    _warnedMissingRoomTone = true;
+                }
+            }
+
+            TryStartBed();
             if (_bag.Count == 0) return;
 
             _timer -= Time.deltaTime;
@@ -99,6 +129,42 @@ namespace Lilo.MonoBehaviours.Audio
                 if (stings[i] != null)
                     _bag.Add(i);
             }
+        }
+
+        private bool HasStings()
+        {
+            if (stings == null) return false;
+            for (int i = 0; i < stings.Length; i++)
+            {
+                if (stings[i] != null) return true;
+            }
+            return false;
+        }
+
+        private void TryStartBed()
+        {
+            if (roomTone == null || _bedSource == null || _bedSource.isPlaying)
+                return;
+
+            if (roomTone.loadState == AudioDataLoadState.Unloaded)
+            {
+                if (Time.unscaledTime < _nextRoomToneLoadAttempt)
+                    return;
+
+                roomTone.LoadAudioData();
+                _nextRoomToneLoadAttempt = Time.unscaledTime + 1f;
+                return;
+            }
+
+            if (roomTone.loadState != AudioDataLoadState.Loaded)
+                return;
+
+            if (Time.unscaledTime < _nextBedPlayAttempt)
+                return;
+
+            _bedSource.clip = roomTone;
+            _bedSource.Play();
+            _nextBedPlayAttempt = Time.unscaledTime + 1f;
         }
     }
 }

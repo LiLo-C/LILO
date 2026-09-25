@@ -1,5 +1,6 @@
 using Lilo.MonoBehaviours;
 using Lilo.Config;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,10 +13,15 @@ namespace Lilo.UI
         [SerializeField] private Text floorText;
         [SerializeField] private Text livesText;
         [SerializeField] private Text batteryText;
+        [SerializeField] private TMP_Text tmpFloorText;
+        [SerializeField] private TMP_Text tmpBatteryText;
         [SerializeField] private Button pauseButton;
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private Button resumeButton;
+        [SerializeField] private Button restartButton;
         [SerializeField] private Button mainMenuButton;
+        [SerializeField] private SoundSettingsPanel soundSettings;
+        [SerializeField] private string restartSceneName = "OfficeLevel1";
 
         private Image _floorFlag;
         private Image _batteryPanel;
@@ -33,6 +39,7 @@ namespace Lilo.UI
                 gameObject.AddComponent<ChaseScreenEffects>();
             pauseButton?.onClick.AddListener(Pause);
             resumeButton?.onClick.AddListener(Resume);
+            restartButton?.onClick.AddListener(RestartRun);
             mainMenuButton?.onClick.AddListener(ReturnToMainMenu);
             if (livesText != null)
                 livesText.gameObject.SetActive(false);
@@ -62,7 +69,18 @@ namespace Lilo.UI
                 int floorNumber = state.CurrentFloor == FloorId.Floor52 ? 52 :
                     state.CurrentFloor == FloorId.Floor51 ? 51 : 50;
                 floorText.text = _floorFlag != null ? floorNumber.ToString() : $"FLOOR {floorNumber}";
+                if (tmpFloorText != null)
+                    tmpFloorText.SetText("{0}", floorNumber);
             }
+            else if (tmpFloorText != null)
+            {
+                int floorNumber = state.CurrentFloor == FloorId.Floor52 ? 52 :
+                    state.CurrentFloor == FloorId.Floor51 ? 51 : 50;
+                tmpFloorText.SetText("{0}", floorNumber);
+            }
+            if (livesText != null)
+                livesText.text = $"LIVES {state.Lives}";
+
             if (batteryText != null)
             {
                 float duration = GameManager.Instance.Config != null ? GameManager.Instance.Config.batteryDuration : 1f;
@@ -71,6 +89,14 @@ namespace Lilo.UI
                     _batteryPercentText.text = $"{percent}%";
                 else
                     batteryText.text = $"BATTERY {percent}%";
+                if (tmpBatteryText != null)
+                    tmpBatteryText.text = $"Battery\t\t{percent}%";
+            }
+            else if (tmpBatteryText != null)
+            {
+                float duration = GameManager.Instance.Config != null ? GameManager.Instance.Config.batteryDuration : 1f;
+                int percent = Mathf.RoundToInt(100f * Mathf.Clamp01(state.InstalledBatteryCharge / Mathf.Max(1f, duration)));
+                tmpBatteryText.text = $"Battery\t\t{percent}%";
             }
         }
 
@@ -78,6 +104,8 @@ namespace Lilo.UI
         {
             _layoutWidth = Screen.width;
             _layoutHeight = Screen.height;
+            if (tmpFloorText != null || tmpBatteryText != null)
+                return;
             Canvas canvas = GetComponent<Canvas>();
             if (canvas == null) return;
             Canvas.ForceUpdateCanvases();
@@ -235,6 +263,7 @@ namespace Lilo.UI
             _paused = true;
             Time.timeScale = 0f;
             if (pausePanel != null) pausePanel.SetActive(true);
+            soundSettings?.Refresh();
         }
 
         public void Resume()
@@ -249,6 +278,14 @@ namespace Lilo.UI
             Resume();
             Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();
             SceneManager.LoadScene("MainMenu");
+        }
+
+        public void RestartRun()
+        {
+            Resume();
+            GameManager.Instance?.BeginNewRun();
+            Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();
+            SceneManager.LoadScene(restartSceneName);
         }
 
         private void OnDestroy()

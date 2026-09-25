@@ -16,8 +16,19 @@ namespace Lilo.Editor
     {
         private const string DevTestScenePath = "Assets/Scenes/DevTest_Movement.unity";
         private const string BehindYouPath = "Assets/Sfx/behind-you.mp3";
-        private const string HorrorChasePath = "Assets/Sfx/horror-chase.mp3";
+        private const string BatteryPickupPath = "Assets/Sfx/pickup-battery-sfx.wav";
+        private const string AmbienceBedPath = "Assets/Sfx/ambience/ambience_sfx.wav";
         private const string PlayerCaughtPath = "Assets/Sfx/player-caught.mp3";
+        private const string ChaseBgmPath = "Assets/Sfx/ambience/chase-refine.wav";
+        private const string KeyPickupPath = "Assets/Sfx/ambience/key-pickup-sfx.mp3";
+        private const string WaterDispenserPath = "Assets/Sfx/ambience/water-dispenser-sfx.wav";
+        private const string ToiletFlushPath = "Assets/Sfx/ambience/toilet-flush-sfx.mp3";
+        private const string Life2VoicePath = "Assets/Sfx/vos/Life-2-sfx.wav";
+        private const string Life1VoicePath = "Assets/Sfx/vos/life-1-sfx.wav";
+        private const string LastLifeVoicePath = "Assets/Sfx/vos/last-life-sfx.wav";
+        private const string NeedAwayVoicePath = "Assets/Sfx/vos/need-away-sfx.wav";
+        private const string BatteryRunsOutVoicePath = "Assets/Sfx/vos/battery-runs-out-sfx.wav";
+        private const string NeedAccessKeyVoicePath = "Assets/Sfx/vos/need-access-key-sfx.wav";
 
         /// <summary>
         /// Batch-mode entry point used to apply the same idempotent setup to the development
@@ -40,18 +51,37 @@ namespace Lilo.Editor
                 Debug.LogError($"[SfxSetup] Clip not found at {BehindYouPath}");
                 return;
             }
-            var horrorChase = AssetDatabase.LoadAssetAtPath<AudioClip>(HorrorChasePath);
-            if (horrorChase == null)
+            var chaseBgm = AssetDatabase.LoadAssetAtPath<AudioClip>(ChaseBgmPath);
+            if (chaseBgm == null)
             {
-                Debug.LogError($"[SfxSetup] Clip not found at {HorrorChasePath}");
+                // The previous loop remains available in local scenes while the
+                // replacement is downloaded and imported from origin/main.
+                chaseBgm = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sfx/horror-chase.mp3");
+                if (chaseBgm == null)
+                    Debug.LogWarning($"[SfxSetup] Clip not found at {ChaseBgmPath}; chase audio will stay silent.");
+            }
+            var keyPickup = AssetDatabase.LoadAssetAtPath<AudioClip>(KeyPickupPath);
+            if (keyPickup == null)
+            {
+                Debug.LogError($"[SfxSetup] Clip not found at {KeyPickupPath}");
                 return;
             }
+            var waterDispenser = AssetDatabase.LoadAssetAtPath<AudioClip>(WaterDispenserPath);
+            var toiletFlush = AssetDatabase.LoadAssetAtPath<AudioClip>(ToiletFlushPath);
+            var batteryPickup = AssetDatabase.LoadAssetAtPath<AudioClip>(BatteryPickupPath);
+            var ambienceBed = AssetDatabase.LoadAssetAtPath<AudioClip>(AmbienceBedPath);
             var playerCaught = AssetDatabase.LoadAssetAtPath<AudioClip>(PlayerCaughtPath);
             if (playerCaught == null)
             {
                 Debug.LogError($"[SfxSetup] Clip not found at {PlayerCaughtPath}");
                 return;
             }
+            var life2Voice = AssetDatabase.LoadAssetAtPath<AudioClip>(Life2VoicePath);
+            var life1Voice = AssetDatabase.LoadAssetAtPath<AudioClip>(Life1VoicePath);
+            var lastLifeVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(LastLifeVoicePath);
+            var needAwayVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(NeedAwayVoicePath);
+            var batteryRunsOutVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(BatteryRunsOutVoicePath);
+            var needAccessKeyVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(NeedAccessKeyVoicePath);
 
             // 2. Find or create SfxController GameObject.
             var sfxGo = GameObject.Find("SfxController");
@@ -64,9 +94,42 @@ namespace Lilo.Editor
             // 3. Assign clips via SerializedObject.
             var so = new SerializedObject(sfx);
             so.FindProperty("behindYouClip").objectReferenceValue = behindYou;
-            so.FindProperty("horrorChaseClip").objectReferenceValue = horrorChase;
             so.FindProperty("playerCaughtClip").objectReferenceValue = playerCaught;
+            if (chaseBgm != null)
+                so.FindProperty("chaseBgmClip").objectReferenceValue = chaseBgm;
+            so.FindProperty("keyPickupClip").objectReferenceValue = keyPickup;
+            so.FindProperty("waterDispenserClip").objectReferenceValue = waterDispenser;
+            so.FindProperty("toiletFlushClip").objectReferenceValue = toiletFlush;
+            if (batteryPickup != null)
+                so.FindProperty("batteryPickupClip").objectReferenceValue = batteryPickup;
+            so.FindProperty("life2VoiceOverClip").objectReferenceValue = life2Voice;
+            so.FindProperty("life1VoiceOverClip").objectReferenceValue = life1Voice;
+            so.FindProperty("lastLifeVoiceOverClip").objectReferenceValue = lastLifeVoice;
+            so.FindProperty("needAwayVoiceOverClip").objectReferenceValue = needAwayVoice;
+            so.FindProperty("batteryRunsOutVoiceOverClip").objectReferenceValue = batteryRunsOutVoice;
+            so.FindProperty("needAccessKeyVoiceOverClip").objectReferenceValue = needAccessKeyVoice;
             so.ApplyModifiedPropertiesWithoutUndo();
+
+            // Keep standalone Office floor launches audible as well as full runs
+            // that carry the first floor's persistent ambience director forward.
+            if (ambienceBed != null)
+            {
+                var ambienceGo = GameObject.Find("AmbienceDirector");
+                if (ambienceGo == null)
+                    ambienceGo = new GameObject("AmbienceDirector");
+                var bedSource = ambienceGo.GetComponent<AudioSource>();
+                if (bedSource == null)
+                    bedSource = ambienceGo.AddComponent<AudioSource>();
+                var ambience = ambienceGo.GetComponent<AmbienceDirector>();
+                if (ambience == null)
+                    ambience = ambienceGo.AddComponent<AmbienceDirector>();
+                var ambienceSo = new SerializedObject(ambience);
+                ambienceSo.FindProperty("roomTone").objectReferenceValue = ambienceBed;
+                ambienceSo.FindProperty("bedSource").objectReferenceValue = bedSource;
+                ambienceSo.ApplyModifiedPropertiesWithoutUndo();
+            }
+
+            WirePropPassBySounds(sfx);
 
             // 4. Wire to PlayerMovementController.
             var player = GameObject.Find("PlayerCharacter");
@@ -111,7 +174,39 @@ namespace Lilo.Editor
             }
 
             EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
-            Debug.Log("[SfxSetup] Done. behind-you on first move, horror-chase on Chase, player-caught on catch.");
+            Debug.Log("[SfxSetup] Done. Audio clips assigned and player/monster controllers wired.");
+        }
+
+        private static void WirePropPassBySounds(SfxController sfx)
+        {
+            foreach (GameObject candidate in Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None))
+            {
+                string objectName = candidate.name.ToLowerInvariant();
+                PropPassBySfx.SoundType soundType;
+                if (objectName.Contains("dispenser"))
+                    soundType = PropPassBySfx.SoundType.WaterDispenser;
+                else if (objectName.Contains("toiletpartition"))
+                    soundType = PropPassBySfx.SoundType.ToiletPartition;
+                else
+                    continue;
+
+                Collider propCollider = candidate.GetComponent<Collider>();
+                if (propCollider == null)
+                {
+                    Debug.LogWarning($"[SfxSetup] {candidate.name} has no collider for pass-by audio.");
+                    continue;
+                }
+
+                var passBy = candidate.GetComponent<PropPassBySfx>();
+                if (passBy == null)
+                    passBy = candidate.AddComponent<PropPassBySfx>();
+
+                var serialized = new SerializedObject(passBy);
+                serialized.FindProperty("soundType").enumValueIndex = (int)soundType;
+                serialized.FindProperty("proximityCollider").objectReferenceValue = propCollider;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(passBy);
+            }
         }
 
         [MenuItem("LILO/Assign Player Caught Audio To Office Floors")]
