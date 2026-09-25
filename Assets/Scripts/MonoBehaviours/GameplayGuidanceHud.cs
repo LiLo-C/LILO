@@ -23,8 +23,6 @@ namespace Lilo.MonoBehaviours
         private SfxController _sfx;
         private string _lastVoiceHint;
         private bool _needAwayPlayed;
-        private bool _hasFoundDoor;
-        private float _needAwayVoiceAt;
 
         private const string NeedAwayHint = "I need to find a way to get out.";
         private const string NeedAccessKeyHint = "I need to find the access key first.";
@@ -32,7 +30,6 @@ namespace Lilo.MonoBehaviours
 
         private void Awake()
         {
-            _needAwayVoiceAt = Time.unscaledTime + 60f;
             _player = GameObject.Find("PlayerCharacter")?.transform;
             _doors = FindObjectsByType<ExitDoorInteraction>();
             _respawnMessage = GameManager.Instance?.State?.ConsumeRespawnMessage();
@@ -56,7 +53,6 @@ namespace Lilo.MonoBehaviours
 
             string hint = NeedAwayHint;
             bool nearDoor = false;
-            bool atExit = false;
             ExitDoorInteraction nearbyExit = null;
             if (_player != null)
             {
@@ -66,9 +62,6 @@ namespace Lilo.MonoBehaviours
                     if (door == null || !door.isActiveAndEnabled) continue;
                     Vector2 doorPosition = new Vector2(door.transform.position.x, door.transform.position.z);
                     float doorDistance = Vector2.Distance(playerPosition, doorPosition);
-                    if (doorDistance <= door.InteractionRadius)
-                        atExit = true;
-
                     if (doorDistance <= door.InteractionRadius * 2.5f)
                     {
                         nearDoor = true;
@@ -77,9 +70,6 @@ namespace Lilo.MonoBehaviours
                     }
                 }
             }
-
-            if (atExit)
-                _hasFoundDoor = true;
 
             if (nearDoor)
             {
@@ -98,20 +88,6 @@ namespace Lilo.MonoBehaviours
                     ? manager.State.InstalledBatteryCharge / Mathf.Max(1f, duration) : 1f;
                 if (charge <= 0.75f)
                     hint = NeedBatteryHint;
-            }
-
-            // This reminder is tied to elapsed time since spawn, not whichever
-            // contextual hint happens to be on screen when the minute passes.
-            if (!_needAwayPlayed && !_hasFoundDoor && Time.unscaledTime >= _needAwayVoiceAt)
-            {
-                if (_sfx == null)
-                    _sfx = Object.FindAnyObjectByType<SfxController>();
-
-                if (_sfx != null && _sfx.PlayNeedAwayVoiceOver())
-                {
-                    _needAwayPlayed = true;
-                    hint = NeedAwayHint;
-                }
             }
 
             if (!string.IsNullOrWhiteSpace(_respawnMessage))
@@ -147,9 +123,8 @@ namespace Lilo.MonoBehaviours
                     ? _sfx != null && _sfx.PlayLifeVoiceOverForSubtitle(hint)
                     : hint switch
                     {
-                        NeedAwayHint when !_needAwayPlayed && !_hasFoundDoor && Time.unscaledTime >= _needAwayVoiceAt
+                        NeedAwayHint when !_needAwayPlayed
                             => _sfx != null && _sfx.PlayNeedAwayVoiceOver(),
-                        NeedAwayHint when !_needAwayPlayed => false,
                         NeedAwayHint => true,
                         NeedAccessKeyHint => _sfx != null && _sfx.PlayNeedAccessKeyVoiceOver(),
                         NeedBatteryHint => _sfx != null && _sfx.PlayBatteryRunsOutVoiceOver(),
