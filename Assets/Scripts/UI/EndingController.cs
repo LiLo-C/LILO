@@ -1,3 +1,4 @@
+using Lilo.MonoBehaviours;
 using Lilo.State;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -17,9 +18,17 @@ namespace Lilo.UI
             if (title != null)
                 title.text = outcome == RunOutcome.GoodEnding ? "HAPPY ENDING" : "SAD ENDING";
             if (message != null)
-                message.text = outcome == RunOutcome.GoodEnding
-                    ? "You made it through the office. The light is still yours."
-                    : "The darkness took the last chance. Try again.";
+            {
+                if (outcome == RunOutcome.GoodEnding)
+                    message.text = "You made it through the office. The light is still yours.";
+                else
+                {
+                    string lastLifeMessage = GameManager.Instance?.State?.RespawnMessage;
+                    message.text = !string.IsNullOrWhiteSpace(lastLifeMessage)
+                        ? lastLifeMessage
+                        : "The darkness took the last chance. Try again.";
+                }
+            }
             if (mainMenuButton != null)
                 mainMenuButton.onClick.AddListener(ReturnToMainMenu);
         }
