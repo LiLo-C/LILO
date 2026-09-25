@@ -110,6 +110,11 @@ namespace Lilo.MonoBehaviours.Monster
         private float _stuckTimer;
         private bool _forceArrived;
         private bool _catchRunning;
+        private NavMeshPath _movementPath;
+        private float _nextRepathTime;
+        private Vector3 _requestedTarget;
+        private bool _hasRequestedTarget;
+        private MonsterState _movementState;
         private MonsterState _lastLoggedState = (MonsterState)(-1);
 
         private void Awake()
@@ -162,15 +167,21 @@ namespace Lilo.MonoBehaviours.Monster
             }
 
             _agent = GetComponent<NavMeshAgent>();
+            _movementPath = new NavMeshPath();
             _agent.radius = 0.5f;
             _agent.height = 2f;
             _agent.baseOffset = 0f;
             _agent.stoppingDistance = 0.3f;
-            _agent.angularSpeed = 360f;
+            _agent.angularSpeed = 240f;
+            _agent.updateRotation = false;
+            _agent.autoRepath = true;
             _agent.acceleration = 12f;
             _agent.autoBraking = true;
 
-            _animator = GetComponentInChildren<Animator>(true);
+            AlignVisibleModel();
+            // Inactive legacy models may still contain an Animator. Never drive them.
+            _animator = GetComponentInChildren<Animator>();
+            if (_animator != null) _animator.applyRootMotion = false;
             if (_animator == null)
                 Debug.LogWarning("[Monster] No Animator under monster; using the visible placeholder without animation.");
             else if (_animator.runtimeAnimatorController == null)
@@ -180,7 +191,18 @@ namespace Lilo.MonoBehaviours.Monster
                 return;
 
             var points = new List<Vector3>();
-            foreach (Transform child in patrolRoute) points.Add(child.position);
+            foreach (Transform child in patrolRoute)
+            {
+                if (NavMesh.SamplePosition(child.position, out NavMeshHit waypoint, 3f, _agent.areaMask)
+                    && IsReachable(player.position, waypoint.position))
+                    points.Add(waypoint.position);
+            }
+            if (points.Count == 0)
+            {
+                Debug.LogError("[Monster] No reachable patrol waypoints after rebuilding navigation.");
+                enabled = false;
+                return;
+            }
             _waypoints = points.ToArray();
 
             if (!PlaceAtValidatedSpawn())
@@ -204,12 +226,29 @@ namespace Lilo.MonoBehaviours.Monster
                 enabled = false;
                 return false;
             }
-            if (surface.navMeshData == null)
+            // Scene geometry changes frequently. A serialized bake can still describe
+            // an older wall layout, letting the agent path straight through it.
+            // Build from the same colliders that stop the player on this floor.
+            surface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
+            surface.BuildNavMesh();
+            if (surface.navMeshData != null
+                && NavMesh.SamplePosition(player.position, out _, 1.5f, NavMesh.AllAreas))
+                return true;
+
+            // An authored floor without a ground collider still needs a walkable
+            // surface. Keep its render-mesh bake as a safe fallback.
+            surface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
+            surface.BuildNavMesh();
+            if (surface.navMeshData != null
+                && NavMesh.SamplePosition(player.position, out _, 1.5f, NavMesh.AllAreas))
             {
-                surface.BuildNavMesh();
-                Debug.Log("[Monster] NavMesh baked at startup (dev arena).");
+                Debug.LogWarning("[Monster] Floor ground has no usable collider; using render meshes for navigation.", surface);
+                return true;
             }
-            return surface.navMeshData != null;
+
+            Debug.LogError("[Monster] No walkable NavMesh at the player after rebuilding the floor.", surface);
+            enabled = false;
+            return false;
         }
 
         private bool PlaceAtValidatedSpawn()
@@ -393,9 +432,11 @@ namespace Lilo.MonoBehaviours.Monster
                 pulses.Add(new NoisePulse { Position = scratchMark, Radius = 8f });
             }
 
-            bool arrived = !(_agent.pathPending)
-                && (_agent.pathStatus == NavMeshPathStatus.PathInvalid
-                    || _agent.remainingDistance <= _agent.stoppingDistance);
+            bool arrived = _hasRequestedTarget
+                && (_brain.Target - _requestedTarget).sqrMagnitude < 0.04f
+                && !_agent.pathPending && _agent.hasPath
+                && _agent.pathStatus == NavMeshPathStatus.PathComplete
+                && _agent.remainingDistance <= _agent.stoppingDistance;
             bool consumedForce = _forceArrived;
             _forceArrived = false;
 
@@ -411,7 +452,8 @@ namespace Lilo.MonoBehaviours.Monster
                 PatrolSpeed = speedSettings != null ? speedSettings.monsterPatrolSpeed : 0f,
                 ChaseSpeed = speedSettings != null ? speedSettings.monsterChaseSpeed : 0f,
                 ChaseTriggerDistance = config.chaseTriggerDistance,
-                PlayerVisible = !hiding && CanSeePlayer(playerPos),
+                PlayerVisible = !hiding && CanSeePlayer(playerPos,
+                    _brain.State == MonsterState.Chase || _brain.State == MonsterState.Alert),
                 SearchRadius = config.searchRadius,
                 CatchRadius = config.catchRadius,
                 Waypoints = _waypoints,
@@ -442,18 +484,8 @@ namespace Lilo.MonoBehaviours.Monster
                 return;
             }
 
-            float movementSpeed = output.Speed * config.monsterSpeedMultiplier;
-            _agent.isStopped = movementSpeed < 0.01f;
-            if (!_agent.isStopped)
-            {
-                _agent.speed = movementSpeed;
-                Vector3 destination = output.MoveTarget;
-                if (input.HidingRevealed
-                    && NavMesh.SamplePosition(destination, out NavMeshHit reachableDesk, 2.5f, NavMesh.AllAreas))
-                    destination = reachableDesk.position;
-                if ((_agent.destination - destination).sqrMagnitude > 0.01f)
-                    _agent.SetDestination(destination);
-            }
+            UpdateMovement(output, input.HidingRevealed);
+            UpdateFacing(dt);
 
             // Stuck safeguard (spec 002 edge cases): never stall forever.
             if (!_agent.isStopped && !arrived)
@@ -481,7 +513,73 @@ namespace Lilo.MonoBehaviours.Monster
             DriveAnimator();
         }
 
-        private bool CanSeePlayer(Vector3 playerPosition)
+        private void AlignVisibleModel()
+        {
+            // Imported/customized visuals can be offset from their navigation root.
+            // Center each active visual branch over the capsule; preserve its authored
+            // hover height and internal arrangement (clothes, smoke, bones).
+            foreach (Transform child in transform)
+            {
+                Renderer[] renderers = child.GetComponentsInChildren<Renderer>();
+                bool found = false;
+                Bounds bounds = default;
+                foreach (Renderer renderer in renderers)
+                {
+                    if (!renderer.enabled || renderer is ParticleSystemRenderer) continue;
+                    if (!found) { bounds = renderer.bounds; found = true; }
+                    else bounds.Encapsulate(renderer.bounds);
+                }
+                if (!found) continue;
+                Vector3 offset = transform.position - bounds.center;
+                offset.y = 0f;
+                child.position += offset;
+            }
+        }
+
+        private void UpdateMovement(MonsterBrainOutput output, bool hidingRevealed)
+        {
+            float speed = output.Speed * config.monsterSpeedMultiplier;
+            _agent.isStopped = speed < 0.01f;
+            if (_agent.isStopped) return;
+            _agent.speed = speed;
+            // Patrol flows through waypoints; investigations still brake at their goal.
+            _agent.autoBraking = _brain.State != MonsterState.Patrol;
+            bool stateChanged = _movementState != _brain.State;
+            bool targetChanged = !_hasRequestedTarget
+                || (output.MoveTarget - _requestedTarget).sqrMagnitude > 0.04f;
+            if (!stateChanged && Time.time < _nextRepathTime) return;
+            if (!stateChanged && !targetChanged && _agent.hasPath && !_agent.isPathStale) return;
+            _nextRepathTime = Time.time + 0.2f;
+            _movementState = _brain.State;
+            _requestedTarget = output.MoveTarget;
+            _hasRequestedTarget = true;
+            if (NavMesh.SamplePosition(output.MoveTarget, out NavMeshHit hit,
+                    hidingRevealed ? 2.5f : 1f, _agent.areaMask)
+                && _agent.CalculatePath(hit.position, _movementPath)
+                && _movementPath.status == NavMeshPathStatus.PathComplete)
+            {
+                _agent.SetPath(_movementPath);
+            }
+            else
+            {
+                // Do not continue toward an obsolete goal after an unreachable retarget.
+                _agent.ResetPath();
+                if (_brain.State != MonsterState.Chase) _forceArrived = true;
+            }
+        }
+
+        private void UpdateFacing(float dt)
+        {
+            Vector3 direction = _brain.State == MonsterState.Alert
+                ? _brain.Target - transform.position
+                : _agent.desiredVelocity;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.01f) return;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation,
+                Quaternion.LookRotation(direction), _agent.angularSpeed * dt);
+        }
+
+        private bool CanSeePlayer(Vector3 playerPosition, bool ignoreFieldOfView)
         {
             Vector3 toPlayer = playerPosition - transform.position;
             Vector3 flatToPlayer = Vector3.ProjectOnPlane(toPlayer, Vector3.up);
@@ -489,7 +587,7 @@ namespace Lilo.MonoBehaviours.Monster
                 return flatToPlayer.sqrMagnitude < 0.0001f;
 
             Vector3 flatForward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
-            if (Vector3.Angle(flatForward, flatToPlayer) > visionAngle * 0.5f)
+            if (!ignoreFieldOfView && Vector3.Angle(flatForward, flatToPlayer) > visionAngle * 0.5f)
                 return false;
 
             Vector3 eye = transform.position + Vector3.up * 1.4f;
@@ -518,10 +616,10 @@ namespace Lilo.MonoBehaviours.Monster
 
         private void OnStuck()
         {
-            Debug.LogWarning($"[Monster] Stuck safeguard in {_brain.State} — skipping ahead.");
-            if (_brain.State == MonsterState.Chase)
-                _agent.SetDestination(_brain.Target); // repath, keep pushing last known.
-            else
+            Debug.LogWarning($"[Monster] Stuck safeguard in {_brain.State} — retrying navigation.");
+            _hasRequestedTarget = false;
+            _nextRepathTime = 0f;
+            if (_brain.State != MonsterState.Chase)
                 _forceArrived = true; // patrol/investigate/search advance on arrival.
         }
 

@@ -44,8 +44,8 @@ namespace Lilo.Config
         public float flashlightNormalRadius = 220f;
         [Tooltip("Flashlight intensity at full charge.")]
         public float flashlightNormalIntensity = 1.0f;
-        [Tooltip("Flashlight intensity at Compact Darkness.")]
-        public float flashlightCompactDarknessIntensity = 0.2f;
+        [Tooltip("Minimum flashlight intensity at 0% battery, so the compact screen remains visible.")]
+        public float flashlightCompactDarknessIntensity = 0.5f;
         public float lightRadiusEaseRate = 4.0f;
         public bool shadowsEnabled = true;
         [Tooltip("Single tunable for out-of-flashlight readability. 0 = pure black outside the beam.")]
@@ -86,13 +86,13 @@ namespace Lilo.Config
         public float noiseHiding = 0f;
 
         [Header("17.4 Monster (per floor)")]
-        [Tooltip("Multiplier for all monster movement and its walk animation. 1.25 = 25% faster.")]
-        public float monsterSpeedMultiplier = 1.25f;
+        [Tooltip("Multiplier for all monster movement and its walk animation. 2 = twice the base speed.")]
+        public float monsterSpeedMultiplier = 2.0f;
         public MonsterTuningProfile monsterTuningFloor51 = new MonsterTuningProfile
         {
             monsterActive = true,
             patrolSpeed = 0.5f,
-            chaseSpeed = 1.5f,
+            chaseSpeed = 1.49f,
             investigateDuration = 4f,
             alertDuration = 2f,
             chaseHoldDuration = 3f,
@@ -102,7 +102,7 @@ namespace Lilo.Config
         {
             monsterActive = true,
             patrolSpeed = 0.5f,
-            chaseSpeed = 1.5f,
+            chaseSpeed = 1.49f,
             investigateDuration = 6f,
             alertDuration = 2f,
             chaseHoldDuration = 5f,
@@ -152,7 +152,7 @@ namespace Lilo.Config
         public int lives = 3;
         public int floorCount = 3;
         public bool checkpointPerFloor = true;
-        public int lockedDoorsFloor52 = 0;
+        public int lockedDoorsFloor52 = 1;
         public int lockedDoorsFloor51 = 1;
         public int lockedDoorsFloor50 = 3;
         public float targetFloorDuration = 300f;
