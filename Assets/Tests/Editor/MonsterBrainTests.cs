@@ -59,6 +59,7 @@ namespace Lilo.Tests
             MonsterBrain.Step(ref s, i);
             Assert.AreEqual(MonsterState.Patrol, s.State);
             Assert.AreEqual(1, s.WaypointIndex);
+            Assert.AreEqual(Route[1], s.Target);
         }
 
         [Test]
@@ -144,23 +145,25 @@ namespace Lilo.Tests
         }
 
         [Test]
-        public void Alert_StopsAndReturnsToPatrolWhenVisionIsLost()
+        public void Alert_InvestigatesLastKnownWhenVisionIsLost()
         {
-            var s = new MonsterBrainState { State = MonsterState.Alert, Timer = 0.5f };
+            var s = new MonsterBrainState { State = MonsterState.Alert, Timer = 0.5f, LastKnown = new Vector3(4f, 0f, 2f) };
             var i = BaseInput();
             i.PlayerVisible = false;
             MonsterBrain.Step(ref s, i);
-            Assert.AreEqual(MonsterState.Patrol, s.State);
+            Assert.AreEqual(MonsterState.Investigate, s.State);
+            Assert.AreEqual(s.LastKnown, s.Target);
         }
 
         [Test]
-        public void Chase_ReturnsToPatrolWhenVisionIsLost()
+        public void Chase_HoldsLastKnownWhenVisionIsLost()
         {
             var s = new MonsterBrainState { State = MonsterState.Chase };
             var i = BaseInput();
             i.PlayerVisible = false;
             MonsterBrain.Step(ref s, i);
-            Assert.AreEqual(MonsterState.Patrol, s.State);
+            Assert.AreEqual(MonsterState.Chase, s.State);
+            Assert.AreEqual(s.LastKnown, s.Target);
         }
 
         [Test]
@@ -177,14 +180,15 @@ namespace Lilo.Tests
         }
 
         [Test]
-        public void Chase_StopsImmediatelyWhenPlayerLeavesVision()
+        public void Chase_SearchesAfterMemoryExpires()
         {
             var s = new MonsterBrainState { State = MonsterState.Chase, LastKnown = new Vector3(5f, 0f, 0f), Target = new Vector3(5f, 0f, 0f) };
             var i = BaseInput();
             i.MonsterPosition = new Vector3(5f, 0f, 0f);
             i.PlayerPosition = new Vector3(50f, 0f, 50f);
+            i.DeltaTime = Profile.chaseHoldDuration;
             MonsterBrain.Step(ref s, i);
-            Assert.AreEqual(MonsterState.Patrol, s.State);
+            Assert.AreEqual(MonsterState.Search, s.State);
         }
 
         [Test]
@@ -218,6 +222,19 @@ namespace Lilo.Tests
 
             Assert.AreEqual(MonsterState.Alert, s.State);
             Assert.AreEqual(i.PlayerPosition, s.LastKnown);
+        }
+
+        [Test]
+        public void Search_HearsNoiseBehindWall_InvestigatesSource()
+        {
+            var s = new MonsterBrainState { State = MonsterState.Search };
+            var i = BaseInput();
+            i.PlayerPosition = new Vector3(2f, 0f, 0f);
+            i.MovementNoiseRadius = 3f;
+            i.PlayerVisible = false;
+            MonsterBrain.Step(ref s, i);
+            Assert.AreEqual(MonsterState.Investigate, s.State);
+            Assert.AreEqual(i.PlayerPosition, s.Target);
         }
 
         [Test]

@@ -33,10 +33,10 @@ namespace Lilo.MonoBehaviours.Input
         private void Awake()
         {
             if (joystick == null)
-                joystick = FindFirstObjectByType<JoystickInputAdapter>();
+                joystick = FindAnyObjectByType<JoystickInputAdapter>();
 
             if (speedSettings == null)
-                speedSettings = FindFirstObjectByType<GameplaySpeedSettings>();
+                speedSettings = FindAnyObjectByType<GameplaySpeedSettings>();
 
             GameObject player = GameObject.Find("PlayerCharacter");
             if (player != null)
@@ -52,7 +52,7 @@ namespace Lilo.MonoBehaviours.Input
         private void Update()
         {
             if (joystick == null)
-                joystick = FindFirstObjectByType<JoystickInputAdapter>();
+                joystick = FindAnyObjectByType<JoystickInputAdapter>();
 
             if (playerInput == null)
                 return;

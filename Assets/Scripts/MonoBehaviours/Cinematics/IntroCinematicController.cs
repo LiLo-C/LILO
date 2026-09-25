@@ -104,7 +104,7 @@ namespace Lilo.MonoBehaviours.Cinematics
             _player = playerObject != null ? playerObject.transform : null;
             _camera = UnityEngine.Camera.main;
             if (_camera == null)
-                _camera = FindFirstObjectByType<UnityEngine.Camera>();
+                _camera = FindAnyObjectByType<UnityEngine.Camera>();
             _lightingRig = playerObject != null ? playerObject.GetComponent<LightingRig>() : null;
             if (_lightingRig != null)
                 _lightingRig.InitializeForCinematic();
@@ -140,14 +140,16 @@ namespace Lilo.MonoBehaviours.Cinematics
 
             if (lightFlickerClip != null && _lampSfxSource != null)
             {
-                // Keep the first two light pulses aligned with the first two sounds in the clip.
+                // Match all three pulses in the intro sound clip with visible lamp flickers.
                 PlayLampFlickerSfx();
                 yield return new WaitForSecondsRealtime(0.12f);
                 yield return SetLampFor(0.65f, 0.28f);
                 yield return SetLampFor(0f, 0.42f);
                 yield return SetLampFor(0.3f, 0.32f);
-                _lampSfxSource.Stop(); // Stop before the clip's third pulse.
                 yield return SetLampFor(0f, 0.3f);
+                yield return new WaitForSecondsRealtime(0.18f);
+                yield return SetLampFor(0.65f, 0.24f);
+                yield return SetLampFor(0f, 0.22f);
             }
             yield return SetLampFor(1f, 1.2f);
 
@@ -187,25 +189,25 @@ namespace Lilo.MonoBehaviours.Cinematics
         {
             SuspendInterface();
 
-            Suspend(FindFirstObjectByType<CameraFollow>());
-            Suspend(FindFirstObjectByType<CameraFollowController>());
-            Suspend(FindFirstObjectByType<ThirdPersonController>());
-            Suspend(FindFirstObjectByType<PlayerMovementController>());
-            Suspend(FindFirstObjectByType<MobileStarterAssetsBridge>());
-            Suspend(FindFirstObjectByType<MonsterAIController>());
-            Suspend(FindFirstObjectByType<KeyboardBatteryDirector>());
-            Suspend(FindFirstObjectByType<ExitDoorInteraction>());
-            Suspend(FindFirstObjectByType<LightingRig>());
+            Suspend(FindAnyObjectByType<CameraFollow>());
+            Suspend(FindAnyObjectByType<CameraFollowController>());
+            Suspend(FindAnyObjectByType<ThirdPersonController>());
+            Suspend(FindAnyObjectByType<PlayerMovementController>());
+            Suspend(FindAnyObjectByType<MobileStarterAssetsBridge>());
+            Suspend(FindAnyObjectByType<MonsterAIController>());
+            Suspend(FindAnyObjectByType<KeyboardBatteryDirector>());
+            Suspend(FindAnyObjectByType<ExitDoorInteraction>());
+            Suspend(FindAnyObjectByType<LightingRig>());
 
             Time.timeScale = 0f;
         }
 
         private void SuspendInterface()
         {
-            foreach (Canvas canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (Canvas canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include))
                 Suspend(canvas);
 
-            foreach (GraphicRaycaster raycaster in FindObjectsByType<GraphicRaycaster>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (GraphicRaycaster raycaster in FindObjectsByType<GraphicRaycaster>(FindObjectsInactive.Include))
                 Suspend(raycaster);
 
             HideCanvasObjects();
@@ -213,7 +215,7 @@ namespace Lilo.MonoBehaviours.Cinematics
 
         private void HideCanvasObjects()
         {
-            foreach (Canvas canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (Canvas canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include))
             {
                 GameObject canvasObject = canvas.gameObject;
                 if (!canvasObject.activeSelf || _hiddenCanvasObjects.Contains(canvasObject))

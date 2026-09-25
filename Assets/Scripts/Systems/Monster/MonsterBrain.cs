@@ -131,9 +131,9 @@ namespace Lilo.Systems.Monster
                     }
                     else if (HasWaypoints(i))
                     {
-                        s.Target = i.Waypoints[s.WaypointIndex % i.Waypoints.Length];
                         if (i.ArrivedAtTarget)
                             s.WaypointIndex = (s.WaypointIndex + 1) % i.Waypoints.Length;
+                        s.Target = i.Waypoints[s.WaypointIndex % i.Waypoints.Length];
                     }
                     else
                     {
@@ -165,7 +165,9 @@ namespace Lilo.Systems.Monster
                 case MonsterState.Alert:
                     if (!i.PlayerVisible)
                     {
-                        ReturnToPatrol(ref s, i);
+                        s.State = MonsterState.Investigate;
+                        s.Target = detected ? point : s.LastKnown;
+                        s.Timer = 0f;
                     }
                     else
                     {
@@ -188,13 +190,21 @@ namespace Lilo.Systems.Monster
                     {
                         if (detected)
                         {
-                            s.State = MonsterState.Investigate;
                             s.Target = point;
                             s.LastKnown = point;
                             s.Timer = 0f;
                         }
                         else
-                            ReturnToPatrol(ref s, i);
+                        {
+                            s.Timer += i.DeltaTime;
+                            s.Target = s.LastKnown;
+                            if (s.Timer >= i.Profile.chaseHoldDuration)
+                            {
+                                s.State = MonsterState.Search;
+                                s.Timer = 0f;
+                                s.SearchRetargetTimer = 0f;
+                            }
+                        }
                     }
                     else
                     {
@@ -210,6 +220,13 @@ namespace Lilo.Systems.Monster
                         s.State = MonsterState.Alert;
                         s.LastKnown = i.PlayerPosition;
                         s.Target = i.PlayerPosition;
+                        s.Timer = 0f;
+                    }
+                    else if (detected)
+                    {
+                        s.State = MonsterState.Investigate;
+                        s.Target = point;
+                        s.LastKnown = point;
                         s.Timer = 0f;
                     }
                     else
