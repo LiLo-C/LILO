@@ -25,6 +25,8 @@ namespace Lilo.State
         public string RespawnMessage { get; private set; }
 
         public float InstalledBatteryCharge { get; private set; }
+        public int PendingLifeVoiceOver { get; private set; } = -1;
+        public bool IsLifeVoiceOverReady { get; private set; }
 
         private readonly HashSet<string> _keyInventory = new HashSet<string>();
         public IReadOnlyCollection<string> KeyInventory => _keyInventory;
@@ -43,6 +45,8 @@ namespace Lilo.State
             Outcome = RunOutcome.InProgress;
             RespawnMessage = string.Empty;
             InstalledBatteryCharge = config.batteryDuration;
+            PendingLifeVoiceOver = -1;
+            IsLifeVoiceOverReady = false;
             _keyInventory.Clear();
         }
 
@@ -56,7 +60,20 @@ namespace Lilo.State
 
         public void AdvanceToFloor(FloorId nextFloor) => CurrentFloor = nextFloor;
 
-        public void LoseLife() => Lives = System.Math.Max(0, Lives - 1);
+        public void LoseLife()
+        {
+            Lives = System.Math.Max(0, Lives - 1);
+            PendingLifeVoiceOver = Lives;
+            IsLifeVoiceOverReady = false;
+        }
+
+        public void MarkLifeVoiceOverReady() => IsLifeVoiceOverReady = PendingLifeVoiceOver >= 0;
+
+        public void ClearPendingLifeVoiceOver()
+        {
+            PendingLifeVoiceOver = -1;
+            IsLifeVoiceOverReady = false;
+        }
 
         public void SetRespawnMessage(string message) => RespawnMessage = message ?? string.Empty;
 

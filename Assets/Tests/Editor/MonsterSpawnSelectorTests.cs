@@ -63,5 +63,21 @@ namespace Lilo.Tests
 
             Assert.AreEqual(-1, selected);
         }
+
+        [Test]
+        public void ChooseReachableFallbackIndex_UsesReachableCandidateWhenVisibilityRejectsAll()
+        {
+            var candidates = new List<MonsterSpawnCandidate>
+            {
+                new MonsterSpawnCandidate(new Vector3(12f, 0f, 0f), false, false),
+                new MonsterSpawnCandidate(new Vector3(10f, 0f, 0f), true, true),
+                new MonsterSpawnCandidate(new Vector3(1f, 0f, 0f), true, false),
+            };
+
+            int selected = MonsterSpawnSelector.ChooseReachableFallbackIndex(
+                candidates, Vector3.zero, Objectives, 8f, 3f, new System.Random(123));
+
+            Assert.AreEqual(1, selected);
+        }
     }
 }

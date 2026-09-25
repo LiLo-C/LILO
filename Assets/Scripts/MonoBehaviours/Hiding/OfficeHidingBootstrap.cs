@@ -107,7 +107,7 @@ namespace Lilo.MonoBehaviours.Hiding
             labelRect.offsetMax = Vector2.zero;
             Text label = labelObject.GetComponent<Text>();
             label.text = "HIDE";
-            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.font = Lilo.UI.GameUIFont.Get();
             label.alignment = TextAnchor.MiddleCenter;
             label.color = Color.white;
             label.raycastTarget = false;

@@ -304,9 +304,20 @@ namespace Lilo.MonoBehaviours.Monster
                 _rng);
             if (selected < 0)
             {
-                Debug.LogError("[Monster] No authored or randomized NavMesh spawn passed reachability, distance, visibility, and objective-clearance validation.");
-                enabled = false;
-                return false;
+                selected = MonsterSpawnSelector.ChooseReachableFallbackIndex(
+                    candidates,
+                    entry,
+                    objectives,
+                    config.monsterSpawnMinDistance,
+                    config.monsterSpawnObjectiveClearance,
+                    _rng);
+                if (selected < 0)
+                {
+                    Debug.LogError("[Monster] No reachable NavMesh spawn candidate is available; check the baked floor NavMesh and spawn area mask.");
+                    enabled = false;
+                    return false;
+                }
+                Debug.LogWarning("[Monster] No spawn met every safety check; using the safest reachable fallback so the monster AI stays active.");
             }
 
             Vector3 selectedPosition = positions[selected];
@@ -464,18 +475,19 @@ namespace Lilo.MonoBehaviours.Monster
                 HidingRevealed = hiding && HidingController.IsPlayerExposed,
             };
             MonsterBrainOutput output = MonsterBrain.Step(ref _brain, input);
-
             if (_brain.State != _lastLoggedState)
             {
                 Debug.Log($"[Monster] {_lastLoggedState} -> {_brain.State} (target={_brain.Target})");
                 MonsterHaptics.OnStateChanged(_brain.State);
                 if (_brain.State == MonsterState.Chase && sfx != null)
                 {
-                    sfx.PlayBehindYou();
-                    sfx.PlayHorrorChase();
+                    sfx.PlayBehindYou(transform.position);
+                    sfx.PlayChaseBgm();
                 }
                 else
-                    sfx?.StopHorrorChase();
+                {
+                    sfx?.StopChaseBgm();
+                }
                 _lastLoggedState = _brain.State;
             }
 
@@ -709,6 +721,7 @@ namespace Lilo.MonoBehaviours.Monster
                 ? "BadEnding"
                 : ResolveRespawnScene(state);
             Debug.Log($"[Monster] Respawning on {respawnScene} for floor {state?.CurrentFloor.ToString() ?? "active scene"}.");
+            state?.MarkLifeVoiceOverReady();
             Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();
             SceneManager.LoadScene(respawnScene);
         }
