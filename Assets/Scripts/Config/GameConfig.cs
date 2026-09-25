@@ -94,7 +94,7 @@ namespace Lilo.Config
             patrolSpeed = 0.5f,
             chaseSpeed = 1.49f,
             investigateDuration = 4f,
-            alertDuration = 2f,
+            alertDuration = 1f,
             chaseHoldDuration = 3f,
             searchDuration = 6f,
         };
@@ -104,7 +104,7 @@ namespace Lilo.Config
             patrolSpeed = 0.5f,
             chaseSpeed = 1.49f,
             investigateDuration = 6f,
-            alertDuration = 2f,
+            alertDuration = 1f,
             chaseHoldDuration = 5f,
             searchDuration = 8f,
         };

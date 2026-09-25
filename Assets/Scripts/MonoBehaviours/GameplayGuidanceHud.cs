@@ -17,11 +17,16 @@ namespace Lilo.MonoBehaviours
         private float _lastScale = -1f;
         private string _lastHint;
         private float _hideAt;
+        private string _respawnMessage;
+        private float _respawnMessageUntil;
 
         private void Awake()
         {
             _player = GameObject.Find("PlayerCharacter")?.transform;
             _doors = FindObjectsByType<ExitDoorInteraction>();
+            _respawnMessage = GameManager.Instance?.State?.ConsumeRespawnMessage();
+            if (!string.IsNullOrWhiteSpace(_respawnMessage))
+                _respawnMessageUntil = Time.unscaledTime + 4f;
             CreateLabel();
             ApplyLayout();
         }
@@ -74,6 +79,15 @@ namespace Lilo.MonoBehaviours
                 if (charge <= 0.75f)
                     hint = "I need to find some more battery.";
             }
+
+            if (!string.IsNullOrWhiteSpace(_respawnMessage))
+            {
+                if (Time.unscaledTime < _respawnMessageUntil)
+                    hint = _respawnMessage;
+                else
+                    _respawnMessage = null;
+            }
+
             if (hint != _lastHint)
             {
                 _lastHint = hint;

@@ -26,6 +26,8 @@ namespace Lilo.UI
             pauseButton?.onClick.AddListener(Pause);
             resumeButton?.onClick.AddListener(Resume);
             mainMenuButton?.onClick.AddListener(ReturnToMainMenu);
+            if (livesText != null)
+                livesText.gameObject.SetActive(false);
             if (pausePanel != null) pausePanel.SetActive(false);
             Time.timeScale = 1f;
         }
@@ -44,7 +46,6 @@ namespace Lilo.UI
                     state.CurrentFloor == FloorId.Floor51 ? 51 : 50;
                 floorText.text = $"FLOOR {floorNumber}";
             }
-            if (livesText != null) livesText.text = $"LIVES {state.Lives}";
             if (batteryText != null)
             {
                 float duration = GameManager.Instance.Config != null ? GameManager.Instance.Config.batteryDuration : 1f;
@@ -63,7 +64,7 @@ namespace Lilo.UI
             float scale = Mathf.Max(0.01f, canvas.scaleFactor);
             float shortSide = Mathf.Min(Screen.width, Screen.height);
             float hudFont = Mathf.Clamp(shortSide * 0.032f, 32f, 48f) * 1.5f;
-            foreach (Text label in new[] { floorText, livesText, batteryText })
+            foreach (Text label in new[] { floorText, batteryText })
             {
                 if (label == null) continue;
                 label.fontSize = Mathf.RoundToInt(hudFont / scale);

@@ -59,7 +59,7 @@ MonoBehaviour:
     patrolSpeed: 0.5
     chaseSpeed: 1.49
     investigateDuration: 4
-    alertDuration: 2
+    alertDuration: 1
     chaseHoldDuration: 3
     searchDuration: 6
   monsterTuningFloor50:
@@ -67,7 +67,7 @@ MonoBehaviour:
     patrolSpeed: 0.5
     chaseSpeed: 1.49
     investigateDuration: 6
-    alertDuration: 2
+    alertDuration: 1
     chaseHoldDuration: 5
     searchDuration: 8
   monsterActiveFloor52: 0

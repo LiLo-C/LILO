@@ -253,7 +253,7 @@ namespace Lilo.UI
             _transitioning = true;
             SetButtons(false);
             GameManager.Instance?.BeginNewRun();
-            SceneManager.LoadScene("IntroCinematic");
+            SceneManager.LoadScene("Prologue");
         }
 
         public void OpenHowToPlay()
