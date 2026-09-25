@@ -106,6 +106,8 @@ namespace Lilo.MonoBehaviours.Cinematics
             if (_camera == null)
                 _camera = FindFirstObjectByType<UnityEngine.Camera>();
             _lightingRig = playerObject != null ? playerObject.GetComponent<LightingRig>() : null;
+            if (_lightingRig != null)
+                _lightingRig.InitializeForCinematic();
             _lamp = _lightingRig != null ? _lightingRig.PlayerFlashlight : null;
 
             if (_player == null || _camera == null || _lamp == null)
@@ -136,15 +138,17 @@ namespace Lilo.MonoBehaviours.Cinematics
             _lamp.intensity = 0f;
             yield return new WaitForSecondsRealtime(darkHoldSeconds);
 
-            // The three audible flickers land at roughly 0.12s, 0.82s, and 1.62s.
-            PlayLampFlickerSfx();
-            yield return new WaitForSecondsRealtime(0.12f);
-            yield return SetLampFor(0.65f, 0.28f);
-            yield return SetLampFor(0f, 0.42f);
-            yield return SetLampFor(0.3f, 0.32f);
-            yield return SetLampFor(0f, 0.48f);
-            yield return SetLampFor(0.85f, 0.32f);
-            yield return SetLampFor(0f, 0.3f);
+            if (lightFlickerClip != null && _lampSfxSource != null)
+            {
+                // Keep the first two light pulses aligned with the first two sounds in the clip.
+                PlayLampFlickerSfx();
+                yield return new WaitForSecondsRealtime(0.12f);
+                yield return SetLampFor(0.65f, 0.28f);
+                yield return SetLampFor(0f, 0.42f);
+                yield return SetLampFor(0.3f, 0.32f);
+                _lampSfxSource.Stop(); // Stop before the clip's third pulse.
+                yield return SetLampFor(0f, 0.3f);
+            }
             yield return SetLampFor(1f, 1.2f);
 
             float elapsed = 0f;
@@ -240,7 +244,9 @@ namespace Lilo.MonoBehaviours.Cinematics
             if (_lampFlickerSfxPlayed || lightFlickerClip == null || _lampSfxSource == null)
                 return;
 
-            _lampSfxSource.PlayOneShot(lightFlickerClip, SoundSettingsStore.Effects);
+            _lampSfxSource.clip = lightFlickerClip;
+            _lampSfxSource.volume = SoundSettingsStore.Effects;
+            _lampSfxSource.Play();
             _lampFlickerSfxPlayed = true;
         }
 
