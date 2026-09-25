@@ -18,7 +18,7 @@ namespace Lilo.MonoBehaviours.Camera
         [Header("Continuous wobble")]
         [SerializeField, Range(0f, 20f)] private float rollWobbleDegrees = 1.5f;
         [SerializeField, Range(0f, 20f)] private float pitchWobbleDegrees = 1.5f;
-        [SerializeField, Min(0.01f)] private float wobbleFrequencyHz = 0.2f;
+        [SerializeField, Min(0.01f)] private float wobbleFrequencyHz = 1.2f;
         [SerializeField, Min(0f)] private float rotationSmoothing = 8f;
 
         private Quaternion _baseRotation;
