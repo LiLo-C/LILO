@@ -51,10 +51,6 @@ namespace Lilo.MonoBehaviours.Monster
         [SerializeField] private SfxController sfx;
         [SerializeField] private GameplaySpeedSettings speedSettings;
 
-        [Header("Vision")]
-        [SerializeField, Min(1f)] private float visionRange = 12f;
-        [SerializeField, Range(10f, 180f)] private float visionAngle = 110f;
-
         /// <summary>
         /// Instance-level one-shot noise pulses (interact/battery, specs 005/006).
         /// Emitters call this on the scene's single MonsterAIController; until those
@@ -295,11 +291,12 @@ namespace Lilo.MonoBehaviours.Monster
                     IsVisibleFromEntry(entry, point)));
             }
 
-            int selected = MonsterSpawnSelector.ChooseValidIndex(
+            int selected = MonsterSpawnSelector.ChooseBalancedIndex(
                 candidates,
                 entry,
                 objectives,
                 config.monsterSpawnMinDistance,
+                config.monsterSpawnMaxDistance,
                 config.monsterSpawnObjectiveClearance,
                 _rng);
             if (selected < 0)
@@ -406,6 +403,11 @@ namespace Lilo.MonoBehaviours.Monster
             bool hiding = (GameManager.Instance != null && GameManager.Instance.State.IsHiding)
                 || HidingController.IsPlayerHiding;
             float moveRadius = MonsterNoise.MovementRadius(config, hiding, moving, sprinting);
+            if (moveRadius > 0f && MonsterNoise.IsInRearBlindSpot(
+                    transform.position, transform.forward, playerPos,
+                    config.monsterHearingRearBlindSpotAngle))
+                moveRadius = 0f;
+            moveRadius *= _profile.noiseSensitivityMultiplier;
             CurrentNoiseRadius = moveRadius;
             CurrentNoiseSource = hiding
                 ? Lilo.Systems.Monster.NoiseSource.Hiding
@@ -419,8 +421,12 @@ namespace Lilo.MonoBehaviours.Monster
             float largestPulse = 0f;
             foreach (var pulse in _pulses)
             {
-                if (pulse.Radius <= largestPulse) continue;
-                largestPulse = pulse.Radius;
+                if (MonsterNoise.IsInRearBlindSpot(transform.position, transform.forward,
+                        pulse.Position, config.monsterHearingRearBlindSpotAngle))
+                    continue;
+                float detectingRadius = pulse.Radius * _profile.noiseSensitivityMultiplier;
+                if (detectingRadius <= largestPulse) continue;
+                largestPulse = detectingRadius;
                 if (largestPulse > CurrentNoiseRadius)
                 {
                     CurrentNoiseRadius = largestPulse;
@@ -431,17 +437,35 @@ namespace Lilo.MonoBehaviours.Monster
             if (_pulses.Count > 0)
             {
                 _pulsesBuffer.Clear();
-                foreach (var p in _pulses) _pulsesBuffer.Add(new NoisePulse { Position = p.Position, Radius = p.Radius });
+                foreach (var p in _pulses)
+                {
+                    if (MonsterNoise.IsInRearBlindSpot(transform.position, transform.forward,
+                            p.Position, config.monsterHearingRearBlindSpotAngle))
+                        continue;
+                    _pulsesBuffer.Add(new NoisePulse
+                    {
+                        Position = p.Position,
+                        Radius = p.Radius * _profile.noiseSensitivityMultiplier,
+                    });
+                }
                 pulses = _pulsesBuffer;
             }
             if (ScratchMarkTrail.TryGetLatestNear(transform.position, out Vector3 scratchMark))
             {
-                if (pulses == null)
+                if (!MonsterNoise.IsInRearBlindSpot(transform.position, transform.forward,
+                        scratchMark, config.monsterHearingRearBlindSpotAngle))
                 {
-                    _pulsesBuffer.Clear();
-                    pulses = _pulsesBuffer;
+                    if (pulses == null)
+                    {
+                        _pulsesBuffer.Clear();
+                        pulses = _pulsesBuffer;
+                    }
+                    pulses.Add(new NoisePulse
+                    {
+                        Position = scratchMark,
+                        Radius = 8f * _profile.noiseSensitivityMultiplier,
+                    });
                 }
-                pulses.Add(new NoisePulse { Position = scratchMark, Radius = 8f });
             }
 
             bool arrived = _hasRequestedTarget
@@ -461,8 +485,12 @@ namespace Lilo.MonoBehaviours.Monster
                 Pulses = pulses,
                 Profile = _profile,
                 WalkSpeed = config.walkSpeed,
-                PatrolSpeed = speedSettings != null ? speedSettings.monsterPatrolSpeed : 0f,
-                ChaseSpeed = speedSettings != null ? speedSettings.monsterChaseSpeed : 0f,
+                PatrolSpeed = speedSettings != null
+                    ? speedSettings.monsterPatrolSpeed * _profile.movementSpeedMultiplier
+                    : 0f,
+                ChaseSpeed = speedSettings != null
+                    ? speedSettings.monsterChaseSpeed * _profile.movementSpeedMultiplier
+                    : 0f,
                 ChaseTriggerDistance = config.chaseTriggerDistance,
                 PlayerVisible = !hiding && CanSeePlayer(playerPos,
                     _brain.State == MonsterState.Chase || _brain.State == MonsterState.Alert),
@@ -595,11 +623,11 @@ namespace Lilo.MonoBehaviours.Monster
         {
             Vector3 toPlayer = playerPosition - transform.position;
             Vector3 flatToPlayer = Vector3.ProjectOnPlane(toPlayer, Vector3.up);
-            if (flatToPlayer.sqrMagnitude > visionRange * visionRange || flatToPlayer.sqrMagnitude < 0.0001f)
+            if (flatToPlayer.sqrMagnitude > config.monsterVisionRange * config.monsterVisionRange || flatToPlayer.sqrMagnitude < 0.0001f)
                 return flatToPlayer.sqrMagnitude < 0.0001f;
 
             Vector3 flatForward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
-            if (!ignoreFieldOfView && Vector3.Angle(flatForward, flatToPlayer) > visionAngle * 0.5f)
+            if (!ignoreFieldOfView && Vector3.Angle(flatForward, flatToPlayer) > config.monsterVisionAngle * 0.5f)
                 return false;
 
             Vector3 eye = transform.position + Vector3.up * 1.4f;
@@ -641,7 +669,9 @@ namespace Lilo.MonoBehaviours.Monster
                 return;
             bool moving = _agent.velocity.magnitude > 0.15f;
             // Match the walk cycle to the multiplier applied to NavMesh movement.
-            _animator.speed = moving ? 0.5f * config.monsterSpeedMultiplier : 1f;
+            _animator.speed = moving
+                ? 0.5f * config.monsterSpeedMultiplier * _profile.movementSpeedMultiplier
+                : 1f;
             if (!moving || _animator.IsInTransition(0))
                 return;
             // The pack's walk state auto-returns to idle, so re-fire while moving.

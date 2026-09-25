@@ -66,9 +66,44 @@ namespace Lilo.Systems.Monster
         }
 
         /// <summary>
-        /// Selects the safest reachable candidate if none pass every strict rule.
-        /// Reachability is never relaxed; visibility and authored separation are
-        /// preferences because they should not leave the monster disabled.
+        /// Picks a safe candidate inside the spawn distance band, preferring the
+        /// middle of the band so large floors do not place the monster at the far edge.
+        /// </summary>
+        public static int ChooseBalancedIndex(
+            IReadOnlyList<MonsterSpawnCandidate> candidates,
+            Vector3 playerEntry,
+            IReadOnlyList<Vector3> objectives,
+            float minimumEntryDistance,
+            float maximumEntryDistance,
+            float objectiveClearance,
+            System.Random rng)
+        {
+            if (candidates == null || rng == null || maximumEntryDistance < minimumEntryDistance)
+                return -1;
+
+            float preferredDistance = (minimumEntryDistance + maximumEntryDistance) * 0.5f;
+            int best = -1;
+            float bestScore = float.PositiveInfinity;
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                MonsterSpawnCandidate candidate = candidates[i];
+                float distance = MonsterBrain.DistXZ(candidate.Position, playerEntry);
+                if (!IsValid(candidate, playerEntry, objectives, minimumEntryDistance, objectiveClearance)
+                    || distance > maximumEntryDistance)
+                    continue;
+
+                float score = Mathf.Abs(distance - preferredDistance)
+                    + (float)rng.NextDouble() * 0.75f;
+                if (score >= bestScore) continue;
+                best = i;
+                bestScore = score;
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// Selects a reachable, reasonably distant fallback if strict candidate
+        /// validation yields no result. A compact floor can still use its farthest point.
         /// </summary>
         public static int ChooseReachableFallbackIndex(
             IReadOnlyList<MonsterSpawnCandidate> candidates,
@@ -84,6 +119,7 @@ namespace Lilo.Systems.Monster
             int best = -1;
             float bestScore = float.NegativeInfinity;
             float minimumFallbackDistance = Mathf.Max(2.5f, minimumEntryDistance * 0.5f);
+            float preferredDistance = minimumEntryDistance + Mathf.Max(2f, minimumEntryDistance * 0.4f);
             for (int i = 0; i < candidates.Count; i++)
             {
                 MonsterSpawnCandidate candidate = candidates[i];
@@ -100,7 +136,8 @@ namespace Lilo.Systems.Monster
                             MonsterBrain.DistXZ(candidate.Position, objectives[j]));
                 }
 
-                float score = entryDistance + Mathf.Min(objectiveDistance, objectiveClearance * 2f) * 1.5f;
+                float score = -Mathf.Abs(entryDistance - preferredDistance)
+                    + Mathf.Min(objectiveDistance, objectiveClearance * 2f) * 1.5f;
                 if (candidate.IsVisibleFromEntry) score -= 3f;
                 score += (float)rng.NextDouble() * 0.5f;
                 if (score <= bestScore) continue;

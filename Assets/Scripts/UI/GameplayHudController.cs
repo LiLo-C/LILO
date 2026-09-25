@@ -29,6 +29,8 @@ namespace Lilo.UI
             DisableDebugUi();
             SetupFloorFlag();
             SetupBatteryPanel();
+            if (GetComponent<ChaseScreenEffects>() == null)
+                gameObject.AddComponent<ChaseScreenEffects>();
             pauseButton?.onClick.AddListener(Pause);
             resumeButton?.onClick.AddListener(Resume);
             mainMenuButton?.onClick.AddListener(ReturnToMainMenu);

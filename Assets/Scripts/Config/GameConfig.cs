@@ -76,14 +76,22 @@ namespace Lilo.Config
         [Tooltip("Lamp charge gained per battery pickup, as a fraction of full (0.25 = +25%). Clamped at full.")]
         public float keyboardBatteryChargeFraction = 0.25f;
 
+        [Header("Access key placement")]
+        [Tooltip("Minimum horizontal distance from the player when an access key is placed.")]
+        public float accessKeySpawnMinDistance = 5f;
+        [Tooltip("Preferred maximum horizontal distance for access key placement.")]
+        public float accessKeySpawnMaxDistance = 8f;
+
         [Header("17.3 Noise")]
-        [Tooltip("Feel value — TBD on device; must be locked before Fase 2 per GDD Ch. 21.")]
-        public float noiseBaseRadius = 1.0f;
+        [Tooltip("Maximum walk noise radius is the base radius times noiseWalk.")]
+        public float noiseBaseRadius = 2.0f;
         public float noiseWalk = 1.0f;
-        public float noiseSprint = 3.0f;
+        public float noiseSprint = 2.5f;
         public float noiseInteract = 2.0f;
         public float noiseBatterySwap = 1.5f;
         public float noiseHiding = 0f;
+        [Tooltip("Half-angle of the rear cone where movement and pickup noises are muffled.")]
+        [Range(0f, 80f)] public float monsterHearingRearBlindSpotAngle = 32f;
 
         [Header("17.4 Monster (per floor)")]
         [Tooltip("Multiplier for all monster movement and its walk animation. 2 = twice the base speed.")]
@@ -91,8 +99,10 @@ namespace Lilo.Config
         public MonsterTuningProfile monsterTuningFloor51 = new MonsterTuningProfile
         {
             monsterActive = true,
-            patrolSpeed = 0.5f,
-            chaseSpeed = 1.49f,
+            patrolSpeed = 0.25f,
+            chaseSpeed = 0.745f,
+            movementSpeedMultiplier = 0.5f,
+            noiseSensitivityMultiplier = 1f,
             investigateDuration = 4f,
             alertDuration = 1f,
             chaseHoldDuration = 3f,
@@ -103,6 +113,8 @@ namespace Lilo.Config
             monsterActive = true,
             patrolSpeed = 0.5f,
             chaseSpeed = 1.49f,
+            movementSpeedMultiplier = 1f,
+            noiseSensitivityMultiplier = 1.5f,
             investigateDuration = 6f,
             alertDuration = 1f,
             chaseHoldDuration = 5f,
@@ -112,15 +124,24 @@ namespace Lilo.Config
 
         public MonsterTuningProfile GetMonsterProfile(FloorId floor)
         {
+            MonsterTuningProfile profile;
             switch (floor)
             {
                 case FloorId.Floor50:
-                    return monsterTuningFloor50;
+                    profile = monsterTuningFloor50;
+                    break;
                 case FloorId.Floor51:
-                    return monsterTuningFloor51;
+                    profile = monsterTuningFloor51;
+                    break;
                 default:
-                    return new MonsterTuningProfile { monsterActive = monsterActiveFloor52 };
+                    profile = new MonsterTuningProfile { monsterActive = monsterActiveFloor52 };
+                    break;
             }
+
+            // Older serialized tuning assets predate these per-floor multipliers.
+            if (profile.movementSpeedMultiplier <= 0f) profile.movementSpeedMultiplier = 1f;
+            if (profile.noiseSensitivityMultiplier <= 0f) profile.noiseSensitivityMultiplier = 1f;
+            return profile;
         }
 
         public int GetLockedDoorCount(FloorId floor)
@@ -135,6 +156,10 @@ namespace Lilo.Config
         }
 
         [Header("002 Monster behavior (FR-018 new keys)")]
+        [Tooltip("Maximum distance for direct sight detection.")]
+        [Min(1f)] public float monsterVisionRange = 9f;
+        [Tooltip("Monster's normal field of view, in degrees.")]
+        [Range(10f, 180f)] public float monsterVisionAngle = 100f;
         [Tooltip("Close-range detection that turns INVESTIGATE into CHASE. Feel value — tune on device.")]
         public float chaseTriggerDistance = 2.5f;
         [Tooltip("Wander radius around last known position in SEARCH. Feel value — tune on device.")]
@@ -143,8 +168,10 @@ namespace Lilo.Config
         public float catchRadius = 0.9f;
         [Tooltip("Stuck safeguard window (spec 002 edge cases).")]
         public float monsterStuckTimeout = 2f;
-        [Tooltip("Spawn validity (FR-003); full automated checks land with spec 004 floor data.")]
+        [Tooltip("Minimum player distance when placing the monster at floor entry.")]
         public float monsterSpawnMinDistance = 8f;
+        [Tooltip("Maximum preferred player distance for the monster's initial spawn.")]
+        public float monsterSpawnMaxDistance = 15f;
         public float monsterSpawnObjectiveClearance = 3f;
         public float monsterSpawnSafeSeconds = 5f;
 
@@ -221,6 +248,10 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(keyboardBatteryCountPerFloor), keyboardBatteryCountPerFloor.ToString(), "must be >= 0"));
             if (keyboardBatteryChargeFraction <= 0f || keyboardBatteryChargeFraction > 1f)
                 failures.Add(new ConfigValidationFailure(nameof(keyboardBatteryChargeFraction), keyboardBatteryChargeFraction.ToString(), "must be in (0, 1]"));
+            if (accessKeySpawnMinDistance <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(accessKeySpawnMinDistance), accessKeySpawnMinDistance.ToString(), "must be > 0"));
+            if (accessKeySpawnMaxDistance < accessKeySpawnMinDistance)
+                failures.Add(new ConfigValidationFailure(nameof(accessKeySpawnMaxDistance), accessKeySpawnMaxDistance.ToString(), "must be >= accessKeySpawnMinDistance"));
 
             // 17.3 Noise
             if (noiseBaseRadius <= 0f)
@@ -235,6 +266,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(noiseBatterySwap), noiseBatterySwap.ToString(), "must be > 0"));
             if (noiseHiding < 0f)
                 failures.Add(new ConfigValidationFailure(nameof(noiseHiding), noiseHiding.ToString(), "must be >= 0"));
+            if (monsterHearingRearBlindSpotAngle < 0f || monsterHearingRearBlindSpotAngle > 80f)
+                failures.Add(new ConfigValidationFailure(nameof(monsterHearingRearBlindSpotAngle), monsterHearingRearBlindSpotAngle.ToString(), "must be between 0 and 80 degrees"));
 
             // 17.4 Monster
             if (monsterSpeedMultiplier <= 0f)
@@ -243,6 +276,10 @@ namespace Lilo.Config
             ValidateMonsterProfile(monsterTuningFloor50, nameof(monsterTuningFloor50), failures);
 
             // 002 Monster behavior (FR-018)
+            if (monsterVisionRange <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(monsterVisionRange), monsterVisionRange.ToString(), "must be > 0"));
+            if (monsterVisionAngle < 10f || monsterVisionAngle > 180f)
+                failures.Add(new ConfigValidationFailure(nameof(monsterVisionAngle), monsterVisionAngle.ToString(), "must be between 10 and 180 degrees"));
             if (chaseTriggerDistance <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(chaseTriggerDistance), chaseTriggerDistance.ToString(), "must be > 0"));
             if (searchRadius <= 0f)
@@ -253,6 +290,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(monsterStuckTimeout), monsterStuckTimeout.ToString(), "must be > 0"));
             if (monsterSpawnMinDistance <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(monsterSpawnMinDistance), monsterSpawnMinDistance.ToString(), "must be > 0"));
+            if (monsterSpawnMaxDistance < monsterSpawnMinDistance)
+                failures.Add(new ConfigValidationFailure(nameof(monsterSpawnMaxDistance), monsterSpawnMaxDistance.ToString(), "must be >= monsterSpawnMinDistance"));
             if (monsterSpawnObjectiveClearance <= 0f)
                 failures.Add(new ConfigValidationFailure(nameof(monsterSpawnObjectiveClearance), monsterSpawnObjectiveClearance.ToString(), "must be > 0"));
             if (monsterSpawnSafeSeconds <= 0f)
@@ -284,6 +323,10 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure($"{label}.patrolSpeed", profile.patrolSpeed.ToString(), "must be > 0"));
             if (profile.chaseSpeed <= 0f)
                 failures.Add(new ConfigValidationFailure($"{label}.chaseSpeed", profile.chaseSpeed.ToString(), "must be > 0"));
+            if (profile.movementSpeedMultiplier <= 0f)
+                failures.Add(new ConfigValidationFailure($"{label}.movementSpeedMultiplier", profile.movementSpeedMultiplier.ToString(), "must be > 0"));
+            if (profile.noiseSensitivityMultiplier < 1f)
+                failures.Add(new ConfigValidationFailure($"{label}.noiseSensitivityMultiplier", profile.noiseSensitivityMultiplier.ToString(), "must be >= 1"));
             if (profile.chaseSpeed * monsterSpeedMultiplier >= sprintMultiplier)
                 failures.Add(new ConfigValidationFailure($"{label}.chaseSpeed", profile.chaseSpeed.ToString(), "chase speed after multiplier must be < sprintMultiplier (hard rule, GDD 6.2)"));
             if (profile.investigateDuration <= 0f)

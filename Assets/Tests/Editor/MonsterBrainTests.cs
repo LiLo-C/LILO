@@ -334,6 +334,15 @@ namespace Lilo.Tests
         }
 
         [Test]
+        public void Floor51IsHalfSpeed_AndFloor50HearsMoreNoise()
+        {
+            var cfg = ScriptableObject.CreateInstance<GameConfig>();
+
+            Assert.AreEqual(0.5f, cfg.GetMonsterProfile(FloorId.Floor51).movementSpeedMultiplier);
+            Assert.AreEqual(1.5f, cfg.GetMonsterProfile(FloorId.Floor50).noiseSensitivityMultiplier);
+        }
+
+        [Test]
         public void HiddenPlayer_ImmuneToCatchEvenWhenWithinCatchRadius()
         {
             var state = new MonsterBrainState { State = MonsterState.Patrol };

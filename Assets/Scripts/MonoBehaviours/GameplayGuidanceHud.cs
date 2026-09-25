@@ -1,4 +1,6 @@
+using Lilo.Config;
 using Lilo.MonoBehaviours.Interaction;
+using Lilo.State;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,7 +44,15 @@ namespace Lilo.MonoBehaviours
                 _doors = FindObjectsByType<ExitDoorInteraction>();
             if (_text == null) return;
 
-            string hint = "I need to find a way to get out.";
+            GameState state = GameManager.Instance?.State;
+            FloorId floor = state != null ? state.CurrentFloor : FloorId.Floor52;
+            string keyId = AccessKeyPickup.KeyIdForFloor(floor);
+            bool hasKey = state != null && state.HasKey(keyId);
+            bool requiresKey = GameManager.Instance?.Config != null
+                && GameManager.Instance.Config.GetLockedDoorCount(floor) > 0;
+            string hint = requiresKey
+                ? hasKey ? GetDoorHint(floor) : GetKeyHint(floor)
+                : "I need to find a way to get out.";
             bool nearDoor = false;
             ExitDoorInteraction nearbyExit = null;
             if (_player != null)
@@ -64,15 +74,13 @@ namespace Lilo.MonoBehaviours
             if (nearDoor)
             {
                 if (nearbyExit != null && nearbyExit.RequiresAccessKey)
-                    hint = nearbyExit.HasRequiredAccessKey
-                        ? "I have the access key. I can get out."
-                        : "I need to find the access key first.";
+                    hint = GetDoorProximityHint(floor, hasKey);
                 else
-                    hint = "I found the exit. I can get out.";
+                    hint = "I FOUND THE EXIT DOOR. I CAN GET OUT!";
             }
-            else
+            else if (!requiresKey)
             {
-                var manager = GameManager.Instance;
+                GameManager manager = GameManager.Instance;
                 float duration = manager != null && manager.Config != null ? manager.Config.batteryDuration : 1f;
                 float charge = manager != null && manager.State != null
                     ? manager.State.InstalledBatteryCharge / Mathf.Max(1f, duration) : 1f;
@@ -99,6 +107,46 @@ namespace Lilo.MonoBehaviours
             {
                 _panel.SetActive(false);
             }
+        }
+
+        private static string GetKeyHint(FloorId floor)
+        {
+            return floor switch
+            {
+                FloorId.Floor51 => "THE KEY MUST BE ON ONE OF THESE DESKS. FIND IT, THEN GET TO THE EXIT DOOR.",
+                FloorId.Floor50 => "THE KEY IS ON ONE OF THESE DESKS—FIND IT! THEN GET TO THE EXIT DOOR, NOW!",
+                _ => "WHY IS THERE A KEY? CHECK THE DESKS... MAYBE ONE HAS IT. I NEED TO FIND AN EXIT!",
+            };
+        }
+
+        private static string GetDoorHint(FloorId floor)
+        {
+            return floor switch
+            {
+                FloorId.Floor51 => "I HAVE THE KEY. NOW FIND THE EXIT DOOR—FAST.",
+                FloorId.Floor50 => "I HAVE THE KEY. FIND THAT EXIT DOOR BEFORE IT FINDS ME!",
+                _ => "I HAVE THE KEY... NOW WHERE IS THE EXIT DOOR? I HAVE TO GET OUT!",
+            };
+        }
+
+        private static string GetDoorProximityHint(FloorId floor, bool hasKey)
+        {
+            if (hasKey)
+            {
+                return floor switch
+                {
+                    FloorId.Floor51 => "THAT'S THE EXIT DOOR. USE THE KEY. GO!",
+                    FloorId.Floor50 => "THE EXIT DOOR—USE THE KEY, NOW!",
+                    _ => "THE EXIT DOOR! I HAVE A KEY—PLEASE, OPEN!",
+                };
+            }
+
+            return floor switch
+            {
+                FloorId.Floor51 => "LOCKED. THE KEY IS ON ONE OF THESE DESKS. GET IT!",
+                FloorId.Floor50 => "LOCKED! THE KEY'S ON ONE OF THESE DESKS. MOVE!",
+                _ => "THE EXIT DOOR IS LOCKED. I NEED THE KEY—CHECK THE DESKS!",
+            };
         }
 
         private void CreateLabel()

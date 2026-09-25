@@ -47,17 +47,22 @@ MonoBehaviour:
   batteryRespawnFloor50: 60
   keyboardBatteryCountPerFloor: 3
   keyboardBatteryChargeFraction: 0.25
-  noiseBaseRadius: 4
+  accessKeySpawnMinDistance: 5
+  accessKeySpawnMaxDistance: 8
+  noiseBaseRadius: 2
   noiseWalk: 1
-  noiseSprint: 3
+  noiseSprint: 2.5
   noiseInteract: 2
   noiseBatterySwap: 1.5
   noiseHiding: 0
+  monsterHearingRearBlindSpotAngle: 32
   monsterSpeedMultiplier: 2.0
   monsterTuningFloor51:
     monsterActive: 1
-    patrolSpeed: 0.5
-    chaseSpeed: 1.49
+    patrolSpeed: 0.25
+    chaseSpeed: 0.745
+    movementSpeedMultiplier: 0.5
+    noiseSensitivityMultiplier: 1
     investigateDuration: 4
     alertDuration: 1
     chaseHoldDuration: 3
@@ -66,16 +71,21 @@ MonoBehaviour:
     monsterActive: 1
     patrolSpeed: 0.5
     chaseSpeed: 1.49
+    movementSpeedMultiplier: 1
+    noiseSensitivityMultiplier: 1.5
     investigateDuration: 6
     alertDuration: 1
     chaseHoldDuration: 5
     searchDuration: 8
   monsterActiveFloor52: 0
+  monsterVisionRange: 9
+  monsterVisionAngle: 100
   chaseTriggerDistance: 2.5
   searchRadius: 4
   catchRadius: 0.9
   monsterStuckTimeout: 2
   monsterSpawnMinDistance: 8
+  monsterSpawnMaxDistance: 15
   monsterSpawnObjectiveClearance: 3
   monsterSpawnSafeSeconds: 5
   lives: 3

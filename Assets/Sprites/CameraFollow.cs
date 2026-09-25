@@ -7,6 +7,8 @@ public class CameraFollow : MonoBehaviour
 
     private Vector3 currentVelocity = Vector3.zero;
     private Vector3 offset;
+    private Vector3 _followPosition;
+    private Lilo.UI.ChaseScreenEffects _chaseScreenEffects;
 
     private void Start()
     {
@@ -23,7 +25,9 @@ public class CameraFollow : MonoBehaviour
         }
 
         // The Transform and Camera Inspector define the framing. Only follow movement.
+        _followPosition = transform.position;
         offset = transform.position - target.position;
+        _chaseScreenEffects = FindAnyObjectByType<Lilo.UI.ChaseScreenEffects>();
     }
 
     private void LateUpdate()
@@ -32,11 +36,15 @@ public class CameraFollow : MonoBehaviour
 
         Vector3 targetPosition = target.position + offset;
 
-        transform.position = Vector3.SmoothDamp(
-            transform.position,
+        _followPosition = Vector3.SmoothDamp(
+            _followPosition,
             targetPosition,
             ref currentVelocity,
             smoothTime
         );
+        if (_chaseScreenEffects == null)
+            _chaseScreenEffects = FindAnyObjectByType<Lilo.UI.ChaseScreenEffects>();
+        transform.position = _followPosition
+            + (_chaseScreenEffects != null ? _chaseScreenEffects.CameraPositionOffset : Vector3.zero);
     }
 }
