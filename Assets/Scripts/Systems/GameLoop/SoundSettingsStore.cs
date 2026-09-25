@@ -2,34 +2,27 @@ using UnityEngine;
 
 namespace Lilo.Systems.GameLoop
 {
-    /// <summary>Persistent, bounded audio preferences for the simple shell settings UI.</summary>
+    /// <summary>Persistent sound effects preference for the settings toggle.</summary>
     public static class SoundSettingsStore
     {
-        private const string MasterKey = "lilo.audio.master";
-        private const string MusicKey = "lilo.audio.music";
-        private const string EffectsKey = "lilo.audio.effects";
-        private const string AmbienceKey = "lilo.audio.ambience";
+        private const string SfxEnabledKey = "lilo.audio.sfxEnabled";
 
-        public static float Master => PlayerPrefs.GetFloat(MasterKey, 1f);
-        public static float Music => PlayerPrefs.GetFloat(MusicKey, 1f);
-        public static float Effects => PlayerPrefs.GetFloat(EffectsKey, 1f);
-        public static float Ambience => PlayerPrefs.GetFloat(AmbienceKey, 1f);
+        public static bool SfxEnabled => PlayerPrefs.GetInt(SfxEnabledKey, 1) != 0;
+        public static float Effects => SfxEnabled ? 1f : 0f;
 
-        public static void SetMaster(float value) => Set(MasterKey, value);
-        public static void SetMusic(float value) => Set(MusicKey, value);
-        public static void SetEffects(float value) => Set(EffectsKey, value);
-        public static void SetAmbience(float value) => Set(AmbienceKey, value);
+        // Music and ambience remain at their authored levels; only SFX has a user setting.
+        public static float Music => 1f;
+        public static float Ambience => 1f;
+
+        public static void SetSfxEnabled(bool enabled)
+        {
+            PlayerPrefs.SetInt(SfxEnabledKey, enabled ? 1 : 0);
+            PlayerPrefs.Save();
+        }
 
         public static void Apply()
         {
-            AudioListener.volume = Mathf.Clamp01(Master);
-        }
-
-        private static void Set(string key, float value)
-        {
-            PlayerPrefs.SetFloat(key, Mathf.Clamp01(value));
-            PlayerPrefs.Save();
-            Apply();
+            AudioListener.volume = 1f;
         }
     }
 }

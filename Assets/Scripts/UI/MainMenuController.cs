@@ -113,14 +113,24 @@ namespace Lilo.UI
             SetOverlayText(settings, "SettingsTitle", Mathf.RoundToInt(Mathf.Clamp(shortSide * 0.04f, 42f, 64f) * 1.5f / scale),
                 700f / scale, 90f / scale);
 
-            foreach (string name in new[] { "MASTER", "MUSIC", "EFFECTS", "AMBIENCE" })
+            Transform sfxToggle = settings != null ? settings.Find("SfxToggle") : null;
+            RectTransform sfxRect = sfxToggle as RectTransform;
+            if (sfxRect != null)
             {
-                SetOverlayText(settings, name + "Label", Mathf.RoundToInt(Mathf.Clamp(shortSide * 0.025f, 28f, 40f) * 1.5f / scale),
-                    260f / scale, 70f / scale);
-                RectTransform slider = settings != null ? settings.Find(name + "Slider") as RectTransform : null;
-                if (slider != null)
-                    slider.sizeDelta = new Vector2(Mathf.Clamp(shortSide * 0.32f, 360f, 600f) * 1.5f / scale,
-                        Mathf.Clamp(shortSide * 0.035f, 38f, 65f) * 1.5f / scale);
+                float rowHeight = Mathf.Clamp(shortSide * 0.09f, 96f, 140f) * 1.5f / scale;
+                float boxSize = Mathf.Clamp(shortSide * 0.075f, 72f, 108f) * 1.5f / scale;
+                sfxRect.sizeDelta = new Vector2(Mathf.Clamp(shortSide * 0.44f, 460f, 760f) * 1.5f / scale, rowHeight);
+                RectTransform background = sfxToggle.Find("Background") as RectTransform;
+                if (background != null)
+                    background.sizeDelta = new Vector2(boxSize, boxSize);
+                RectTransform labelRect = sfxToggle.Find("SfxToggleLabel") as RectTransform;
+                if (labelRect != null)
+                {
+                    labelRect.offsetMin = new Vector2(boxSize + 24f / scale, 0f);
+                    Text label = labelRect.GetComponent<Text>();
+                    if (label != null)
+                        label.fontSize = Mathf.RoundToInt(Mathf.Clamp(shortSide * 0.03f, 32f, 46f) * 1.5f / scale);
+                }
             }
         }
 
@@ -254,6 +264,7 @@ namespace Lilo.UI
         public void OpenSettings()
         {
             if (settingsPanel != null) settingsPanel.SetActive(true);
+            ApplyResponsiveMenuLayout();
             soundSettings?.Refresh();
         }
 
