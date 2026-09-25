@@ -146,11 +146,15 @@ public static class SetupOfficeGameplay
         var monster = monsterGo != null ? monsterGo.GetComponent<MonsterAIController>() : null;
         var sfxGo = GameObject.Find("SfxController");
         var sfx = sfxGo != null ? sfxGo.GetComponent<SfxController>() : null;
-        var chaseClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sfx/chased.mp3");
-        if (sfx != null && chaseClip != null)
+        var chaseBgmClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sfx/ambience/chase-refine.wav");
+        var keyPickupClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Sfx/ambience/key-pickup-sfx.mp3");
+        if (sfx != null)
         {
             var sfxSerialized = new SerializedObject(sfx);
-            sfxSerialized.FindProperty("horrorChaseClip").objectReferenceValue = chaseClip;
+            if (chaseBgmClip != null)
+                sfxSerialized.FindProperty("chaseBgmClip").objectReferenceValue = chaseBgmClip;
+            if (keyPickupClip != null)
+                sfxSerialized.FindProperty("keyPickupClip").objectReferenceValue = keyPickupClip;
             sfxSerialized.ApplyModifiedPropertiesWithoutUndo();
         }
 

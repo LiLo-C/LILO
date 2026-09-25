@@ -1,3 +1,4 @@
+using Lilo.MonoBehaviours.Audio;
 using Lilo.MonoBehaviours.Interaction;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,6 +20,12 @@ namespace Lilo.MonoBehaviours
         private float _hideAt;
         private string _respawnMessage;
         private float _respawnMessageUntil;
+        private SfxController _sfx;
+        private string _lastVoiceHint;
+
+        private const string NeedAwayHint = "I need to find a way to get out.";
+        private const string NeedAccessKeyHint = "I need to find the access key first.";
+        private const string NeedBatteryHint = "I need to find some more battery.";
 
         private void Awake()
         {
@@ -27,6 +34,7 @@ namespace Lilo.MonoBehaviours
             _respawnMessage = GameManager.Instance?.State?.ConsumeRespawnMessage();
             if (!string.IsNullOrWhiteSpace(_respawnMessage))
                 _respawnMessageUntil = Time.unscaledTime + 4f;
+            _sfx = GameObject.Find("SfxController")?.GetComponent<SfxController>();
             CreateLabel();
             ApplyLayout();
         }
@@ -42,7 +50,7 @@ namespace Lilo.MonoBehaviours
                 _doors = FindObjectsByType<ExitDoorInteraction>();
             if (_text == null) return;
 
-            string hint = "I need to find a way to get out.";
+            string hint = NeedAwayHint;
             bool nearDoor = false;
             ExitDoorInteraction nearbyExit = null;
             if (_player != null)
@@ -52,7 +60,8 @@ namespace Lilo.MonoBehaviours
                 {
                     if (door == null || !door.isActiveAndEnabled) continue;
                     Vector2 doorPosition = new Vector2(door.transform.position.x, door.transform.position.z);
-                    if (Vector2.Distance(playerPosition, doorPosition) <= door.InteractionRadius * 2.5f)
+                    float doorDistance = Vector2.Distance(playerPosition, doorPosition);
+                    if (doorDistance <= door.InteractionRadius * 2.5f)
                     {
                         nearDoor = true;
                         nearbyExit = door;
@@ -77,7 +86,7 @@ namespace Lilo.MonoBehaviours
                 float charge = manager != null && manager.State != null
                     ? manager.State.InstalledBatteryCharge / Mathf.Max(1f, duration) : 1f;
                 if (charge <= 0.75f)
-                    hint = "I need to find some more battery.";
+                    hint = NeedBatteryHint;
             }
 
             if (!string.IsNullOrWhiteSpace(_respawnMessage))
@@ -94,10 +103,45 @@ namespace Lilo.MonoBehaviours
                 _text.text = hint;
                 _panel.SetActive(true);
                 _hideAt = Time.unscaledTime + 5f;
+
             }
             else if (_panel.activeSelf && Time.unscaledTime >= _hideAt)
             {
                 _panel.SetActive(false);
+            }
+
+            if (hint != _lastVoiceHint)
+            {
+                if (_sfx == null)
+                    _sfx = Object.FindAnyObjectByType<SfxController>();
+
+                bool isLifeSubtitle = hint == "WHAT WAS THAT? WHAT IS HAPPENING?!"
+                    || hint == "I FELT IT ALL THROUGH MY SKIN OH GOD"
+                    || hint == "NO NO NO I DON'T WANT TO FEEL IT AGAIN";
+                bool voiceRequested = isLifeSubtitle
+                    ? _sfx != null && _sfx.PlayLifeVoiceOverForSubtitle(hint)
+                    : hint switch
+                    {
+                        NeedAwayHint => _sfx != null && _sfx.PlayNeedAwayVoiceOver(),
+                        NeedAccessKeyHint => _sfx != null && _sfx.PlayNeedAccessKeyVoiceOver(),
+                        NeedBatteryHint => _sfx != null && _sfx.PlayBatteryRunsOutVoiceOver(),
+                        _ => true,
+                    };
+                if (voiceRequested)
+                {
+                    if (hint == NeedAwayHint)
+                    {
+                        if (!_panel.activeSelf)
+                        {
+                            _text.text = hint;
+                            _panel.SetActive(true);
+                            _hideAt = Time.unscaledTime + 5f;
+                        }
+                    }
+                    _lastVoiceHint = hint;
+                    if (isLifeSubtitle)
+                        GameManager.Instance?.State?.ClearPendingLifeVoiceOver();
+                }
             }
         }
 
