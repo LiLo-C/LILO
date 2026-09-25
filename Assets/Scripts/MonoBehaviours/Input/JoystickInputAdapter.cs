@@ -15,6 +15,7 @@ namespace Lilo.MonoBehaviours.Input
     /// - Sprint is combined into the joystick pull distance (pull far = sprint)
     /// - Circle sprite applied automatically at runtime
     /// </summary>
+    [ExecuteAlways]
     public class JoystickInputAdapter : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerUpHandler
     {
         [SerializeField] private GameConfig config;
@@ -35,6 +36,11 @@ namespace Lilo.MonoBehaviours.Input
         private float _fadeSpeed = 4f;
         private float _fadeTimer;
         private bool _fading;
+        private int _lastScreenWidth;
+        private int _lastScreenHeight;
+        private float _lastAppliedDiameter = -1f;
+        private Vector2 _lastAppliedOffset = new Vector2(float.NaN, float.NaN);
+        private Vector2 _lastCanvasSize;
 
         private const float MinTouchTargetPt = 44f;
         private const float ScreenMargin = 16f;
@@ -45,6 +51,13 @@ namespace Lilo.MonoBehaviours.Input
             CacheImages();
             ApplyCircleShape();
             ApplyPresentation();
+        }
+
+        private void OnEnable()
+        {
+            CacheImages();
+            if (!Application.isPlaying)
+                ApplyPresentation();
         }
 
         /// <summary>
@@ -64,6 +77,15 @@ namespace Lilo.MonoBehaviours.Input
 
         private void Update()
         {
+            GameConfig cfg = ResolveConfig();
+            Vector2 canvasSize = GetCanvasSize();
+            bool layoutChanged = cfg != null && (
+                !Mathf.Approximately(cfg.joystickDiameter, _lastAppliedDiameter)
+                || cfg.joystickCenterOffset != _lastAppliedOffset
+                || canvasSize != _lastCanvasSize);
+            if (Screen.width != _lastScreenWidth || Screen.height != _lastScreenHeight || layoutChanged)
+                ApplyPresentation();
+
             if (!_active && _fading)
             {
                 _fadeTimer += Time.deltaTime * _fadeSpeed;
@@ -163,37 +185,60 @@ namespace Lilo.MonoBehaviours.Input
         }
 
         /// <summary>
-        /// Sizes the joystick from GameConfig and enforces Apple HIG minimums.
-        /// joystickDiameter is a screen-height fraction (0–1), so it scales on every device.
+        /// Sizes the joystick from GameConfig and enforces a minimum touch target.
+        /// The size fraction follows the canvas bounds so the same layout previews in
+        /// the editor and scales consistently across device resolutions.
         /// </summary>
         public void ApplyPresentation()
         {
-            GameConfig cfg = config != null ? config : GameManager.Instance?.Config;
+            _lastScreenWidth = Screen.width;
+            _lastScreenHeight = Screen.height;
+            GameConfig cfg = ResolveConfig();
             if (cfg == null)
                 return;
             config = cfg;
 
-            // joystickDiameter is a fraction of screen height (0.35 = 35%).
-            float fraction = cfg.joystickDiameter > 0f ? cfg.joystickDiameter : 0.35f;
-            float screenHeight = Screen.height;
-            float diameter = screenHeight * fraction;
+            float fraction = cfg.joystickDiameter > 0f ? cfg.joystickDiameter : 0.2f;
+            Vector2 canvasSize = GetCanvasSize();
+            bool tablet = Mathf.Min(canvasSize.x, canvasSize.y) *
+                          Mathf.Max(0.01f, _parentCanvas != null ? _parentCanvas.scaleFactor : 1f) >= 1400;
+            if (tablet)
+                fraction *= 0.8f;
+            float canvasScale = Mathf.Max(0.01f, _parentCanvas != null ? _parentCanvas.scaleFactor : 1f);
+            float diameter = canvasSize.y * fraction;
 
             // Apple HIG: minimum 44pt touch target. At ~2x scale, 44pt ≈ 88px.
-            float minDiameter = MinTouchTargetPt * 2f;
-            diameter = Mathf.Max(diameter, minDiameter);
+            float minDiameterPixels = MinTouchTargetPt * 2f;
+            diameter = Mathf.Max(diameter, minDiameterPixels / canvasScale);
 
             radius = diameter * 0.5f;
+            float margin = ScreenMargin / canvasScale;
+            // Keep the requested 10% right and 15% up position from the bottom-left layout.
+            Vector2 requestedShift = new Vector2(canvasSize.x * 0.1f, canvasSize.y * 0.15f);
+            Vector2 desiredPosition = new Vector2(radius + margin, radius + margin)
+                + cfg.joystickCenterOffset + requestedShift;
+            Vector2 desiredBackgroundSize = new Vector2(diameter, diameter);
+            Vector2 desiredHandleSize = desiredBackgroundSize * 0.45f;
+#if UNITY_EDITOR
+            bool editorLayoutChanged = !Application.isPlaying &&
+                ((background != null && (background.sizeDelta != desiredBackgroundSize
+                                         || background.anchoredPosition != desiredPosition))
+                 || (handle != null && handle.sizeDelta != desiredHandleSize));
+            if (editorLayoutChanged)
+            {
+                if (background != null) UnityEditor.Undo.RecordObject(background, "Update joystick layout");
+                if (handle != null) UnityEditor.Undo.RecordObject(handle, "Update joystick layout");
+            }
+#endif
 
             if (background != null)
             {
-                background.sizeDelta = new Vector2(diameter, diameter);
-                // Keep joystick fully visible — offset from bottom-left edge by half diameter + margin
-                background.anchoredPosition = new Vector2(radius + ScreenMargin, radius + ScreenMargin)
-                    + cfg.joystickCenterOffset;
+                background.sizeDelta = desiredBackgroundSize;
+                background.anchoredPosition = desiredPosition;
             }
             if (handle != null)
             {
-                handle.sizeDelta = new Vector2(diameter, diameter) * 0.45f;
+                handle.sizeDelta = desiredHandleSize;
             }
 
             // Apple HIG: semi-transparent so controls don't obscure gameplay.
@@ -211,6 +256,46 @@ namespace Lilo.MonoBehaviours.Input
                 c.a = _idleOpacity;
                 _handleImage.color = c;
             }
+
+            _lastAppliedDiameter = cfg.joystickDiameter;
+            _lastAppliedOffset = cfg.joystickCenterOffset;
+            _lastCanvasSize = canvasSize;
+#if UNITY_EDITOR
+            if (editorLayoutChanged)
+            {
+                if (background != null) UnityEditor.EditorUtility.SetDirty(background);
+                if (handle != null) UnityEditor.EditorUtility.SetDirty(handle);
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+            }
+#endif
+        }
+
+        private Vector2 GetCanvasSize()
+        {
+            RectTransform canvasRect = _parentCanvas != null
+                ? _parentCanvas.transform as RectTransform
+                : null;
+            if (canvasRect != null && canvasRect.rect.width > 0f && canvasRect.rect.height > 0f)
+                return canvasRect.rect.size;
+
+            CanvasScaler scaler = _parentCanvas != null ? _parentCanvas.GetComponent<CanvasScaler>() : null;
+            if (scaler != null && scaler.referenceResolution.x > 0f && scaler.referenceResolution.y > 0f)
+                return scaler.referenceResolution;
+
+            float scale = Mathf.Max(0.01f, _parentCanvas != null ? _parentCanvas.scaleFactor : 1f);
+            return new Vector2(Screen.width / scale, Screen.height / scale);
+        }
+
+        private GameConfig ResolveConfig()
+        {
+            if (config != null) return config;
+            if (GameManager.Instance != null && GameManager.Instance.Config != null)
+                return GameManager.Instance.Config;
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+                return UnityEditor.AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/Config/GameConfig.asset");
+#endif
+            return null;
         }
 
         public MovementInput CurrentInput

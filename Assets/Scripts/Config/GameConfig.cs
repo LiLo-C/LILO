@@ -27,7 +27,7 @@ namespace Lilo.Config
         [Header("15.3 Joystick presentation (movement-and-camera/001)")]
         [Tooltip("Feel value — no prior tuning, pending on-device pass. 0 is a placeholder, not a locked default.")]
         public float joystickDeadZone = 0f;
-        [Tooltip("Fraction of screen height (0–1). 0.35 = 35% of screen height. Scales across all devices.")]
+        [Tooltip("Fraction of rendered screen height (0–1); the joystick converts pixels to canvas units and uses a smaller fraction on tablets.")]
         public float joystickDiameter = 0.18f;
         [Tooltip("Feel value — no prior tuning, pending on-device pass.")]
         public float joystickOpacity = 0f;
@@ -56,6 +56,14 @@ namespace Lilo.Config
         public int batterySlots = 1;
         public float lightStateFlickerStart = 0.30f;
         public float lightStateCriticalStart = 0.10f;
+        [Tooltip("Random seconds between lamp flickers at full charge.")]
+        public Vector2 flickerIntervalFullBattery = new Vector2(18f, 28f);
+        [Tooltip("Random seconds between lamp flickers just before the battery is empty.")]
+        public Vector2 flickerIntervalLowBattery = new Vector2(1f, 2.5f);
+        [Tooltip("Fraction of lamp brightness lost during a flicker at full charge.")]
+        [Range(0f, 1f)] public float flickerDimFullBattery = 0.25f;
+        [Tooltip("Fraction of lamp brightness lost during a flicker near empty.")]
+        [Range(0f, 1f)] public float flickerDimLowBattery = 0.95f;
         public float compactDarknessRadius = 0.10f;
         public int batteryCountFloor52Min = 3;
         public int batteryCountFloor52Max = 5;
@@ -78,6 +86,8 @@ namespace Lilo.Config
         public float noiseHiding = 0f;
 
         [Header("17.4 Monster (per floor)")]
+        [Tooltip("Multiplier for all monster movement and its walk animation. 1.25 = 25% faster.")]
+        public float monsterSpeedMultiplier = 1.25f;
         public MonsterTuningProfile monsterTuningFloor51 = new MonsterTuningProfile
         {
             monsterActive = true,
@@ -176,6 +186,14 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(lightStateFlickerStart), lightStateFlickerStart.ToString(), "must be < 1"));
             if (lightStateCriticalStart >= lightStateFlickerStart)
                 failures.Add(new ConfigValidationFailure(nameof(lightStateCriticalStart), lightStateCriticalStart.ToString(), "must be < lightStateFlickerStart (dead-zone ordering)"));
+            if (flickerIntervalFullBattery.x <= 0f || flickerIntervalFullBattery.y < flickerIntervalFullBattery.x)
+                failures.Add(new ConfigValidationFailure(nameof(flickerIntervalFullBattery), flickerIntervalFullBattery.ToString(), "interval must have 0 < min <= max"));
+            if (flickerIntervalLowBattery.x <= 0f || flickerIntervalLowBattery.y < flickerIntervalLowBattery.x)
+                failures.Add(new ConfigValidationFailure(nameof(flickerIntervalLowBattery), flickerIntervalLowBattery.ToString(), "interval must have 0 < min <= max"));
+            if (flickerIntervalLowBattery.x > flickerIntervalFullBattery.x || flickerIntervalLowBattery.y > flickerIntervalFullBattery.y)
+                failures.Add(new ConfigValidationFailure(nameof(flickerIntervalLowBattery), flickerIntervalLowBattery.ToString(), "low-battery intervals must be no longer than full-battery intervals"));
+            if (flickerDimFullBattery < 0f || flickerDimLowBattery > 1f || flickerDimFullBattery > flickerDimLowBattery)
+                failures.Add(new ConfigValidationFailure(nameof(flickerDimFullBattery), $"{flickerDimFullBattery}..{flickerDimLowBattery}", "dim fractions must satisfy 0 <= full <= low <= 1"));
             if (compactDarknessRadius <= 0f || compactDarknessRadius > 0.5f)
                 failures.Add(new ConfigValidationFailure(nameof(compactDarknessRadius), compactDarknessRadius.ToString(), "must be in (0, 0.5]"));
             if (batteryCountFloor52Min <= 0 || batteryCountFloor52Max <= 0 || batteryCountFloor52Min > batteryCountFloor52Max)
@@ -208,6 +226,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure(nameof(noiseHiding), noiseHiding.ToString(), "must be >= 0"));
 
             // 17.4 Monster
+            if (monsterSpeedMultiplier <= 0f)
+                failures.Add(new ConfigValidationFailure(nameof(monsterSpeedMultiplier), monsterSpeedMultiplier.ToString(), "must be > 0"));
             ValidateMonsterProfile(monsterTuningFloor51, nameof(monsterTuningFloor51), failures);
             ValidateMonsterProfile(monsterTuningFloor50, nameof(monsterTuningFloor50), failures);
 
@@ -253,8 +273,8 @@ namespace Lilo.Config
                 failures.Add(new ConfigValidationFailure($"{label}.patrolSpeed", profile.patrolSpeed.ToString(), "must be > 0"));
             if (profile.chaseSpeed <= 0f)
                 failures.Add(new ConfigValidationFailure($"{label}.chaseSpeed", profile.chaseSpeed.ToString(), "must be > 0"));
-            if (profile.chaseSpeed >= sprintMultiplier)
-                failures.Add(new ConfigValidationFailure($"{label}.chaseSpeed", profile.chaseSpeed.ToString(), "must be < sprintMultiplier (hard rule, GDD 6.2)"));
+            if (profile.chaseSpeed * monsterSpeedMultiplier >= sprintMultiplier)
+                failures.Add(new ConfigValidationFailure($"{label}.chaseSpeed", profile.chaseSpeed.ToString(), "chase speed after multiplier must be < sprintMultiplier (hard rule, GDD 6.2)"));
             if (profile.investigateDuration <= 0f)
                 failures.Add(new ConfigValidationFailure($"{label}.investigateDuration", profile.investigateDuration.ToString(), "must be > 0"));
             if (profile.chaseHoldDuration <= 0f)
