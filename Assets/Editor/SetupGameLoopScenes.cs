@@ -360,12 +360,9 @@ public static class SetupGameLoopScenes
         var hud = canvas.gameObject.AddComponent<GameplayHudController>();
         var floor = CreateTextAt(canvas.transform, "FloorText", "FLOOR", 20,
             new Vector2(0.18f, 0.95f), new Vector2(180, 45));
-        var lives = CreateTextAt(canvas.transform, "LivesText", "LIVES", 20,
-            new Vector2(0.5f, 0.95f), new Vector2(180, 45));
         var battery = CreateTextAt(canvas.transform, "BatteryText", "BATTERY", 20,
             new Vector2(0.78f, 0.95f), new Vector2(180, 45));
         floor.raycastTarget = false;
-        lives.raycastTarget = false;
         battery.raycastTarget = false;
         var pause = CreateButton(canvas.transform, "PauseButton", "PAUSE", new Vector2(0.9f, 0.86f));
         pause.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 48);
@@ -378,7 +375,7 @@ public static class SetupGameLoopScenes
 
         var serialized = new SerializedObject(hud);
         serialized.FindProperty("floorText").objectReferenceValue = floor;
-        serialized.FindProperty("livesText").objectReferenceValue = lives;
+        serialized.FindProperty("livesText").objectReferenceValue = null;
         serialized.FindProperty("batteryText").objectReferenceValue = battery;
         serialized.FindProperty("pauseButton").objectReferenceValue = pause;
         serialized.FindProperty("pausePanel").objectReferenceValue = panel.gameObject;

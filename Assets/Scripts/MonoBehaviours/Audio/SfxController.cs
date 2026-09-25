@@ -12,6 +12,7 @@ namespace Lilo.MonoBehaviours.Audio
         [SerializeField] private AudioClip behindYouClip;
         [SerializeField] private AudioClip horrorChaseClip;
         [SerializeField] private AudioClip batteryPickupClip;
+        [SerializeField] private AudioClip playerCaughtClip;
         [SerializeField, Range(0f, 1f)] private float volume = 0.8f;
 
         private AudioSource _source;
@@ -61,6 +62,12 @@ namespace Lilo.MonoBehaviours.Audio
         {
             AudioClip clip = batteryPickupClip != null ? batteryPickupClip : GetGeneratedBatteryPickupClip();
             _source.PlayOneShot(clip, volume * SoundSettingsStore.Effects);
+        }
+
+        public void PlayPlayerCaught()
+        {
+            if (playerCaughtClip != null)
+                _source.PlayOneShot(playerCaughtClip, volume * SoundSettingsStore.Effects);
         }
 
         private AudioClip GetGeneratedBatteryPickupClip()

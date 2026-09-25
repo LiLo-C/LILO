@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Unity.AI.Navigation;
 using Lilo.Config;
 using Lilo.State;
@@ -662,12 +663,23 @@ namespace Lilo.MonoBehaviours.Monster
         {
             _catchRunning = true;
             PlayerCaught?.Invoke();
+            sfx?.PlayPlayerCaught();
+            Time.timeScale = 0f;
+            HideGameplayInterface();
+            SuspendFollowCamera();
+
             if (HasPlayableAnimator())
             {
                 _animator.speed = 1f;
+                _animator.updateMode = AnimatorUpdateMode.UnscaledTime;
                 _animator.SetTrigger("attack");
             }
             if (_playerMovement != null) _playerMovement.enabled = false; // input stops (US4).
+            if (player != null)
+            {
+                var thirdPerson = player.GetComponent<ThirdPersonController>();
+                if (thirdPerson != null) thirdPerson.enabled = false;
+            }
             if (_starterAssetsInput != null)
             {
                 _starterAssetsInput.MoveInput(Vector2.zero);
@@ -679,13 +691,19 @@ namespace Lilo.MonoBehaviours.Monster
             if (state != null)
             {
                 state.LoseLife();
+                state.SetRespawnMessage(state.Lives switch
+                {
+                    2 => "WHAT WAS THAT? WHAT IS HAPPENING?!",
+                    1 => "I FELT IT ALL THROUGH MY SKIN OH GOD",
+                    _ => "NO NO NO I DON'T WANT TO FEEL IT AGAIN",
+                });
                 if (state.Lives > 0)
                     state.ResetForFloorRestart(config);
                 else
                     state.SetOutcome(RunOutcome.BadEnding);
             }
             Debug.Log($"[Monster] Player caught — lives remaining: {state?.Lives ?? -1}.");
-            yield return new WaitForSeconds(1.6f);
+            yield return PlayDeathCinematic();
 
             string respawnScene = state != null && state.Lives <= 0
                 ? "BadEnding"
@@ -693,6 +711,96 @@ namespace Lilo.MonoBehaviours.Monster
             Debug.Log($"[Monster] Respawning on {respawnScene} for floor {state?.CurrentFloor.ToString() ?? "active scene"}.");
             Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();
             SceneManager.LoadScene(respawnScene);
+        }
+
+        private static void HideGameplayInterface()
+        {
+            foreach (Canvas canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include))
+                canvas.enabled = false;
+
+            foreach (GraphicRaycaster raycaster in FindObjectsByType<GraphicRaycaster>(FindObjectsInactive.Include))
+                raycaster.enabled = false;
+        }
+
+        private static void SuspendFollowCamera()
+        {
+            var follow = FindAnyObjectByType<global::CameraFollow>();
+            if (follow != null) follow.enabled = false;
+            var followController = FindAnyObjectByType<Lilo.MonoBehaviours.Camera.CameraFollowController>();
+            if (followController != null) followController.enabled = false;
+        }
+
+        private IEnumerator PlayDeathCinematic()
+        {
+            UnityEngine.Camera gameplayCamera = UnityEngine.Camera.main;
+            if (gameplayCamera == null)
+                gameplayCamera = FindAnyObjectByType<UnityEngine.Camera>();
+
+            Vector3 cameraStart = gameplayCamera != null ? gameplayCamera.transform.position : Vector3.zero;
+            Quaternion cameraStartRotation = gameplayCamera != null ? gameplayCamera.transform.rotation : Quaternion.identity;
+            float sizeStart = gameplayCamera != null ? gameplayCamera.orthographicSize : 0f;
+            Vector3 focus = player != null ? player.position + Vector3.up * 1.15f : transform.position + Vector3.up;
+            Vector3 cameraClose = focus - cameraStartRotation * Vector3.forward * 4f;
+            float sizeClose = gameplayCamera != null && gameplayCamera.orthographic
+                ? Mathf.Min(sizeStart, 4.5f)
+                : sizeStart;
+
+            Canvas deathCanvas = CreateDeathOverlay(out Image overlay);
+            float zoomDuration = 0.8f;
+            float elapsed = 0f;
+            while (elapsed < zoomDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / zoomDuration));
+                if (gameplayCamera != null)
+                {
+                    gameplayCamera.transform.position = Vector3.Lerp(cameraStart, cameraClose, t);
+                    gameplayCamera.transform.rotation = cameraStartRotation;
+                    if (gameplayCamera.orthographic)
+                        gameplayCamera.orthographicSize = Mathf.Lerp(sizeStart, sizeClose, t);
+                }
+                overlay.color = new Color(0.38f, 0.015f, 0.025f, 0.18f * Mathf.Sin(t * Mathf.PI));
+                yield return null;
+            }
+
+            // Let the attack read clearly before the image closes to black.
+            yield return new WaitForSecondsRealtime(0.65f);
+            elapsed = 0f;
+            const float fadeDuration = 0.75f;
+            while (elapsed < fadeDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / fadeDuration);
+                overlay.color = Color.Lerp(new Color(0.18f, 0f, 0.015f, 0.18f), Color.black, t);
+                yield return null;
+            }
+            overlay.color = Color.black;
+            yield return new WaitForSecondsRealtime(0.2f);
+            if (deathCanvas != null)
+                Destroy(deathCanvas.gameObject);
+        }
+
+        private static Canvas CreateDeathOverlay(out Image overlay)
+        {
+            var canvasObject = new GameObject("DeathCinematicCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
+            Canvas canvas = canvasObject.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = short.MaxValue;
+            CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+
+            var overlayObject = new GameObject("Fade", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            overlayObject.transform.SetParent(canvasObject.transform, false);
+            RectTransform rect = overlayObject.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            overlay = overlayObject.GetComponent<Image>();
+            overlay.color = new Color(0.38f, 0.015f, 0.025f, 0f);
+            overlay.raycastTarget = false;
+            return canvas;
         }
 
         private void OnDisable()
