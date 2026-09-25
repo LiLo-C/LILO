@@ -56,6 +56,7 @@ namespace Lilo.MonoBehaviours
 
             string hint = NeedAwayHint;
             bool nearDoor = false;
+            bool atExit = false;
             ExitDoorInteraction nearbyExit = null;
             if (_player != null)
             {
@@ -64,7 +65,11 @@ namespace Lilo.MonoBehaviours
                 {
                     if (door == null || !door.isActiveAndEnabled) continue;
                     Vector2 doorPosition = new Vector2(door.transform.position.x, door.transform.position.z);
-                    if (Vector2.Distance(playerPosition, doorPosition) <= door.InteractionRadius * 2.5f)
+                    float doorDistance = Vector2.Distance(playerPosition, doorPosition);
+                    if (doorDistance <= door.InteractionRadius)
+                        atExit = true;
+
+                    if (doorDistance <= door.InteractionRadius * 2.5f)
                     {
                         nearDoor = true;
                         nearbyExit = door;
@@ -73,9 +78,11 @@ namespace Lilo.MonoBehaviours
                 }
             }
 
+            if (atExit)
+                _hasFoundDoor = true;
+
             if (nearDoor)
             {
-                _hasFoundDoor = true;
                 if (nearbyExit != null && nearbyExit.RequiresAccessKey)
                     hint = nearbyExit.HasRequiredAccessKey
                         ? "I have the access key. I can get out."
