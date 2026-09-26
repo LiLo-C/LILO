@@ -29,12 +29,6 @@ namespace Lilo.Editor
         private const string NeedAwayVoicePath = "Assets/Sfx/vos/need-away-sfx.wav";
         private const string BatteryRunsOutVoicePath = "Assets/Sfx/vos/battery-runs-out-sfx.wav";
         private const string NeedAccessKeyVoicePath = "Assets/Sfx/vos/need-access-key-sfx.wav";
-        private static readonly string[] FootstepPaths =
-        {
-            "Assets/Sfx/walking/left-foot-sfx.wav", "Assets/Sfx/walking/right-foot-sfx.wav",
-            "Assets/Sfx/walking/left-foot-2-sfx.wav", "Assets/Sfx/walking/right-foot-2-sfx.wav",
-            "Assets/Sfx/walking/left-foot-3-sfx.wav", "Assets/Sfx/walking/right-foot-3-sfx.wav"
-        };
         private static readonly string[] AmbienceStingPaths =
         {
             "Assets/Sfx/ambience/empty-room-sfx.mp3", "Assets/Sfx/ambience/hey-1-sfx.wav",
@@ -152,7 +146,7 @@ namespace Lilo.Editor
                 ambienceSo.ApplyModifiedPropertiesWithoutUndo();
             }
 
-            WireFootsteps();
+            RemoveCustomFootsteps();
 
             WirePropPassBySounds(sfx);
 
@@ -234,52 +228,21 @@ namespace Lilo.Editor
             }
         }
 
-        private static void WireFootsteps()
+        private static void RemoveCustomFootsteps()
         {
             var player = GameObject.Find("PlayerCharacter");
             if (player == null) return;
-            var footstepPlayer = player.GetComponent<FootstepPlayer>();
-            if (footstepPlayer == null) footstepPlayer = player.AddComponent<FootstepPlayer>();
-            var clips = new System.Collections.Generic.List<AudioClip>();
-            foreach (string path in FootstepPaths)
-            {
-                var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-                if (clip != null) clips.Add(clip);
-                else Debug.LogWarning($"[SfxSetup] Footstep clip missing: {path}");
-            }
-            var serialized = new SerializedObject(footstepPlayer);
-            var stepClips = serialized.FindProperty("stepClips");
-            stepClips.arraySize = clips.Count;
-            for (int i = 0; i < clips.Count; i++)
-                stepClips.GetArrayElementAtIndex(i).objectReferenceValue = clips[i];
-            serialized.ApplyModifiedPropertiesWithoutUndo();
-            EditorUtility.SetDirty(footstepPlayer);
-
-            // The Starter Assets animator also emits footstep events. Keep its
-            // landing sound, but clear its step array so it cannot double-play
-            // alongside the distance-driven FootstepPlayer above.
             var builtInControllers = player.GetComponentsInChildren<StarterAssets.ThirdPersonController>(true);
-            int clearedAnimatorStepArrays = 0;
-            foreach (var starterController in builtInControllers)
+            int removedCustomPlayers = 0;
+            foreach (var customPlayer in player.GetComponentsInChildren<FootstepPlayer>(true))
             {
-                var starterSerialized = new SerializedObject(starterController);
-                var builtInSteps = starterSerialized.FindProperty("FootstepAudioClips");
-                if (builtInSteps == null || builtInSteps.arraySize == 0) continue;
-                builtInSteps.arraySize = 0;
-                starterSerialized.ApplyModifiedPropertiesWithoutUndo();
-                EditorUtility.SetDirty(starterController);
-                clearedAnimatorStepArrays++;
+                Object.DestroyImmediate(customPlayer);
+                removedCustomPlayers++;
             }
-
-            int removedDuplicatePlayers = 0;
-            foreach (var extra in player.GetComponentsInChildren<FootstepPlayer>(true))
-            {
-                if (extra == footstepPlayer || !(extra.transform == player.transform || extra.transform.IsChildOf(player.transform)))
-                    continue;
-                Object.DestroyImmediate(extra);
-                removedDuplicatePlayers++;
-            }
-            Debug.Log($"[SfxSetup] Footsteps: one distance-driven player, cleared built-in arrays on {clearedAnimatorStepArrays} controller(s), removed {removedDuplicatePlayers} duplicate FootstepPlayer(s).");
+            int nativeClipCount = 0;
+            foreach (var controller in builtInControllers)
+                nativeClipCount += controller.FootstepAudioClips == null ? 0 : controller.FootstepAudioClips.Length;
+            Debug.Log($"[SfxSetup] Restored Starter Assets footsteps: removed {removedCustomPlayers} custom player(s), kept {nativeClipCount} built-in step clips.");
         }
 
         [MenuItem("LILO/Setup Sfx On Office Floors")]
