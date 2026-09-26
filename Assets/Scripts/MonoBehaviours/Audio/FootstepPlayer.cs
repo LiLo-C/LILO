@@ -29,7 +29,9 @@ namespace Lilo.MonoBehaviours.Audio
             if (_source == null) _source = gameObject.AddComponent<AudioSource>();
             _source.playOnAwake = false;
             _source.spatialBlend = 0f;
-            _source.volume = volume;
+            // Keep the current clip gain, but halve the AudioSource output so
+            // the resulting footstep level is 50% below the previous setup.
+            _source.volume = volume * 0.5f;
             _lastPosition = transform.position;
         }
 
