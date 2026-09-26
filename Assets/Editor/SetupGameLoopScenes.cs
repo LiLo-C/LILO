@@ -355,34 +355,12 @@ public static class SetupGameLoopScenes
         var old = GameObject.Find("GameplayHudCanvas");
         if (old != null) Object.DestroyImmediate(old);
 
-        var canvas = CreateCanvas("GameplayHudCanvas");
-        canvas.sortingOrder = 100;
-        var hud = canvas.gameObject.AddComponent<GameplayHudController>();
-        var floor = CreateTextAt(canvas.transform, "FloorText", "FLOOR", 20,
-            new Vector2(0.18f, 0.95f), new Vector2(180, 45));
-        var battery = CreateTextAt(canvas.transform, "BatteryText", "BATTERY", 20,
-            new Vector2(0.78f, 0.95f), new Vector2(180, 45));
-        floor.raycastTarget = false;
-        battery.raycastTarget = false;
-        var pause = CreateButton(canvas.transform, "PauseButton", "PAUSE", new Vector2(0.9f, 0.86f));
-        pause.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 48);
-
-        var panel = CreatePanel(canvas.transform, "PausePanel", PanelColor);
-        CreateTextAt(panel.transform, "PauseTitle", "PAUSED", 36,
-            new Vector2(0.5f, 0.65f), new Vector2(500, 80));
-        var resume = CreateButton(panel.transform, "ResumeButton", "RESUME", new Vector2(0.5f, 0.48f));
-        var menu = CreateButton(panel.transform, "MainMenuButton", "MAIN MENU", new Vector2(0.5f, 0.35f));
-
-        var serialized = new SerializedObject(hud);
-        serialized.FindProperty("floorText").objectReferenceValue = floor;
-        serialized.FindProperty("livesText").objectReferenceValue = null;
-        serialized.FindProperty("batteryText").objectReferenceValue = battery;
-        serialized.FindProperty("pauseButton").objectReferenceValue = pause;
-        serialized.FindProperty("pausePanel").objectReferenceValue = panel.gameObject;
-        serialized.FindProperty("resumeButton").objectReferenceValue = resume;
-        serialized.FindProperty("mainMenuButton").objectReferenceValue = menu;
-        serialized.ApplyModifiedPropertiesWithoutUndo();
-        panel.gameObject.SetActive(false);
+        // Tata letak HUD dan Pause Menu ada di prefab (LILO/UI/2. Build ... Prefabs).
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/GameplayHud.prefab");
+        if (prefab == null)
+            throw new System.InvalidOperationException("GameplayHud.prefab belum ada. Jalankan LILO/UI/2 dulu.");
+        var hud = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+        hud.name = "GameplayHudCanvas";
     }
 
     private static Canvas CreateCanvas(string name)
