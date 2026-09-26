@@ -27,6 +27,12 @@ namespace Lilo.MonoBehaviours.Audio
         {
             _controller = GetComponent<CharacterController>();
 
+            // The player rig puts StarterAssets.ThirdPersonController on the
+            // character hierarchy. Its animation events would play a second
+            // footstep on top of this distance-driven player.
+            foreach (var starterController in GetComponentsInChildren<StarterAssets.ThirdPersonController>(true))
+                starterController.FootstepAudioClips = System.Array.Empty<AudioClip>();
+
             _source = gameObject.AddComponent<AudioSource>();
             _source.playOnAwake = false;
             _source.spatialBlend = 0f;

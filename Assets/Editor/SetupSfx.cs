@@ -258,14 +258,28 @@ namespace Lilo.Editor
             // The Starter Assets animator also emits footstep events. Keep its
             // landing sound, but clear its step array so it cannot double-play
             // alongside the distance-driven FootstepPlayer above.
-            var starterController = player.GetComponent<StarterAssets.ThirdPersonController>();
-            if (starterController != null)
+            var builtInControllers = player.GetComponentsInChildren<StarterAssets.ThirdPersonController>(true);
+            int clearedAnimatorStepArrays = 0;
+            foreach (var starterController in builtInControllers)
             {
                 var starterSerialized = new SerializedObject(starterController);
-                starterSerialized.FindProperty("FootstepAudioClips").arraySize = 0;
+                var builtInSteps = starterSerialized.FindProperty("FootstepAudioClips");
+                if (builtInSteps == null || builtInSteps.arraySize == 0) continue;
+                builtInSteps.arraySize = 0;
                 starterSerialized.ApplyModifiedPropertiesWithoutUndo();
                 EditorUtility.SetDirty(starterController);
+                clearedAnimatorStepArrays++;
             }
+
+            int removedDuplicatePlayers = 0;
+            foreach (var extra in player.GetComponentsInChildren<FootstepPlayer>(true))
+            {
+                if (extra == footstepPlayer || !(extra.transform == player.transform || extra.transform.IsChildOf(player.transform)))
+                    continue;
+                Object.DestroyImmediate(extra);
+                removedDuplicatePlayers++;
+            }
+            Debug.Log($"[SfxSetup] Footsteps: one distance-driven player, cleared built-in arrays on {clearedAnimatorStepArrays} controller(s), removed {removedDuplicatePlayers} duplicate FootstepPlayer(s).");
         }
 
         [MenuItem("LILO/Setup Sfx On Office Floors")]
