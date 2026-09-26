@@ -721,7 +721,7 @@ MonoBehaviour:
     zoomDuration: 9
     hardCut: 0
     silenceBefore: 0
-  nextSceneName: MainMenu
+  nextSceneName: BadEnding
   frameImage: {fileID: 1666160066}
   narrationText: {fileID: 1727018439}
   fadeOverlay: {fileID: 839331495}
