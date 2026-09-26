@@ -35,11 +35,21 @@ namespace Lilo.MonoBehaviours
             if (_outlineMaterial == null) return;
             _outlineMaterial.SetColor("_OutlineColor", outlineColor);
             _outlineMaterial.SetFloat("_OutlineWidth", outlineWidth);
+            // Character outlines use a reversed depth test so only the silhouette
+            // behind scene geometry shows. Always-visible targets (keys, exits)
+            // also need a normal visible-edge pass or the outline disappears when
+            // the target itself is unobstructed.
+            _outlineMaterial.SetInt("_DepthTest", (int)(alwaysVisible
+                ? UnityEngine.Rendering.CompareFunction.LessEqual
+                : UnityEngine.Rendering.CompareFunction.Greater));
             if (_flatOutlineMaterial != null)
             {
                 _flatOutlineMaterial.SetColor("_OutlineColor", outlineColor);
                 _flatOutlineMaterial.SetFloat("_OutlineWidth", outlineWidth);
                 _flatOutlineMaterial.SetFloat("_AlphaOutlineRadius", Mathf.Clamp(outlineWidth * 384f, 1.5f, 4f));
+                _flatOutlineMaterial.SetInt("_DepthTest", (int)(alwaysVisible
+                    ? UnityEngine.Rendering.CompareFunction.LessEqual
+                    : UnityEngine.Rendering.CompareFunction.Always));
             }
         }
 
@@ -54,6 +64,13 @@ namespace Lilo.MonoBehaviours
                     _outlineMaterial.SetFloat("_XRayFade", 0f);
                 if (_flatOutlineMaterial != null)
                     _flatOutlineMaterial.SetFloat("_XRayFade", 0f);
+                // Outline renderers are siblings of their source meshes, so they
+                // remain active if the source GameObject is hidden immediately.
+                foreach (var pair in _pairs)
+                {
+                    if (pair.mask != null) pair.mask.enabled = false;
+                    if (pair.outline != null) pair.outline.enabled = false;
+                }
             }
         }
 
@@ -72,9 +89,11 @@ namespace Lilo.MonoBehaviours
             _outlineMaterial = new Material(outlineShader) { name = "Eddie XRay Outline (Runtime)" };
             _outlineMaterial.SetColor("_OutlineColor", outlineColor);
             _outlineMaterial.SetFloat("_OutlineWidth", outlineWidth);
-            // The shell should pass only where the scene depth is in front of Eddie.
-            // The previous reversed-Z branch selected Less on Metal and hid the covered edge.
-            _outlineMaterial.SetInt("_DepthTest", (int)UnityEngine.Rendering.CompareFunction.Greater);
+            // Player outlines are visible through occluders. ConfigureOutline can
+            // switch persistent targets to a normal visible-edge depth test.
+            _outlineMaterial.SetInt("_DepthTest", (int)(_alwaysVisibleOutline
+                ? UnityEngine.Rendering.CompareFunction.LessEqual
+                : UnityEngine.Rendering.CompareFunction.Greater));
             _outlineMaterial.SetFloat("_XRayFade", 0f);
             _maskMaterial = new Material(maskShader) { name = "Eddie XRay Stencil Mask (Runtime)" };
 

@@ -24,6 +24,7 @@ namespace Lilo.MonoBehaviours
         private float _respawnMessageUntil;
         private SfxController _sfx;
         private string _lastVoiceHint;
+        private bool _doorLocationHintShown;
 
         private const string NeedAwayHint = "I need to find a way to get out";
         private const string NeedAccessKeyHint = "I need to find the access key first";
@@ -102,6 +103,18 @@ namespace Lilo.MonoBehaviours
                 }
             }
 
+            // If the player has spent a while searching, give one floor-specific
+            // reminder about where the exit is. Avoid interrupting the door
+            // proximity hint or the short respawn subtitle.
+            bool showingRespawnMessage = !string.IsNullOrWhiteSpace(_respawnMessage)
+                && Time.unscaledTime < _respawnMessageUntil;
+            if (!_doorLocationHintShown && !nearDoor && !showingRespawnMessage
+                && Time.timeSinceLevelLoad > 30f)
+            {
+                hint = GetDoorLocationHint(floor);
+                _doorLocationHintShown = true;
+            }
+
             if (!string.IsNullOrWhiteSpace(_respawnMessage))
             {
                 if (Time.unscaledTime < _respawnMessageUntil)
@@ -156,6 +169,16 @@ namespace Lilo.MonoBehaviours
                 FloorId.Floor51 => "I HAVE THE KEY. NOW FIND THE EXIT DOOR—FAST.",
                 FloorId.Floor50 => "I HAVE THE KEY. FIND THAT EXIT DOOR BEFORE IT FINDS ME!",
                 _ => "I HAVE THE KEY... NOW WHERE IS THE EXIT DOOR? I HAVE TO GET OUT!",
+            };
+        }
+
+        private static string GetDoorLocationHint(FloorId floor)
+        {
+            return floor switch
+            {
+                FloorId.Floor51 => "Can I exit through marketing office on the right?",
+                FloorId.Floor50 => "Wait, was it on the right? on the left? I can't remember",
+                _ => "If I'm not mistaken, the emergency exit was on the left side of this floor?",
             };
         }
 

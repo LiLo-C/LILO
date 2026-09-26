@@ -69,6 +69,7 @@ namespace Lilo.MonoBehaviours.Interaction
             if (sfx != null) sfx.PlayKeyPickup();
             if (monster != null && config != null)
                 monster.EmitPulse(transform.position, config.noiseInteract);
+            GetComponent<PlayerXRayOutline>()?.SetOutlineVisible(false);
             gameObject.SetActive(false);
         }
     }

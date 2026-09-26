@@ -13,6 +13,16 @@ namespace Lilo.MonoBehaviours.Interaction
     /// </summary>
     public class ExitDoorInteraction : MonoBehaviour
     {
+        private static readonly Color ExitOutlineColor = new Color(0.35f, 1f, 0.62f, 1f);
+        private static readonly Color ExitFrameColor = new Color(0.12f, 1f, 0.32f, 1f);
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int ColorId = Shader.PropertyToID("_Color");
+        private static readonly (int a, int b)[] BoxEdges =
+        {
+            (0, 1), (0, 2), (0, 4), (1, 3), (1, 5), (2, 3),
+            (2, 6), (3, 7), (4, 5), (4, 6), (5, 7), (6, 7),
+        };
+
         [SerializeField] private float interactRadius = 2f;
         [Tooltip("Optional next scene. If empty, this dev slice records a GoodEnding and stays in-scene.")]
         [SerializeField] private string nextSceneName;
@@ -24,6 +34,7 @@ namespace Lilo.MonoBehaviours.Interaction
         private Transform _player;
         private bool _triggered;
         private bool _blockedMessageShown;
+        private Material _exitFrameMaterial;
 
         public float InteractionRadius => interactRadius;
         public bool RequiresAccessKey
@@ -41,6 +52,94 @@ namespace Lilo.MonoBehaviours.Interaction
             {
                 var state = GameManager.Instance?.State;
                 return state != null && state.HasKey(AccessKeyPickup.KeyIdForFloor(state.CurrentFloor));
+            }
+        }
+
+        private void Awake()
+        {
+            PlayerXRayOutline outline = GetComponent<PlayerXRayOutline>();
+            if (outline == null)
+                outline = gameObject.AddComponent<PlayerXRayOutline>();
+            outline.ConfigureOutline(ExitOutlineColor, 0.012f, true);
+            outline.SetOutlineVisible(true);
+            CreateVisibleDoorFrame();
+        }
+
+        private void CreateVisibleDoorFrame()
+        {
+            Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+            Bounds bounds = default;
+            bool hasBounds = false;
+            foreach (Renderer source in renderers)
+            {
+                if (source == null || source is LineRenderer) continue;
+                if (!hasBounds)
+                {
+                    bounds = source.bounds;
+                    hasBounds = true;
+                }
+                else
+                    bounds.Encapsulate(source.bounds);
+            }
+
+            if (!hasBounds)
+            {
+                Collider targetCollider = GetComponentInChildren<Collider>();
+                if (targetCollider != null)
+                {
+                    bounds = targetCollider.bounds;
+                    hasBounds = true;
+                }
+            }
+
+            if (!hasBounds || bounds.size.sqrMagnitude < 0.0001f)
+            {
+                Debug.LogWarning("[ExitDoor] No mesh or collider bounds found for the exit highlight.", this);
+                return;
+            }
+
+            Shader shader = Shader.Find("Universal Render Pipeline/Unlit")
+                ?? Shader.Find("Unlit/Color")
+                ?? Shader.Find("Sprites/Default");
+            if (shader == null)
+            {
+                Debug.LogError("[ExitDoor] Could not find a shader for the visible exit frame.", this);
+                return;
+            }
+
+            _exitFrameMaterial = new Material(shader) { name = "Exit Door Frame (Runtime)" };
+            if (_exitFrameMaterial.HasProperty(BaseColorId)) _exitFrameMaterial.SetColor(BaseColorId, ExitFrameColor);
+            if (_exitFrameMaterial.HasProperty(ColorId)) _exitFrameMaterial.SetColor(ColorId, ExitFrameColor);
+            _exitFrameMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+            Vector3 min = bounds.min;
+            Vector3 max = bounds.max;
+            Vector3[] corners =
+            {
+                new Vector3(min.x, min.y, min.z), new Vector3(max.x, min.y, min.z),
+                new Vector3(min.x, max.y, min.z), new Vector3(max.x, max.y, min.z),
+                new Vector3(min.x, min.y, max.z), new Vector3(max.x, min.y, max.z),
+                new Vector3(min.x, max.y, max.z), new Vector3(max.x, max.y, max.z),
+            };
+
+            for (int i = 0; i < BoxEdges.Length; i++)
+            {
+                var edgeObject = new GameObject($"Exit Highlight Edge {i + 1}");
+                edgeObject.transform.SetParent(transform, false);
+                var line = edgeObject.AddComponent<LineRenderer>();
+                line.useWorldSpace = true;
+                line.positionCount = 2;
+                line.SetPosition(0, corners[BoxEdges[i].a]);
+                line.SetPosition(1, corners[BoxEdges[i].b]);
+                line.startWidth = 0.035f;
+                line.endWidth = 0.035f;
+                line.numCapVertices = 3;
+                line.alignment = LineAlignment.View;
+                line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                line.receiveShadows = false;
+                line.sharedMaterial = _exitFrameMaterial;
+                line.startColor = ExitFrameColor;
+                line.endColor = ExitFrameColor;
             }
         }
 
@@ -123,6 +222,12 @@ namespace Lilo.MonoBehaviours.Interaction
                 Debug.Log("[ExitDoor] Player escaped — GoodEnding recorded for the playable slice.");
                 enabled = false;
             }
+        }
+
+        private void OnDestroy()
+        {
+            if (_exitFrameMaterial != null)
+                Destroy(_exitFrameMaterial);
         }
 
         private void OnDrawGizmosSelected()
