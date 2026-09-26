@@ -61,6 +61,8 @@ namespace Lilo.State
             _keyInventory.Clear();
         }
 
+        // Floor transitions preserve the installed charge. Only StartNewRun and
+        // ResetForFloorRestart refill it, matching the run/restart battery rules.
         public void AdvanceToFloor(FloorId nextFloor) => CurrentFloor = nextFloor;
 
         public void LoseLife()

@@ -2,6 +2,7 @@ using UnityEngine;
 using Lilo.Config;
 using Lilo.MonoBehaviours.Audio;
 using Lilo.MonoBehaviours.Monster;
+using Lilo.MonoBehaviours;
 
 namespace Lilo.MonoBehaviours.Interaction
 {
@@ -20,6 +21,23 @@ namespace Lilo.MonoBehaviours.Interaction
 
         private Transform _player;
         private bool _pickedUp;
+        private PlayerXRayOutline _outline;
+        private Light[] _glowLights;
+        private float[] _glowIntensities;
+
+        private void Awake()
+        {
+            _outline = GetComponent<PlayerXRayOutline>();
+            if (_outline == null)
+                _outline = gameObject.AddComponent<PlayerXRayOutline>();
+            _outline.ConfigureOutline(new Color(0.15f, 0.85f, 1f, 1f), 0.008f, true);
+            _outline.EnablePickupPulse();
+            _outline.SetOutlineVisible(true);
+            _glowLights = GetComponentsInChildren<Light>();
+            _glowIntensities = new float[_glowLights.Length];
+            for (int i = 0; i < _glowLights.Length; i++)
+                _glowIntensities[i] = _glowLights[i].intensity;
+        }
 
         private void Start()
         {
@@ -46,6 +64,11 @@ namespace Lilo.MonoBehaviours.Interaction
         {
             if (_player == null || _pickedUp) return;
 
+            float opacity = PlayerXRayOutline.PickupPulseOpacity(Time.time);
+            for (int i = 0; i < _glowLights.Length; i++)
+                if (_glowLights[i] != null)
+                    _glowLights[i].intensity = _glowIntensities[i] * opacity;
+
             float dist = Vector3.Distance(transform.position, _player.position);
             if (dist <= interactRadius)
             {
@@ -56,6 +79,7 @@ namespace Lilo.MonoBehaviours.Interaction
         private void PickUp()
         {
             _pickedUp = true;
+            _outline?.SetOutlineVisible(false);
 
             var state = GameManager.Instance?.State;
             if (state != null && config != null)

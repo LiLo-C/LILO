@@ -78,7 +78,16 @@ namespace Lilo.MonoBehaviours.Interaction
 
             if (pickup == null) pickup = keyObject.GetComponent<AccessKeyPickup>();
             if (pickup == null) pickup = keyObject.AddComponent<AccessKeyPickup>();
-            pickup.Configure(keyId, manager.Config);
+            pickup.Configure(keyId, manager.Config, FindSupportingTable(spawnPosition));
+        }
+
+        private static AccessKeySpawnTable FindSupportingTable(Vector3 spawnPosition)
+        {
+            foreach (AccessKeySpawnTable table in Object.FindObjectsByType<AccessKeySpawnTable>())
+                if (table.TryGetKeyPosition(out Vector3 surface)
+                    && (surface - spawnPosition).sqrMagnitude < 0.01f)
+                    return table;
+            return null;
         }
 
         private static AccessKeyPickup FindExistingPickup()
@@ -103,7 +112,7 @@ namespace Lilo.MonoBehaviours.Interaction
             foreach (AccessKeyPickup pickup in Object.FindObjectsByType<AccessKeyPickup>())
             {
                 if (pickup != null && hiddenObjects.Add(pickup.gameObject))
-                    pickup.gameObject.SetActive(false);
+                    HideKeyObject(pickup.gameObject);
             }
 
             foreach (Transform candidate in Object.FindObjectsByType<Transform>())
@@ -112,9 +121,15 @@ namespace Lilo.MonoBehaviours.Interaction
                     && string.Equals(candidate.name, "access-key", System.StringComparison.OrdinalIgnoreCase)
                     && hiddenObjects.Add(candidate.gameObject))
                 {
-                    candidate.gameObject.SetActive(false);
+                    HideKeyObject(candidate.gameObject);
                 }
             }
+        }
+
+        private static void HideKeyObject(GameObject keyObject)
+        {
+            keyObject.GetComponent<PlayerXRayOutline>()?.SetOutlineVisible(false);
+            keyObject.SetActive(false);
         }
 
         private static bool TryFindAuthoredTableSpawn(

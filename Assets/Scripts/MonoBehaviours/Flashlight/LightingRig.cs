@@ -1,5 +1,6 @@
 using Lilo.Config;
 using Lilo.MonoBehaviours;
+using Lilo.State;
 using Lilo.Systems.Flashlight;
 using Lilo.Systems.GameLoop;
 using UnityEngine;
@@ -56,10 +57,13 @@ namespace Lilo.MonoBehaviours.Flashlight
 
             ConfigurePlayerFlashlight();
             ConfigureFlickerAudio();
-            _standaloneCharge = config.batteryDuration;
+            GameState state = GameManager.Instance != null ? GameManager.Instance.State : null;
+            _standaloneCharge = state != null
+                ? Mathf.Clamp(state.InstalledBatteryCharge, 0f, config.batteryDuration)
+                : config.batteryDuration;
             _displayedRadius = config.flashlightNormalRadius;
-            _steadyIntensity = LightStateSystem.GetTargetIntensity(1f, config);
-            ChargeFraction = 1f;
+            ChargeFraction = config.batteryDuration > 0f ? _standaloneCharge / config.batteryDuration : 0f;
+            _steadyIntensity = LightStateSystem.GetTargetIntensity(ChargeFraction, config);
             ApplyLights();
             _initialized = true;
         }

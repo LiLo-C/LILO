@@ -706,6 +706,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50441ece8f98f4bfe9137a9a311bf17c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrologueController
+  endingTrack: {fileID: 8300000, guid: b34e97477d5224954b96fdccfd3cf110, type: 3}
   frames:
   - image: {fileID: 527762847320777146, guid: 239134813aef34f16a6ba2f43ad57a43, type: 3}
     narration: An exit sign, a door left open, and daylight on the other side. He walks toward it.

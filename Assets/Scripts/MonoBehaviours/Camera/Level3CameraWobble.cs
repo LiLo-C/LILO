@@ -18,6 +18,7 @@ namespace Lilo.MonoBehaviours.Camera
         [Header("Continuous wobble")]
         [SerializeField, Range(0f, 20f)] private float rollWobbleDegrees = 1.5f;
         [SerializeField, Range(0f, 20f)] private float pitchWobbleDegrees = 1.5f;
+        [SerializeField, Range(0f, 1f)] private float wobbleIntensity = 0.5f;
         [SerializeField, Min(0.01f)] private float wobbleFrequencyHz = 1.2f;
         [SerializeField, Min(0f)] private float rotationSmoothing = 8f;
 
@@ -51,9 +52,9 @@ namespace Lilo.MonoBehaviours.Camera
             float elapsed = Time.time - _startTime;
             float phase = elapsed * (2f * Mathf.PI * wobbleFrequencyHz);
             float fadeIn = Mathf.Clamp01(elapsed);
-            float roll = rollWobbleDegrees * fadeIn *
+            float roll = rollWobbleDegrees * wobbleIntensity * fadeIn *
                 (0.65f * Mathf.Sin(phase) + 0.35f * Mathf.Sin(phase * 1.71f + 1f));
-            float pitch = pitchWobbleDegrees * fadeIn *
+            float pitch = pitchWobbleDegrees * wobbleIntensity * fadeIn *
                 (0.7f * Mathf.Sin(phase * 0.79f + 1.2f) + 0.3f * Mathf.Sin(phase * 1.33f));
 
             Quaternion target = _baseRotation * Quaternion.Euler(pitch, 0f, inverseRoll + roll);

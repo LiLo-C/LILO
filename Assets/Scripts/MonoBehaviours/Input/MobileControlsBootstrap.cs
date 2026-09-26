@@ -66,12 +66,15 @@ namespace Lilo.MonoBehaviours.Input
                 player.AddComponent<PlayerXRayOutline>();
 
             AccessKeyBootstrap.Ensure();
+            EnsureExitDoor();
 
             GameObject canvasObject = GameObject.Find(CanvasName);
             if (canvasObject == null)
                 canvasObject = CreateCanvas();
             if (canvasObject.GetComponent<GameplayGuidanceHud>() == null)
                 canvasObject.AddComponent<GameplayGuidanceHud>();
+            if (canvasObject.GetComponent<GameplayMinimap>() == null)
+                canvasObject.AddComponent<GameplayMinimap>();
 
             if (!Application.isEditor && !Application.isMobilePlatform)
                 return;
@@ -169,6 +172,37 @@ namespace Lilo.MonoBehaviours.Input
 
             if (eventSystem.GetComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>() == null)
                 eventSystem.gameObject.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
+        }
+
+        private static void EnsureExitDoor()
+        {
+            ExitDoorInteraction door = Object.FindAnyObjectByType<ExitDoorInteraction>(FindObjectsInactive.Include);
+            if (door == null) return;
+
+            string sceneName = SceneManager.GetActiveScene().name;
+            string nextScene = sceneName switch
+            {
+                "OfficeLevel1" => "OfficeLevel2",
+                "OfficeLevel2" => "OfficeLevel3",
+                "OfficeLevel3" => "Epilogue",
+                _ => string.Empty,
+            };
+            if (string.IsNullOrEmpty(nextScene)) return;
+
+            ActivateHierarchy(door.transform);
+            if (!door.enabled)
+                door.enabled = true;
+
+            FloorId nextFloor = sceneName == "OfficeLevel1" ? FloorId.Floor51 : FloorId.Floor50;
+            door.ConfigureTransition(nextScene, true, nextFloor);
+        }
+
+        private static void ActivateHierarchy(Transform target)
+        {
+            if (target.parent != null)
+                ActivateHierarchy(target.parent);
+            if (!target.gameObject.activeSelf)
+                target.gameObject.SetActive(true);
         }
 
         private static void EnsureBridge(Transform canvas, JoystickInputAdapter joystick)

@@ -278,33 +278,26 @@ namespace Lilo.Editor
                 else Debug.LogWarning($"[SfxSetup] Footstep clip missing: {path}");
             }
 
-            var controllers = player.GetComponentsInChildren<StarterAssets.ThirdPersonController>(true);
-            int wiredControllers = 0;
-            foreach (var controller in controllers)
-            {
-                var serialized = new SerializedObject(controller);
-                var stepClips = serialized.FindProperty("FootstepAudioClips");
-                if (stepClips == null)
-                {
-                    Debug.LogWarning($"[SfxSetup] {controller.name} has no FootstepAudioClips field.");
-                    continue;
-                }
+            var footstepPlayer = player.GetComponent<FootstepPlayer>();
+            if (footstepPlayer == null)
+                footstepPlayer = player.AddComponent<FootstepPlayer>();
 
-                stepClips.arraySize = clips.Count;
-                for (int i = 0; i < clips.Count; i++)
-                    stepClips.GetArrayElementAtIndex(i).objectReferenceValue = clips[i];
-                serialized.ApplyModifiedPropertiesWithoutUndo();
-                EditorUtility.SetDirty(controller);
-                wiredControllers++;
+            var serialized = new SerializedObject(footstepPlayer);
+            var stepClips = serialized.FindProperty("stepClips");
+            if (stepClips == null)
+            {
+                Debug.LogWarning($"[SfxSetup] {footstepPlayer.name} has no stepClips field.");
+                return;
             }
 
-            foreach (var customPlayer in player.GetComponentsInChildren<FootstepPlayer>(true))
-            {
-                customPlayer.enabled = false;
-                EditorUtility.SetDirty(customPlayer);
-            }
-
-            Debug.Log($"[SfxSetup] Wired {clips.Count} native footstep clips to {wiredControllers} ThirdPersonController(s); disabled duplicate distance-based footstep players.");
+            stepClips.arraySize = clips.Count;
+            for (int i = 0; i < clips.Count; i++)
+                stepClips.GetArrayElementAtIndex(i).objectReferenceValue = clips[i];
+            serialized.FindProperty("volume").floatValue = 1f;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            footstepPlayer.enabled = true;
+            EditorUtility.SetDirty(footstepPlayer);
+            Debug.Log($"[SfxSetup] Wired {clips.Count} louder clips to the animation-event footstep player.");
         }
 
         [MenuItem("LILO/Setup Sfx On Office Floors")]

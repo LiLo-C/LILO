@@ -103,6 +103,7 @@ namespace Lilo.Config
             chaseSpeed = 0.745f,
             movementSpeedMultiplier = 0.5f,
             noiseSensitivityMultiplier = 1f,
+            visionRangeMultiplier = 1f,
             investigateDuration = 4f,
             alertDuration = 1f,
             chaseHoldDuration = 3f,
@@ -113,8 +114,9 @@ namespace Lilo.Config
             monsterActive = true,
             patrolSpeed = 0.5f,
             chaseSpeed = 1.49f,
-            movementSpeedMultiplier = 1f,
-            noiseSensitivityMultiplier = 1.5f,
+            movementSpeedMultiplier = 0.75f,
+            noiseSensitivityMultiplier = 1.125f,
+            visionRangeMultiplier = 0.75f,
             investigateDuration = 6f,
             alertDuration = 1f,
             chaseHoldDuration = 5f,
@@ -141,6 +143,7 @@ namespace Lilo.Config
             // Older serialized tuning assets predate these per-floor multipliers.
             if (profile.movementSpeedMultiplier <= 0f) profile.movementSpeedMultiplier = 1f;
             if (profile.noiseSensitivityMultiplier <= 0f) profile.noiseSensitivityMultiplier = 1f;
+            if (profile.visionRangeMultiplier <= 0f) profile.visionRangeMultiplier = 1f;
             return profile;
         }
 
@@ -169,9 +172,9 @@ namespace Lilo.Config
         [Tooltip("Stuck safeguard window (spec 002 edge cases).")]
         public float monsterStuckTimeout = 2f;
         [Tooltip("Minimum player distance when placing the monster at floor entry.")]
-        public float monsterSpawnMinDistance = 8f;
+        public float monsterSpawnMinDistance = 18f;
         [Tooltip("Maximum preferred player distance for the monster's initial spawn.")]
-        public float monsterSpawnMaxDistance = 15f;
+        public float monsterSpawnMaxDistance = 26f;
         public float monsterSpawnObjectiveClearance = 3f;
         public float monsterSpawnSafeSeconds = 5f;
 
