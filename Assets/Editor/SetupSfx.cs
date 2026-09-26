@@ -254,6 +254,18 @@ namespace Lilo.Editor
                 stepClips.GetArrayElementAtIndex(i).objectReferenceValue = clips[i];
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(footstepPlayer);
+
+            // The Starter Assets animator also emits footstep events. Keep its
+            // landing sound, but clear its step array so it cannot double-play
+            // alongside the distance-driven FootstepPlayer above.
+            var starterController = player.GetComponent<StarterAssets.ThirdPersonController>();
+            if (starterController != null)
+            {
+                var starterSerialized = new SerializedObject(starterController);
+                starterSerialized.FindProperty("FootstepAudioClips").arraySize = 0;
+                starterSerialized.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(starterController);
+            }
         }
 
         [MenuItem("LILO/Setup Sfx On Office Floors")]
