@@ -3,8 +3,7 @@ using UnityEngine;
 namespace Lilo.MonoBehaviours.Audio
 {
     /// <summary>
-    /// Plays one step per distance-based stride. The Starter Assets animation
-    /// footsteps are disabled on the same character hierarchy to avoid doubles.
+    /// Distance-based fallback footsteps for scenes without Starter Assets animation events.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     public sealed class FootstepPlayer : MonoBehaviour
@@ -21,16 +20,21 @@ namespace Lilo.MonoBehaviours.Audio
 
         private void Awake()
         {
-            _controller = GetComponent<CharacterController>();
-            foreach (var controller in GetComponentsInChildren<StarterAssets.ThirdPersonController>(true))
-                controller.FootstepAudioClips = System.Array.Empty<AudioClip>();
+            if (!enabled) return;
 
+            var nativeFootsteps = GetComponentInChildren<StarterAssets.ThirdPersonController>(true);
+            if (nativeFootsteps != null && nativeFootsteps.FootstepAudioClips != null
+                && nativeFootsteps.FootstepAudioClips.Length > 0)
+            {
+                enabled = false;
+                return;
+            }
+
+            _controller = GetComponent<CharacterController>();
             _source = GetComponent<AudioSource>();
             if (_source == null) _source = gameObject.AddComponent<AudioSource>();
             _source.playOnAwake = false;
             _source.spatialBlend = 0f;
-            // Keep the current clip gain, but halve the AudioSource output so
-            // the resulting footstep level is 50% below the previous setup.
             _source.volume = volume * 0.3f;
             _lastPosition = transform.position;
         }

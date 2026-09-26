@@ -138,12 +138,16 @@ namespace Lilo.MonoBehaviours
                     if (voiceRequested)
                         GameManager.Instance?.State?.ClearPendingLifeVoiceOver();
                 }
-                else if (needsKeyVoiceOver)
-                    _sfx?.PlayNeedAccessKeyVoiceOver();
-                else if (needsBatteryVoiceOver)
-                    _sfx?.PlayBatteryRunsOutVoiceOver();
-                else if (hint == NeedAwayHint)
-                    _sfx?.PlayNeedAwayVoiceOver();
+                else
+                {
+                    bool subtitleVoiceRequested = _sfx != null && _sfx.PlaySubtitleVoiceOver(hint);
+                    if (!subtitleVoiceRequested && needsKeyVoiceOver)
+                        _sfx?.PlayNeedAccessKeyVoiceOver();
+                    else if (!subtitleVoiceRequested && needsBatteryVoiceOver)
+                        _sfx?.PlayBatteryRunsOutVoiceOver();
+                    else if (!subtitleVoiceRequested && hint == NeedAwayHint)
+                        _sfx?.PlayNeedAwayVoiceOver();
+                }
 
                 _lastVoiceHint = hint;
             }
@@ -153,8 +157,8 @@ namespace Lilo.MonoBehaviours
         {
             return floor switch
             {
-                FloorId.Floor51 => "I HAVE THE KEY. NOW FIND THE EXIT DOOR—FAST.",
-                FloorId.Floor50 => "I HAVE THE KEY. FIND THAT EXIT DOOR BEFORE IT FINDS ME!",
+                FloorId.Floor51 => "I HAVE THE KEY. NOW FIND THE EXIT DOOR.",
+                FloorId.Floor50 => "I HAVE THE KEY. NEED TO FIND THAT EXIT DOOR BEFORE IT FINDS ME!",
                 _ => "I HAVE THE KEY... NOW WHERE IS THE EXIT DOOR? I HAVE TO GET OUT!",
             };
         }
@@ -173,8 +177,8 @@ namespace Lilo.MonoBehaviours
 
             return floor switch
             {
-                FloorId.Floor51 => "LOCKED. THE KEY IS ON ONE OF THESE DESKS. GET IT!",
-                FloorId.Floor50 => "LOCKED! THE KEY'S ON ONE OF THESE DESKS. MOVE!",
+                FloorId.Floor51 => "LOCKED. THE KEY MUST BE ON ONE OF THOSE DESKS!",
+                FloorId.Floor50 => "LOCKED! THE KEY'S MUST BE ON ONE OF THOSE DESKS!",
                 _ => "THE EXIT DOOR IS LOCKED. I NEED THE KEY—CHECK THE DESKS!",
             };
         }
