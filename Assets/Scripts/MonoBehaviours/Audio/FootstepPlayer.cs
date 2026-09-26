@@ -41,8 +41,8 @@ namespace Lilo.MonoBehaviours.Audio
             _source.playOnAwake = false;
             _source.spatialBlend = 0f;
             _source.pitch = 1f;
-            // Apply the Inspector gain directly so the boosted clips retain their level.
-            _source.volume = Mathf.Clamp01(volume);
+            // Preserve the existing combined source and one-shot gain.
+            _source.volume = volume * volume * 0.3f;
             _lastPosition = transform.position;
         }
 
