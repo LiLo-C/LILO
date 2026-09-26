@@ -14,6 +14,8 @@ namespace Lilo.Config
         public float movementSpeedMultiplier;
         [Tooltip("Per-floor multiplier for movement, interaction, and objective noise radii.")]
         public float noiseSensitivityMultiplier;
+        [Tooltip("Per-floor multiplier for monster visual detection range.")]
+        public float visionRangeMultiplier;
         public float investigateDuration;
         public float alertDuration;
         public float chaseHoldDuration;

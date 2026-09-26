@@ -334,12 +334,14 @@ namespace Lilo.Tests
         }
 
         [Test]
-        public void Floor51IsHalfSpeed_AndFloor50HearsMoreNoise()
+        public void Floor51KeepsItsSpeed_AndFloor50GetsReducedSpeedAndDetection()
         {
             var cfg = ScriptableObject.CreateInstance<GameConfig>();
 
             Assert.AreEqual(0.5f, cfg.GetMonsterProfile(FloorId.Floor51).movementSpeedMultiplier);
-            Assert.AreEqual(1.5f, cfg.GetMonsterProfile(FloorId.Floor50).noiseSensitivityMultiplier);
+            Assert.AreEqual(0.75f, cfg.GetMonsterProfile(FloorId.Floor50).movementSpeedMultiplier);
+            Assert.AreEqual(1.125f, cfg.GetMonsterProfile(FloorId.Floor50).noiseSensitivityMultiplier);
+            Assert.AreEqual(0.75f, cfg.GetMonsterProfile(FloorId.Floor50).visionRangeMultiplier);
         }
 
         [Test]
