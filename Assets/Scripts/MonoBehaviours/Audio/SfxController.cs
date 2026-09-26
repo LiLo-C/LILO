@@ -215,7 +215,7 @@ namespace Lilo.MonoBehaviours.Audio
         {
             int livesRemaining = subtitle switch
             {
-                "WHAT WAS THAT? WHAT IS HAPPENING?!" => 2,
+                "WAIT WHAT WAS THAT? WHAT IS HAPPENING?!" => 2,
                 "I FELT IT ALL THROUGH MY SKIN OH GOD" => 1,
                 "NO NO NO I DON'T WANT TO FEEL IT AGAIN" => 0,
                 _ => -1,

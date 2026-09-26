@@ -735,7 +735,7 @@ namespace Lilo.MonoBehaviours.Monster
                 state.LoseLife();
                 state.SetRespawnMessage(state.Lives switch
                 {
-                    2 => "WHAT WAS THAT? WHAT IS HAPPENING?!",
+                    2 => "WAIT WHAT WAS THAT? WHAT IS HAPPENING?!",
                     1 => "I FELT IT ALL THROUGH MY SKIN OH GOD",
                     _ => "NO NO NO I DON'T WANT TO FEEL IT AGAIN",
                 });

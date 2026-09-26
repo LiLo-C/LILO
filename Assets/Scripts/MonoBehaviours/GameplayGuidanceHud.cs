@@ -25,8 +25,9 @@ namespace Lilo.MonoBehaviours
         private SfxController _sfx;
         private string _lastVoiceHint;
 
-        private const string NeedAwayHint = "I need to find a way to get out.";
-        private const string NeedBatteryHint = "I need to find some more battery.";
+        private const string NeedAwayHint = "I need to find a way to get out";
+        private const string NeedAccessKeyHint = "I need to find the access key first";
+        private const string NeedBatteryHint = "I need to find some more battery";
 
         private void Awake()
         {
@@ -60,7 +61,7 @@ namespace Lilo.MonoBehaviours
             bool needsKeyVoiceOver = requiresKey && !hasKey;
             bool needsBatteryVoiceOver = false;
             string hint = requiresKey
-                ? hasKey ? GetDoorHint(floor) : GetKeyHint(floor)
+                ? hasKey ? GetDoorHint(floor) : NeedAccessKeyHint
                 : NeedAwayHint;
             bool nearDoor = false;
             ExitDoorInteraction nearbyExit = null;
@@ -84,7 +85,7 @@ namespace Lilo.MonoBehaviours
             if (nearDoor)
             {
                 if (nearbyExit != null && nearbyExit.RequiresAccessKey)
-                    hint = GetDoorProximityHint(floor, hasKey);
+                    hint = hasKey ? GetDoorProximityHint(floor, true) : NeedAccessKeyHint;
                 else
                     hint = "I FOUND THE EXIT DOOR. I CAN GET OUT!";
             }
@@ -127,7 +128,7 @@ namespace Lilo.MonoBehaviours
                 if (_sfx == null)
                     _sfx = Object.FindAnyObjectByType<SfxController>();
 
-                bool isLifeSubtitle = hint == "WHAT WAS THAT? WHAT IS HAPPENING?!"
+                bool isLifeSubtitle = hint == "WAIT WHAT WAS THAT? WHAT IS HAPPENING?!"
                     || hint == "I FELT IT ALL THROUGH MY SKIN OH GOD"
                     || hint == "NO NO NO I DON'T WANT TO FEEL IT AGAIN";
                 if (isLifeSubtitle)
@@ -146,16 +147,6 @@ namespace Lilo.MonoBehaviours
 
                 _lastVoiceHint = hint;
             }
-        }
-
-        private static string GetKeyHint(FloorId floor)
-        {
-            return floor switch
-            {
-                FloorId.Floor51 => "THE KEY MUST BE ON ONE OF THESE DESKS. FIND IT, THEN GET TO THE EXIT DOOR.",
-                FloorId.Floor50 => "THE KEY IS ON ONE OF THESE DESKS—FIND IT! THEN GET TO THE EXIT DOOR, NOW!",
-                _ => "WHY IS THERE A KEY? CHECK THE DESKS... MAYBE ONE HAS IT. I NEED TO FIND AN EXIT!",
-            };
         }
 
         private static string GetDoorHint(FloorId floor)
