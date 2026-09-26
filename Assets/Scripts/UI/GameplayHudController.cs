@@ -59,11 +59,15 @@ namespace Lilo.UI
 
         private void DisableDebugUi()
         {
-            foreach (Transform child in GetComponentsInChildren<Transform>(true))
+            var roots = SceneManager.GetActiveScene().GetRootGameObjects();
+            foreach (var root in roots)
             {
-                string n = child.name.ToLowerInvariant();
-                if (n.Contains("debug") || n.Contains("devbuild") || n == "dbg")
-                    child.gameObject.SetActive(false);
+                foreach (Transform child in root.GetComponentsInChildren<Transform>(true))
+                {
+                    string n = child.name.ToLowerInvariant();
+                    if (n.Contains("debug") || n.Contains("devbuild") || n == "dbg")
+                        child.gameObject.SetActive(false);
+                }
             }
         }
 
