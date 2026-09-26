@@ -103,7 +103,7 @@ namespace Lilo.MonoBehaviours.Interaction
             foreach (AccessKeyPickup pickup in Object.FindObjectsByType<AccessKeyPickup>())
             {
                 if (pickup != null && hiddenObjects.Add(pickup.gameObject))
-                    pickup.gameObject.SetActive(false);
+                    HideKeyObject(pickup.gameObject);
             }
 
             foreach (Transform candidate in Object.FindObjectsByType<Transform>())
@@ -112,9 +112,15 @@ namespace Lilo.MonoBehaviours.Interaction
                     && string.Equals(candidate.name, "access-key", System.StringComparison.OrdinalIgnoreCase)
                     && hiddenObjects.Add(candidate.gameObject))
                 {
-                    candidate.gameObject.SetActive(false);
+                    HideKeyObject(candidate.gameObject);
                 }
             }
+        }
+
+        private static void HideKeyObject(GameObject keyObject)
+        {
+            keyObject.GetComponent<PlayerXRayOutline>()?.SetOutlineVisible(false);
+            keyObject.SetActive(false);
         }
 
         private static bool TryFindAuthoredTableSpawn(
