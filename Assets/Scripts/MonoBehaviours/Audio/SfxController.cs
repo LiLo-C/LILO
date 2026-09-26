@@ -26,6 +26,15 @@ namespace Lilo.MonoBehaviours.Audio
         [SerializeField] private AudioClip needAwayVoiceOverClip;
         [SerializeField] private AudioClip batteryRunsOutVoiceOverClip;
         [SerializeField] private AudioClip needAccessKeyVoiceOverClip;
+        [SerializeField] private AudioClip marketingOfficeExitVoiceOverClip;
+        [SerializeField] private AudioClip foundExitVoiceOverClip;
+        [SerializeField] private AudioClip keyFoundFloor51VoiceOverClip;
+        [SerializeField] private AudioClip keyFoundFloor50VoiceOverClip;
+        [SerializeField] private AudioClip lockedKeyFloor51VoiceOverClip;
+        [SerializeField] private AudioClip lockedKeyFloor50VoiceOverClip;
+        [SerializeField] private AudioClip whereIsExitVoiceOverClip;
+        [SerializeField] private AudioClip exitDirectionUnclearVoiceOverClip;
+
         [SerializeField, Min(0.05f)] private float chaseBgmFadeOutSeconds = 1.5f;
         [SerializeField, Range(0f, 1f)] private float volume = 0.8f;
         [SerializeField, Min(0.1f)] private float monsterAudioMinDistance = 1.5f;
@@ -238,6 +247,51 @@ namespace Lilo.MonoBehaviours.Audio
         {
             return PlayVoiceOver(needAwayVoiceOverClip);
         }
+
+        public bool PlaySubtitleVoiceOver(string subtitle)
+        {
+            string normalizedSubtitle = NormalizeSubtitle(subtitle);
+            AudioClip clip = normalizedSubtitle switch
+            {
+                "CANIEXITTHROUGHMARKETINGOFFICEONTHERIGHT" => marketingOfficeExitVoiceOverClip,
+                "FOUNDTHEEXITDOOR" => foundExitVoiceOverClip,
+                "IFOUNDTHEEXITDOORICANGETOUT" => foundExitVoiceOverClip,
+                "THATSTHEEXITDOORUSETHEKEYGO" => foundExitVoiceOverClip,
+                "THEEXITDOORUSETHEKEYNOW" => foundExitVoiceOverClip,
+                "THEEXITDOORIHAVEAKEYPLEASEOPEN" => foundExitVoiceOverClip,
+                "IHAVETHEKEYNOWFINDTHEEXITDOOR" => keyFoundFloor51VoiceOverClip,
+                "IHAVETHEKEYNOWFINDTHEEXITDOORFAST" => keyFoundFloor51VoiceOverClip,
+                "IHAVETHEKEYNEEDTOFINDTHATEXITDOORBEFOREITFINDSME" => keyFoundFloor50VoiceOverClip,
+                "IHAVETHEKEYFINDTHATEXITDOORBEFOREITFINDSME" => keyFoundFloor50VoiceOverClip,
+                "LOCKEDTHEKEYMUSTBEONONEOFTHOSEDESKS" => lockedKeyFloor51VoiceOverClip,
+                "LOCKEDTHEKEYISONONEOFTHOSEDESKS" => lockedKeyFloor51VoiceOverClip,
+                "LOCKEDTHEKEYISONONEOFTHESEDESKSGETIT" => lockedKeyFloor51VoiceOverClip,
+                "LOCKEDTHEKEYSMUSTBEONONEOFTHOSEDESKS" => lockedKeyFloor50VoiceOverClip,
+                "LOCKEDTHEKEYSONONEOFTHOSEDESKS" => lockedKeyFloor50VoiceOverClip,
+                "LOCKEDTHEKEYSONONEOFTHESEDESKSMOVE" => lockedKeyFloor50VoiceOverClip,
+                "NOWWHEREISTHEEXITDOOR" => whereIsExitVoiceOverClip,
+                "IHAVETHEKEYNOWWHEREISTHEEXITDOORIHAVETOGETOUT" => whereIsExitVoiceOverClip,
+                "WAITWASITONTHERIGHTONTHELEFTICANTREMEMBER" => exitDirectionUnclearVoiceOverClip,
+                _ => null,
+            };
+
+            return PlayVoiceOver(clip);
+        }
+
+        private static string NormalizeSubtitle(string subtitle)
+        {
+            if (string.IsNullOrEmpty(subtitle))
+                return string.Empty;
+
+            var normalized = new System.Text.StringBuilder(subtitle.Length);
+            foreach (char character in subtitle)
+            {
+                if (char.IsLetterOrDigit(character))
+                    normalized.Append(char.ToUpperInvariant(character));
+            }
+            return normalized.ToString();
+        }
+
 
         private bool PlayVoiceOver(AudioClip clip)
         {

@@ -28,6 +28,15 @@ namespace Lilo.Editor
         private const string LastLifeVoicePath = "Assets/Sfx/vos/last-life-sfx.wav";
         private const string NeedAwayVoicePath = "Assets/Sfx/vos/need-away-sfx.wav";
         private const string BatteryRunsOutVoicePath = "Assets/Sfx/vos/battery-runs-out-sfx.wav";
+
+        private const string MarketingOfficeExitVoicePath = "Assets/Sfx/vos/Can I exit through marketing office on the right?.wav";
+        private const string FoundExitVoicePath = "Assets/Sfx/vos/Found The Exit door.wav";
+        private const string KeyFoundFloor51VoicePath = "Assets/Sfx/vos/I HAVE THE KEY. NOW FIND THE EXIT DOOR.wav";
+        private const string KeyFoundFloor50VoicePath = "Assets/Sfx/vos/I HAVE THE KEY. NEED TO FIND THAT EXIT DOOR BEFORE IT FINDS ME!.wav";
+        private const string LockedKeyFloor51VoicePath = "Assets/Sfx/vos/LOCKED. THE KEY MUST BE ON ONE OF THOSE DESKS!.wav";
+        private const string LockedKeyFloor50VoicePath = "Assets/Sfx/vos/LOCKED! THE KEY'S MUST BE ON ONE OF THOSE DESKS!.wav";
+        private const string WhereIsExitVoicePath = "Assets/Sfx/vos/NOW WHERE IS THE EXIT DOOR?.wav";
+        private const string ExitDirectionUnclearVoicePath = "Assets/Sfx/vos/Wait, was it on the right? on the left? I can't remember”.wav";
         private const string NeedAccessKeyVoicePath = "Assets/Sfx/vos/need-access-key-sfx.wav";
         private static readonly string[] FootstepPaths =
         {
@@ -93,6 +102,15 @@ namespace Lilo.Editor
             var lastLifeVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(LastLifeVoicePath);
             var needAwayVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(NeedAwayVoicePath);
             var batteryRunsOutVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(BatteryRunsOutVoicePath);
+
+            var marketingOfficeExitVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(MarketingOfficeExitVoicePath);
+            var foundExitVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(FoundExitVoicePath);
+            var keyFoundFloor51Voice = AssetDatabase.LoadAssetAtPath<AudioClip>(KeyFoundFloor51VoicePath);
+            var keyFoundFloor50Voice = AssetDatabase.LoadAssetAtPath<AudioClip>(KeyFoundFloor50VoicePath);
+            var lockedKeyFloor51Voice = AssetDatabase.LoadAssetAtPath<AudioClip>(LockedKeyFloor51VoicePath);
+            var lockedKeyFloor50Voice = AssetDatabase.LoadAssetAtPath<AudioClip>(LockedKeyFloor50VoicePath);
+            var whereIsExitVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(WhereIsExitVoicePath);
+            var exitDirectionUnclearVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(ExitDirectionUnclearVoicePath);
             var needAccessKeyVoice = AssetDatabase.LoadAssetAtPath<AudioClip>(NeedAccessKeyVoicePath);
 
             // 2. Find or create SfxController GameObject.
@@ -119,6 +137,15 @@ namespace Lilo.Editor
             so.FindProperty("lastLifeVoiceOverClip").objectReferenceValue = lastLifeVoice;
             so.FindProperty("needAwayVoiceOverClip").objectReferenceValue = needAwayVoice;
             so.FindProperty("batteryRunsOutVoiceOverClip").objectReferenceValue = batteryRunsOutVoice;
+
+            so.FindProperty("marketingOfficeExitVoiceOverClip").objectReferenceValue = marketingOfficeExitVoice;
+            so.FindProperty("foundExitVoiceOverClip").objectReferenceValue = foundExitVoice;
+            so.FindProperty("keyFoundFloor51VoiceOverClip").objectReferenceValue = keyFoundFloor51Voice;
+            so.FindProperty("keyFoundFloor50VoiceOverClip").objectReferenceValue = keyFoundFloor50Voice;
+            so.FindProperty("lockedKeyFloor51VoiceOverClip").objectReferenceValue = lockedKeyFloor51Voice;
+            so.FindProperty("lockedKeyFloor50VoiceOverClip").objectReferenceValue = lockedKeyFloor50Voice;
+            so.FindProperty("whereIsExitVoiceOverClip").objectReferenceValue = whereIsExitVoice;
+            so.FindProperty("exitDirectionUnclearVoiceOverClip").objectReferenceValue = exitDirectionUnclearVoice;
             so.FindProperty("needAccessKeyVoiceOverClip").objectReferenceValue = needAccessKeyVoice;
             so.ApplyModifiedPropertiesWithoutUndo();
 

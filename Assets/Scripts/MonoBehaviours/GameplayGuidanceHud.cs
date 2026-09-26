@@ -151,12 +151,16 @@ namespace Lilo.MonoBehaviours
                     if (voiceRequested)
                         GameManager.Instance?.State?.ClearPendingLifeVoiceOver();
                 }
-                else if (needsKeyVoiceOver)
-                    _sfx?.PlayNeedAccessKeyVoiceOver();
-                else if (needsBatteryVoiceOver)
-                    _sfx?.PlayBatteryRunsOutVoiceOver();
-                else if (hint == NeedAwayHint)
-                    _sfx?.PlayNeedAwayVoiceOver();
+                else
+                {
+                    bool subtitleVoiceRequested = _sfx != null && _sfx.PlaySubtitleVoiceOver(hint);
+                    if (!subtitleVoiceRequested && needsKeyVoiceOver)
+                        _sfx?.PlayNeedAccessKeyVoiceOver();
+                    else if (!subtitleVoiceRequested && needsBatteryVoiceOver)
+                        _sfx?.PlayBatteryRunsOutVoiceOver();
+                    else if (!subtitleVoiceRequested && hint == NeedAwayHint)
+                        _sfx?.PlayNeedAwayVoiceOver();
+                }
 
                 _lastVoiceHint = hint;
             }
