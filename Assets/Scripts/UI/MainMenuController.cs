@@ -17,8 +17,11 @@ namespace Lilo.UI
         [SerializeField] private Button startButton;
         [SerializeField] private Button howToPlayButton;
         [SerializeField] private Button settingsButton;
+        [SerializeField] private Button creditsButton;
+        [SerializeField] private Button creditsCloseButton;
         [SerializeField] private GameObject howToPlayPanel;
         [SerializeField] private GameObject settingsPanel;
+        [SerializeField] private GameObject creditsPanel;
         [SerializeField] private SoundSettingsPanel soundSettings;
         [SerializeField] private AudioClip mainMenuBgm;
         [SerializeField, Min(0f)] private float mainMenuFadeInSeconds = 5f;
@@ -34,9 +37,12 @@ namespace Lilo.UI
             if (startButton != null) startButton.onClick.AddListener(StartRun);
             if (howToPlayButton != null) howToPlayButton.onClick.AddListener(OpenHowToPlay);
             if (settingsButton != null) settingsButton.onClick.AddListener(OpenSettings);
+            if (creditsButton != null) creditsButton.onClick.AddListener(OpenCredits);
+            if (creditsCloseButton != null) creditsCloseButton.onClick.AddListener(CloseOverlay);
 
             if (howToPlayPanel != null) howToPlayPanel.SetActive(false);
             if (settingsPanel != null) settingsPanel.SetActive(false);
+            if (creditsPanel != null) creditsPanel.SetActive(false);
         }
 
         private void OnEnable()
@@ -103,19 +109,28 @@ namespace Lilo.UI
 
         public void OpenHowToPlay()
         {
+            CloseOverlay();
             if (howToPlayPanel != null) howToPlayPanel.SetActive(true);
         }
 
         public void OpenSettings()
         {
+            CloseOverlay();
             if (settingsPanel != null) settingsPanel.SetActive(true);
             soundSettings?.Refresh();
+        }
+
+        public void OpenCredits()
+        {
+            CloseOverlay();
+            if (creditsPanel != null) creditsPanel.SetActive(true);
         }
 
         public void CloseOverlay()
         {
             if (howToPlayPanel != null) howToPlayPanel.SetActive(false);
             if (settingsPanel != null) settingsPanel.SetActive(false);
+            if (creditsPanel != null) creditsPanel.SetActive(false);
         }
 
         private void SetButtons(bool enabled)
@@ -123,6 +138,7 @@ namespace Lilo.UI
             if (startButton != null) startButton.interactable = enabled;
             if (howToPlayButton != null) howToPlayButton.interactable = enabled;
             if (settingsButton != null) settingsButton.interactable = enabled;
+            if (creditsButton != null) creditsButton.interactable = enabled;
         }
     }
 }

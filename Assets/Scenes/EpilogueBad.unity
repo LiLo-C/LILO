@@ -706,6 +706,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50441ece8f98f4bfe9137a9a311bf17c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrologueController
+  endingTrack: {fileID: 8300000, guid: cdd807277da104a018c936f9ef9c9bf9, type: 3}
   frames:
   - image: {fileID: 2303383149465349767, guid: 512439303d21e47c8bafdc1cb7b23de9, type: 3}
     narration: He trips over the papers he never finished. It reaches him before he can stand.

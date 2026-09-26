@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
+using Lilo.Systems.GameLoop;
 
 public class PrologueController : MonoBehaviour
 {
@@ -35,6 +36,13 @@ public class PrologueController : MonoBehaviour
         public float silenceBefore = 0f;
     }
 
+    [Header("Ending Audio")]
+    [Tooltip("Optional full-scene ending track, used by the good and bad epilogues.")]
+    public AudioClip endingTrack;
+    [Range(0f, 1f)] public float endingTrackVolume = 0.5f;
+    [Min(0f)] public float endingTrackFadeInSeconds = 1.25f;
+    [Min(0f)] public float endingTrackFadeOutSeconds = 0.6f;
+
     [Header("Isi adegan")]
     public List<Frame> frames = new List<Frame>();
     public string nextSceneName = "Gameplay";
@@ -61,6 +69,7 @@ public class PrologueController : MonoBehaviour
     AudioSource _ambienceA;
     AudioSource _ambienceB;
     AudioSource _eventSource;
+    AudioSource _endingSource;
     AudioSource _activeAmbience;
     Coroutine _ambienceFade;
 
@@ -70,6 +79,7 @@ public class PrologueController : MonoBehaviour
         _ambienceA = CreateAudioSource("PrologueAmbienceA", loop: true);
         _ambienceB = CreateAudioSource("PrologueAmbienceB", loop: true);
         _eventSource = CreateAudioSource("PrologueEvents", loop: false);
+        _endingSource = CreateAudioSource("EndingTrack", loop: false);
         if (tapCatcher != null) tapCatcher.onClick.AddListener(() => tapped = true);
         if (skipButton != null) skipButton.onClick.AddListener(Skip);
     }
@@ -87,9 +97,32 @@ public class PrologueController : MonoBehaviour
 
     void Start()
     {
+        SoundSettingsStore.Apply();
         fadeOverlay.alpha = 1f;
         narrationText.text = "";
+        if (endingTrack != null)
+        {
+            _endingSource.clip = endingTrack;
+            _endingSource.volume = 0f;
+            _endingSource.Play();
+            StartCoroutine(FadeEndingTrack());
+        }
         StartCoroutine(Run());
+    }
+
+    IEnumerator FadeEndingTrack()
+    {
+        float duration = Mathf.Max(0.01f, endingTrackFadeInSeconds);
+        float elapsed = 0f;
+        while (elapsed < duration && _endingSource != null)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            _endingSource.volume = endingTrackVolume * Mathf.Clamp01(elapsed / duration);
+            yield return null;
+        }
+
+        if (_endingSource != null)
+            _endingSource.volume = endingTrackVolume;
     }
 
     IEnumerator Run()
@@ -100,6 +133,7 @@ public class PrologueController : MonoBehaviour
             yield return StartCoroutine(PlayFrame(frames[i]));
         }
         yield return StartCoroutine(Fade(1f));
+        yield return StartCoroutine(FadeEndingTrackOut());
         Finish();
     }
 
@@ -276,7 +310,24 @@ public class PrologueController : MonoBehaviour
     IEnumerator SkipRoutine()
     {
         yield return StartCoroutine(Fade(1f));
+        yield return StartCoroutine(FadeEndingTrackOut());
         Finish();
+    }
+
+    IEnumerator FadeEndingTrackOut()
+    {
+        if (_endingSource == null || !_endingSource.isPlaying || endingTrackFadeOutSeconds <= 0f)
+            yield break;
+
+        float startVolume = _endingSource.volume;
+        float elapsed = 0f;
+        while (elapsed < endingTrackFadeOutSeconds)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            _endingSource.volume = Mathf.Lerp(startVolume, 0f, elapsed / endingTrackFadeOutSeconds);
+            yield return null;
+        }
+        _endingSource.volume = 0f;
     }
 
     void Finish()
@@ -284,6 +335,7 @@ public class PrologueController : MonoBehaviour
         _ambienceA?.Stop();
         _ambienceB?.Stop();
         _eventSource?.Stop();
+        _endingSource?.Stop();
         SceneManager.LoadScene(nextSceneName);
     }
 }

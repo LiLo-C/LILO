@@ -202,8 +202,10 @@ namespace Lilo.MonoBehaviours.Monster
             }
             _waypoints = points.ToArray();
 
-            if (!PlaceAtValidatedSpawn())
-                return;
+            bool placed = activeFloor == FloorId.Floor50
+                ? PlaceAtFarthestSpawn()
+                : PlaceAtValidatedSpawn();
+            if (!placed) return;
 
             _brain = new MonsterBrainState
             {
@@ -325,6 +327,133 @@ namespace Lilo.MonoBehaviours.Monster
                 return false;
             }
             Debug.Log($"[Monster] Randomized spawn selected at ({selectedPosition.x:0.00}, {selectedPosition.y:0.00}, {selectedPosition.z:0.00}) from {candidates.Count} authored and sampled candidates.");
+            return true;
+        }
+
+        private bool PlaceAtFarthestSpawn()
+        {
+            Vector3 entry = player.position;
+            var objectives = new List<Vector3>();
+            if (spawnObjectives != null)
+            {
+                foreach (Transform objective in spawnObjectives)
+                    objectives.Add(objective.position);
+            }
+
+            NavMeshTriangulation triangulation = NavMesh.CalculateTriangulation();
+            if (triangulation.vertices == null || triangulation.vertices.Length == 0)
+            {
+                Debug.LogError("[Monster] Cannot find a far Level 3 spawn because the NavMesh has no vertices.");
+                enabled = false;
+                return false;
+            }
+
+            // NavMesh vertices capture the outer reachable boundary; triangle
+            // centers cover large open regions between those boundary points.
+            var rawPoints = new List<Vector3>(triangulation.vertices.Length * 2
+                + (triangulation.indices != null ? triangulation.indices.Length / 3 : 0));
+            var uniquePoints = new HashSet<Vector3>();
+            foreach (Vector3 vertex in triangulation.vertices)
+                if (uniquePoints.Add(vertex)) rawPoints.Add(vertex);
+
+            if (triangulation.indices != null)
+            {
+                for (int i = 0; i + 2 < triangulation.indices.Length; i += 3)
+                {
+                    Vector3 a = triangulation.vertices[triangulation.indices[i]];
+                    Vector3 b = triangulation.vertices[triangulation.indices[i + 1]];
+                    Vector3 c = triangulation.vertices[triangulation.indices[i + 2]];
+                    Vector3 center = (a + b + c) / 3f;
+                    if (uniquePoints.Add(center)) rawPoints.Add(center);
+                }
+            }
+
+            if (spawnPresets != null)
+            {
+                foreach (Transform preset in spawnPresets)
+                    if (uniquePoints.Add(preset.position)) rawPoints.Add(preset.position);
+            }
+
+            rawPoints.Sort((a, b) => MonsterBrain.DistXZ(b, entry).CompareTo(MonsterBrain.DistXZ(a, entry)));
+
+            Vector3 farthestClearHidden = default;
+            Vector3 farthestClear = default;
+            Vector3 farthestReachable = default;
+            float clearHiddenDistance = -1f;
+            float clearDistance = -1f;
+            float reachableDistance = -1f;
+            float minimumDistance = config.monsterSpawnMinDistance;
+
+            foreach (Vector3 rawPoint in rawPoints)
+            {
+                // Sampling can move a point by at most two meters, so once the
+                // remaining sorted points cannot beat the current best, stop.
+                float bestQualifiedDistance = clearHiddenDistance >= 0f ? clearHiddenDistance
+                    : clearDistance >= 0f ? clearDistance
+                    : reachableDistance;
+                if (bestQualifiedDistance >= 0f
+                    && MonsterBrain.DistXZ(rawPoint, entry) < bestQualifiedDistance - 2f)
+                    break;
+                if (!NavMesh.SamplePosition(rawPoint, out NavMeshHit hit, 2f, _agent.areaMask))
+                    continue;
+
+                Vector3 point = hit.position;
+                float distance = MonsterBrain.DistXZ(point, entry);
+                if (!IsReachable(entry, point))
+                    continue;
+                if (distance > reachableDistance)
+                {
+                    farthestReachable = point;
+                    reachableDistance = distance;
+                }
+                // Small/disconnected floors may have no reachable point 18m
+                // away. Still retain their farthest point as a playable fallback.
+                if (distance < minimumDistance) continue;
+
+                bool clearOfObjectives = true;
+                foreach (Vector3 objective in objectives)
+                {
+                    if (MonsterBrain.DistXZ(point, objective) < config.monsterSpawnObjectiveClearance)
+                    {
+                        clearOfObjectives = false;
+                        break;
+                    }
+                }
+                if (!clearOfObjectives) continue;
+                if (distance > clearDistance)
+                {
+                    farthestClear = point;
+                    clearDistance = distance;
+                }
+
+                if (!IsVisibleFromEntry(entry, point) && distance > clearHiddenDistance)
+                {
+                    farthestClearHidden = point;
+                    clearHiddenDistance = distance;
+                }
+            }
+
+            Vector3 selected = clearHiddenDistance >= 0f ? farthestClearHidden
+                : clearDistance >= 0f ? farthestClear
+                : farthestReachable;
+            if (reachableDistance < 0f)
+            {
+                Debug.LogError("[Monster] No reachable Level 3 spawn exists on the NavMesh.");
+                enabled = false;
+                return false;
+            }
+
+            if (reachableDistance < minimumDistance)
+                Debug.LogWarning($"[Monster] No reachable point meets the preferred {minimumDistance:0.#}m spawn distance; using the farthest available point ({reachableDistance:0.0}m).");
+
+            if (!_agent.Warp(selected))
+            {
+                Debug.LogError($"[Monster] Farthest validated Level 3 spawn at {selected} was not on the NavMesh.");
+                enabled = false;
+                return false;
+            }
+
+            Debug.Log($"[Monster] Level 3 spawned at its farthest safe NavMesh point, {MonsterBrain.DistXZ(selected, entry):0.0}m from the player.");
             return true;
         }
 

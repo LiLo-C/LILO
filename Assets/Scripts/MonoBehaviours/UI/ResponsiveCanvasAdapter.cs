@@ -1,5 +1,5 @@
+using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Lilo.MonoBehaviours.UI
 {
@@ -11,7 +11,6 @@ namespace Lilo.MonoBehaviours.UI
     public sealed class ResponsiveCanvasAdapter : MonoBehaviour
     {
         private Canvas _canvas;
-        private CanvasScaler _scaler;
         private RectTransform _rectTransform;
         private Rect _lastSafeArea;
         private int _lastScreenWidth;
@@ -20,15 +19,18 @@ namespace Lilo.MonoBehaviours.UI
         private void Awake()
         {
             _canvas = GetComponent<Canvas>();
-            _scaler = GetComponent<CanvasScaler>();
             _rectTransform = transform as RectTransform;
 
-            if (_scaler != null && _scaler.uiScaleMode == CanvasScaler.ScaleMode.ScaleWithScreenSize)
-            {
-                _scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-                _scaler.matchWidthOrHeight = 0.5f;
-            }
+            ApplySafeArea();
+            StartCoroutine(RefreshSafeAreaAfterCanvasLayout());
+        }
 
+        private IEnumerator RefreshSafeAreaAfterCanvasLayout()
+        {
+            // iOS can report its final safe area after the first scene frame,
+            // especially on iPad during cold launch / orientation settling.
+            yield return null;
+            yield return new WaitForEndOfFrame();
             ApplySafeArea();
         }
 
