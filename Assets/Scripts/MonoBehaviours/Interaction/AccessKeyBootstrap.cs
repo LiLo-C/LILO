@@ -1,5 +1,6 @@
 using Lilo.Config;
 using Lilo.MonoBehaviours;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -16,7 +17,13 @@ namespace Lilo.MonoBehaviours.Interaction
             FloorId floor = manager.State.CurrentFloor;
             if (manager.Config.GetLockedDoorCount(floor) <= 0) return;
             string keyId = AccessKeyPickup.KeyIdForFloor(floor);
-            if (manager.State.HasKey(keyId)) return;
+            if (manager.State.HasKey(keyId))
+            {
+                // Scene-authored pickups become active again when the floor reloads
+                // after a death. Keep the collected key visibly gone on that reload.
+                HideExistingKeys();
+                return;
+            }
 
             GameObject playerObject = GameObject.Find("PlayerCharacter");
             if (playerObject == null) return;
@@ -88,6 +95,26 @@ namespace Lilo.MonoBehaviours.Interaction
                     return candidate.gameObject;
             }
             return null;
+        }
+
+        private static void HideExistingKeys()
+        {
+            var hiddenObjects = new HashSet<GameObject>();
+            foreach (AccessKeyPickup pickup in Object.FindObjectsByType<AccessKeyPickup>())
+            {
+                if (pickup != null && hiddenObjects.Add(pickup.gameObject))
+                    pickup.gameObject.SetActive(false);
+            }
+
+            foreach (Transform candidate in Object.FindObjectsByType<Transform>())
+            {
+                if (candidate != null
+                    && string.Equals(candidate.name, "access-key", System.StringComparison.OrdinalIgnoreCase)
+                    && hiddenObjects.Add(candidate.gameObject))
+                {
+                    candidate.gameObject.SetActive(false);
+                }
+            }
         }
 
         private static bool TryFindAuthoredTableSpawn(

@@ -753,6 +753,10 @@ namespace Lilo.MonoBehaviours.Monster
             Debug.Log($"[Monster] Respawning on {respawnScene} for floor {state?.CurrentFloor.ToString() ?? "active scene"}.");
             state?.MarkLifeVoiceOverReady();
             Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();
+            // CatchSequence freezes gameplay while its death cinematic runs. Restore
+            // scaled time before loading the ending/respawn scene so its fades and
+            // typewriter timeline can advance instead of remaining on a black frame.
+            Time.timeScale = 1f;
             SceneManager.LoadScene(respawnScene);
         }
 
