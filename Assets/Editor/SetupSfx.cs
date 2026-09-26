@@ -29,6 +29,12 @@ namespace Lilo.Editor
         private const string NeedAwayVoicePath = "Assets/Sfx/vos/need-away-sfx.wav";
         private const string BatteryRunsOutVoicePath = "Assets/Sfx/vos/battery-runs-out-sfx.wav";
         private const string NeedAccessKeyVoicePath = "Assets/Sfx/vos/need-access-key-sfx.wav";
+        private static readonly string[] FootstepPaths =
+        {
+            "Assets/Sfx/walking/left-foot-sfx.wav", "Assets/Sfx/walking/right-foot-sfx.wav",
+            "Assets/Sfx/walking/left-foot-2-sfx.wav", "Assets/Sfx/walking/right-foot-2-sfx.wav",
+            "Assets/Sfx/walking/left-foot-3-sfx.wav", "Assets/Sfx/walking/right-foot-3-sfx.wav"
+        };
         private static readonly string[] AmbienceStingPaths =
         {
             "Assets/Sfx/ambience/empty-room-sfx.mp3", "Assets/Sfx/ambience/hey-1-sfx.wav",
@@ -146,7 +152,7 @@ namespace Lilo.Editor
                 ambienceSo.ApplyModifiedPropertiesWithoutUndo();
             }
 
-            RemoveCustomFootsteps();
+            WireFootsteps();
 
             WirePropPassBySounds(sfx);
 
@@ -228,21 +234,29 @@ namespace Lilo.Editor
             }
         }
 
-        private static void RemoveCustomFootsteps()
+        private static void WireFootsteps()
         {
             var player = GameObject.Find("PlayerCharacter");
             if (player == null) return;
-            var builtInControllers = player.GetComponentsInChildren<StarterAssets.ThirdPersonController>(true);
-            int removedCustomPlayers = 0;
-            foreach (var customPlayer in player.GetComponentsInChildren<FootstepPlayer>(true))
+            var footstepPlayer = player.GetComponent<FootstepPlayer>();
+            if (footstepPlayer == null) footstepPlayer = player.AddComponent<FootstepPlayer>();
+
+            var clips = new System.Collections.Generic.List<AudioClip>();
+            foreach (string path in FootstepPaths)
             {
-                Object.DestroyImmediate(customPlayer);
-                removedCustomPlayers++;
+                var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+                if (clip != null) clips.Add(clip);
+                else Debug.LogWarning($"[SfxSetup] Footstep clip missing: {path}");
             }
-            int nativeClipCount = 0;
-            foreach (var controller in builtInControllers)
-                nativeClipCount += controller.FootstepAudioClips == null ? 0 : controller.FootstepAudioClips.Length;
-            Debug.Log($"[SfxSetup] Restored Starter Assets footsteps: removed {removedCustomPlayers} custom player(s), kept {nativeClipCount} built-in step clips.");
+
+            var serialized = new SerializedObject(footstepPlayer);
+            var stepClips = serialized.FindProperty("stepClips");
+            stepClips.arraySize = clips.Count;
+            for (int i = 0; i < clips.Count; i++)
+                stepClips.GetArrayElementAtIndex(i).objectReferenceValue = clips[i];
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(footstepPlayer);
+            Debug.Log($"[SfxSetup] Wired {clips.Count} custom step clips; native animated footsteps are disabled by FootstepPlayer.");
         }
 
         [MenuItem("LILO/Setup Sfx On Office Floors")]
