@@ -78,7 +78,16 @@ namespace Lilo.MonoBehaviours.Interaction
 
             if (pickup == null) pickup = keyObject.GetComponent<AccessKeyPickup>();
             if (pickup == null) pickup = keyObject.AddComponent<AccessKeyPickup>();
-            pickup.Configure(keyId, manager.Config);
+            pickup.Configure(keyId, manager.Config, FindSupportingTable(spawnPosition));
+        }
+
+        private static AccessKeySpawnTable FindSupportingTable(Vector3 spawnPosition)
+        {
+            foreach (AccessKeySpawnTable table in Object.FindObjectsByType<AccessKeySpawnTable>())
+                if (table.TryGetKeyPosition(out Vector3 surface)
+                    && (surface - spawnPosition).sqrMagnitude < 0.01f)
+                    return table;
+            return null;
         }
 
         private static AccessKeyPickup FindExistingPickup()

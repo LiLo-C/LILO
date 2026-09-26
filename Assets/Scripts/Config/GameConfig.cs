@@ -172,9 +172,9 @@ namespace Lilo.Config
         [Tooltip("Stuck safeguard window (spec 002 edge cases).")]
         public float monsterStuckTimeout = 2f;
         [Tooltip("Minimum player distance when placing the monster at floor entry.")]
-        public float monsterSpawnMinDistance = 12f;
+        public float monsterSpawnMinDistance = 18f;
         [Tooltip("Maximum preferred player distance for the monster's initial spawn.")]
-        public float monsterSpawnMaxDistance = 20f;
+        public float monsterSpawnMaxDistance = 26f;
         public float monsterSpawnObjectiveClearance = 3f;
         public float monsterSpawnSafeSeconds = 5f;
 

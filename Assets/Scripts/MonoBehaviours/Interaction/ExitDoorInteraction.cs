@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using Lilo.Config;
 using Lilo.MonoBehaviours;
 using Lilo.MonoBehaviours.Monster;
+using Lilo.MonoBehaviours.Cinematics;
 using Lilo.State;
 
 namespace Lilo.MonoBehaviours.Interaction
@@ -35,6 +36,7 @@ namespace Lilo.MonoBehaviours.Interaction
         private bool _triggered;
         private bool _blockedMessageShown;
         private Material _exitFrameMaterial;
+        private GameObject _exitFrameRoot;
 
         public float InteractionRadius => interactRadius;
         public bool RequiresAccessKey
@@ -94,8 +96,25 @@ namespace Lilo.MonoBehaviours.Interaction
 
             if (!hasBounds || bounds.size.sqrMagnitude < 0.0001f)
             {
-                Debug.LogWarning("[ExitDoor] No mesh or collider bounds found for the exit highlight.", this);
-                return;
+                // A few authored door placeholders are interaction transforms only,
+                // with no renderer/collider to outline. Keep the exit discoverable.
+                Debug.LogWarning("[ExitDoor] No mesh or collider bounds found; using a doorway-sized highlight.", this);
+                bounds = new Bounds(transform.position + Vector3.up * 1.1f,
+                    new Vector3(1.6f, 2.2f, 0.14f));
+            }
+
+            if (bounds.size.x > 5f || bounds.size.z > 5f || bounds.size.y > 5f)
+                bounds = new Bounds(transform.position + Vector3.up * 1.1f,
+                    new Vector3(1.6f, 2.2f, 0.14f));
+
+            // Some floor scenes author the exit as a thin trigger pad at the
+            // doorway. Raise a simple doorway-shaped frame there instead of
+            // drawing an almost invisible outline flat against the floor.
+            if (bounds.size.y < 0.25f)
+            {
+                bounds = new Bounds(
+                    new Vector3(bounds.center.x, bounds.min.y + 1.1f, bounds.center.z),
+                    new Vector3(1.6f, 2.2f, 0.14f));
             }
 
             Shader shader = Shader.Find("Universal Render Pipeline/Unlit")
@@ -110,7 +129,12 @@ namespace Lilo.MonoBehaviours.Interaction
             _exitFrameMaterial = new Material(shader) { name = "Exit Door Frame (Runtime)" };
             if (_exitFrameMaterial.HasProperty(BaseColorId)) _exitFrameMaterial.SetColor(BaseColorId, ExitFrameColor);
             if (_exitFrameMaterial.HasProperty(ColorId)) _exitFrameMaterial.SetColor(ColorId, ExitFrameColor);
-            _exitFrameMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            // Use a bright opaque unlit material so the exit stays readable in
+            // Level 2's very dark lighting and isn't sorted behind the doorway.
+            _exitFrameMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
+            // Keep the bars in an identity-transform root. Parenting them to a
+            // scaled placeholder stretches the frame away from the actual door.
+            _exitFrameRoot = new GameObject("Exit Door Highlight");
 
             Vector3 min = bounds.min;
             Vector3 max = bounds.max;
@@ -124,22 +148,23 @@ namespace Lilo.MonoBehaviours.Interaction
 
             for (int i = 0; i < BoxEdges.Length; i++)
             {
-                var edgeObject = new GameObject($"Exit Highlight Edge {i + 1}");
-                edgeObject.transform.SetParent(transform, false);
-                var line = edgeObject.AddComponent<LineRenderer>();
-                line.useWorldSpace = true;
-                line.positionCount = 2;
-                line.SetPosition(0, corners[BoxEdges[i].a]);
-                line.SetPosition(1, corners[BoxEdges[i].b]);
-                line.startWidth = 0.035f;
-                line.endWidth = 0.035f;
-                line.numCapVertices = 3;
-                line.alignment = LineAlignment.View;
-                line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                line.receiveShadows = false;
-                line.sharedMaterial = _exitFrameMaterial;
-                line.startColor = ExitFrameColor;
-                line.endColor = ExitFrameColor;
+                Vector3 start = corners[BoxEdges[i].a];
+                Vector3 end = corners[BoxEdges[i].b];
+                Vector3 delta = end - start;
+                if (delta.sqrMagnitude < 0.0001f) continue;
+
+                GameObject edgeObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                edgeObject.name = $"Exit Highlight Edge {i + 1}";
+                edgeObject.transform.SetParent(_exitFrameRoot.transform, false);
+                edgeObject.transform.position = (start + end) * 0.5f;
+                edgeObject.transform.rotation = Quaternion.LookRotation(delta.normalized);
+                edgeObject.transform.localScale = new Vector3(0.045f, 0.045f, delta.magnitude);
+                Collider edgeCollider = edgeObject.GetComponent<Collider>();
+                if (edgeCollider != null) Destroy(edgeCollider);
+                Renderer edgeRenderer = edgeObject.GetComponent<Renderer>();
+                edgeRenderer.sharedMaterial = _exitFrameMaterial;
+                edgeRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                edgeRenderer.receiveShadows = false;
             }
         }
 
@@ -203,6 +228,18 @@ namespace Lilo.MonoBehaviours.Interaction
                         return;
                     }
 
+                    if (nextSceneName == "OfficeLevel2" || nextSceneName == "OfficeLevel3")
+                    {
+                        if (!FloorTransitionController.Begin(nextSceneName, nextFloor))
+                        {
+                            _triggered = false;
+                            return;
+                        }
+                        if (state != null && requiresKey)
+                            state.RemoveKey(requiredKeyId);
+                        return;
+                    }
+
                     if (state != null && advanceToNextFloor)
                         state.AdvanceToFloor(nextFloor);
                     if (state != null && requiresKey)
@@ -228,6 +265,8 @@ namespace Lilo.MonoBehaviours.Interaction
         {
             if (_exitFrameMaterial != null)
                 Destroy(_exitFrameMaterial);
+            if (_exitFrameRoot != null)
+                Destroy(_exitFrameRoot);
         }
 
         private void OnDrawGizmosSelected()

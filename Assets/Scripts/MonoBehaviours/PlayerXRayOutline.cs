@@ -26,6 +26,16 @@ namespace Lilo.MonoBehaviours
         private float _fadeVelocity;
         private bool _alwaysVisibleOutline;
         private bool _outlineVisible = true;
+        private bool _pickupPulse;
+
+        public void EnablePickupPulse() => _pickupPulse = true;
+
+        /// <summary>A soft rise/fall with a short fully dark interval, shared by pickups.</summary>
+        public static float PickupPulseOpacity(float time)
+        {
+            float wave = Mathf.Cos(time * (2f * Mathf.PI / 2.2f));
+            return Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((wave + 0.25f) / 1.25f));
+        }
 
         public void ConfigureOutline(Color color, float width, bool alwaysVisible)
         {
@@ -64,8 +74,6 @@ namespace Lilo.MonoBehaviours
                     _outlineMaterial.SetFloat("_XRayFade", 0f);
                 if (_flatOutlineMaterial != null)
                     _flatOutlineMaterial.SetFloat("_XRayFade", 0f);
-                // Outline renderers are siblings of their source meshes, so they
-                // remain active if the source GameObject is hidden immediately.
                 foreach (var pair in _pairs)
                 {
                     if (pair.mask != null) pair.mask.enabled = false;
@@ -110,6 +118,8 @@ namespace Lilo.MonoBehaviours
         {
             if (_camera == null) _camera = UnityEngine.Camera.main;
             float targetFade = _outlineVisible && (_alwaysVisibleOutline || IsOccluded()) ? 1f : 0f;
+            if (_pickupPulse)
+                targetFade *= PickupPulseOpacity(Time.time);
             _xrayFade = Mathf.SmoothDamp(_xrayFade, targetFade, ref _fadeVelocity,
                 Mathf.Max(0.0125f, transitionSeconds * 0.25f));
             if (Mathf.Abs(_xrayFade - targetFade) < 0.001f)
@@ -123,8 +133,8 @@ namespace Lilo.MonoBehaviours
             {
                 if (pair.source == null || pair.mask == null || pair.outline == null) continue;
                 bool sourceVisible = pair.source.enabled && pair.source.gameObject.activeInHierarchy;
-                pair.mask.enabled = sourceVisible;
-                pair.outline.enabled = sourceVisible && _xrayFade > 0f;
+                pair.mask.enabled = sourceVisible && _outlineVisible;
+                pair.outline.enabled = sourceVisible && _outlineVisible && _xrayFade > 0.001f;
                 Transform source = pair.source.transform;
                 SyncTransform(pair.mask.transform, source);
                 SyncTransform(pair.outline.transform, source);
@@ -133,9 +143,20 @@ namespace Lilo.MonoBehaviours
 
         private static void SyncTransform(Transform destination, Transform source)
         {
-            destination.localPosition = source.localPosition;
-            destination.localRotation = source.localRotation;
-            destination.localScale = source.localScale;
+            // The clone belongs to its source, inherits its transform exactly,
+            // and is automatically hidden with the source GameObject.
+            destination.localPosition = Vector3.zero;
+            destination.localRotation = Quaternion.identity;
+            destination.localScale = Vector3.one;
+        }
+
+        private void OnDisable()
+        {
+            foreach (var pair in _pairs)
+            {
+                if (pair.mask != null) pair.mask.enabled = false;
+                if (pair.outline != null) pair.outline.enabled = false;
+            }
         }
 
         private bool IsOccluded()
@@ -297,10 +318,7 @@ namespace Lilo.MonoBehaviours
         {
             var outlineObject = new GameObject(source.name + " XRay Outline");
             outlineObject.layer = source.gameObject.layer;
-            outlineObject.transform.SetParent(source.parent, false);
-            outlineObject.transform.localPosition = source.localPosition;
-            outlineObject.transform.localRotation = source.localRotation;
-            outlineObject.transform.localScale = source.localScale;
+            outlineObject.transform.SetParent(source, false);
             return outlineObject;
         }
 

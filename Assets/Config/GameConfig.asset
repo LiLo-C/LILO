@@ -86,8 +86,8 @@ MonoBehaviour:
   searchRadius: 4
   catchRadius: 0.9
   monsterStuckTimeout: 2
-  monsterSpawnMinDistance: 12
-  monsterSpawnMaxDistance: 20
+  monsterSpawnMinDistance: 18
+  monsterSpawnMaxDistance: 26
   monsterSpawnObjectiveClearance: 3
   monsterSpawnSafeSeconds: 5
   lives: 3
