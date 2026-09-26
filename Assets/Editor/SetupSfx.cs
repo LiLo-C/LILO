@@ -29,6 +29,18 @@ namespace Lilo.Editor
         private const string NeedAwayVoicePath = "Assets/Sfx/vos/need-away-sfx.wav";
         private const string BatteryRunsOutVoicePath = "Assets/Sfx/vos/battery-runs-out-sfx.wav";
         private const string NeedAccessKeyVoicePath = "Assets/Sfx/vos/need-access-key-sfx.wav";
+        private static readonly string[] FootstepPaths =
+        {
+            "Assets/Sfx/walking/left-foot-sfx.wav", "Assets/Sfx/walking/right-foot-sfx.wav",
+            "Assets/Sfx/walking/left-foot-2-sfx.wav", "Assets/Sfx/walking/right-foot-2-sfx.wav",
+            "Assets/Sfx/walking/left-foot-3-sfx.wav", "Assets/Sfx/walking/right-foot-3-sfx.wav"
+        };
+        private static readonly string[] AmbienceStingPaths =
+        {
+            "Assets/Sfx/ambience/empty-room-sfx.mp3", "Assets/Sfx/ambience/hey-1-sfx.wav",
+            "Assets/Sfx/ambience/hey-2-sfx.wav", "Assets/Sfx/ambience/smoking-sfx.wav",
+            "Assets/Sfx/ambience/tape-sfx.wav", "Assets/Sfx/ambience/keyboard-sfx.wav"
+        };
 
         /// <summary>
         /// Batch-mode entry point used to apply the same idempotent setup to the development
@@ -126,8 +138,21 @@ namespace Lilo.Editor
                 var ambienceSo = new SerializedObject(ambience);
                 ambienceSo.FindProperty("roomTone").objectReferenceValue = ambienceBed;
                 ambienceSo.FindProperty("bedSource").objectReferenceValue = bedSource;
+                var stingClips = new System.Collections.Generic.List<AudioClip>();
+                foreach (string path in AmbienceStingPaths)
+                {
+                    var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+                    if (clip != null) stingClips.Add(clip);
+                    else Debug.LogWarning($"[SfxSetup] Optional ambience clip missing: {path}");
+                }
+                var stings = ambienceSo.FindProperty("stings");
+                stings.arraySize = stingClips.Count;
+                for (int i = 0; i < stingClips.Count; i++)
+                    stings.GetArrayElementAtIndex(i).objectReferenceValue = stingClips[i];
                 ambienceSo.ApplyModifiedPropertiesWithoutUndo();
             }
+
+            WireFootsteps();
 
             WirePropPassBySounds(sfx);
 
@@ -207,6 +232,49 @@ namespace Lilo.Editor
                 serialized.ApplyModifiedPropertiesWithoutUndo();
                 EditorUtility.SetDirty(passBy);
             }
+        }
+
+        private static void WireFootsteps()
+        {
+            var player = GameObject.Find("PlayerCharacter");
+            if (player == null) return;
+            var footstepPlayer = player.GetComponent<FootstepPlayer>();
+            if (footstepPlayer == null) footstepPlayer = player.AddComponent<FootstepPlayer>();
+            var clips = new System.Collections.Generic.List<AudioClip>();
+            foreach (string path in FootstepPaths)
+            {
+                var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+                if (clip != null) clips.Add(clip);
+                else Debug.LogWarning($"[SfxSetup] Footstep clip missing: {path}");
+            }
+            var serialized = new SerializedObject(footstepPlayer);
+            var stepClips = serialized.FindProperty("stepClips");
+            stepClips.arraySize = clips.Count;
+            for (int i = 0; i < clips.Count; i++)
+                stepClips.GetArrayElementAtIndex(i).objectReferenceValue = clips[i];
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(footstepPlayer);
+        }
+
+        [MenuItem("LILO/Setup Sfx On Office Floors")]
+        public static void RunOnOfficeFloors()
+        {
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+            string returnScenePath = EditorSceneManager.GetActiveScene().path;
+            int saved = 0;
+            foreach (string sceneName in new[] { "OfficeLevel1", "OfficeLevel2", "OfficeLevel3" })
+            {
+                var scene = EditorSceneManager.OpenScene($"Assets/Scenes/{sceneName}.unity", OpenSceneMode.Single);
+                Run();
+                if (scene.IsValid())
+                {
+                    EditorSceneManager.SaveScene(scene);
+                    saved++;
+                }
+            }
+            if (!string.IsNullOrEmpty(returnScenePath))
+                EditorSceneManager.OpenScene(returnScenePath, OpenSceneMode.Single);
+            Debug.Log($"[SfxSetup] Configured audio in {saved} Office floor scenes.");
         }
 
         [MenuItem("LILO/Assign Player Caught Audio To Office Floors")]

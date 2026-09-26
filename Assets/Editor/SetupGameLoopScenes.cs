@@ -367,9 +367,10 @@ public static class SetupGameLoopScenes
         var old = GameObject.Find("GameplayHudCanvas");
         if (old != null) Object.DestroyImmediate(old);
 
+        // Tata letak HUD dan Pause Menu ada di prefab (LILO/UI/2. Build ... Prefabs).
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/GameplayHud.prefab");
         if (prefab == null)
-            throw new System.InvalidOperationException("GameplayHud.prefab was not found in Assets/Prefabs/UI.");
+            throw new System.InvalidOperationException("GameplayHud.prefab belum ada. Jalankan LILO/UI/2 dulu.");
         var hud = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
         hud.name = "GameplayHudCanvas";
     }
