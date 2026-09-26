@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Lilo.Config
 {
@@ -9,6 +10,10 @@ namespace Lilo.Config
         public bool monsterActive;
         public float patrolSpeed;
         public float chaseSpeed;
+        [Tooltip("Per-floor multiplier for scene-authored patrol and chase speeds.")]
+        public float movementSpeedMultiplier;
+        [Tooltip("Per-floor multiplier for movement, interaction, and objective noise radii.")]
+        public float noiseSensitivityMultiplier;
         public float investigateDuration;
         public float alertDuration;
         public float chaseHoldDuration;

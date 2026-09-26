@@ -1,5 +1,7 @@
+using Lilo.Config;
 using Lilo.MonoBehaviours.Audio;
 using Lilo.MonoBehaviours.Interaction;
+using Lilo.State;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,9 +25,9 @@ namespace Lilo.MonoBehaviours
         private SfxController _sfx;
         private string _lastVoiceHint;
 
-        private const string NeedAwayHint = "I need to find a way to get out.";
-        private const string NeedAccessKeyHint = "I need to find the access key first.";
-        private const string NeedBatteryHint = "I need to find some more battery.";
+        private const string NeedAwayHint = "I need to find a way to get out";
+        private const string NeedAccessKeyHint = "I need to find the access key first";
+        private const string NeedBatteryHint = "I need to find some more battery";
 
         private void Awake()
         {
@@ -50,7 +52,17 @@ namespace Lilo.MonoBehaviours
                 _doors = FindObjectsByType<ExitDoorInteraction>();
             if (_text == null) return;
 
-            string hint = NeedAwayHint;
+            GameState state = GameManager.Instance?.State;
+            FloorId floor = state != null ? state.CurrentFloor : FloorId.Floor52;
+            string keyId = AccessKeyPickup.KeyIdForFloor(floor);
+            bool hasKey = state != null && state.HasKey(keyId);
+            bool requiresKey = GameManager.Instance?.Config != null
+                && GameManager.Instance.Config.GetLockedDoorCount(floor) > 0;
+            bool needsKeyVoiceOver = requiresKey && !hasKey;
+            bool needsBatteryVoiceOver = false;
+            string hint = requiresKey
+                ? hasKey ? GetDoorHint(floor) : NeedAccessKeyHint
+                : NeedAwayHint;
             bool nearDoor = false;
             ExitDoorInteraction nearbyExit = null;
             if (_player != null)
@@ -73,20 +85,21 @@ namespace Lilo.MonoBehaviours
             if (nearDoor)
             {
                 if (nearbyExit != null && nearbyExit.RequiresAccessKey)
-                    hint = nearbyExit.HasRequiredAccessKey
-                        ? "I have the access key. I can get out."
-                        : "I need to find the access key first.";
+                    hint = hasKey ? GetDoorProximityHint(floor, true) : NeedAccessKeyHint;
                 else
-                    hint = "I found the exit. I can get out.";
+                    hint = "I FOUND THE EXIT DOOR. I CAN GET OUT!";
             }
-            else
+            else if (!requiresKey)
             {
-                var manager = GameManager.Instance;
+                GameManager manager = GameManager.Instance;
                 float duration = manager != null && manager.Config != null ? manager.Config.batteryDuration : 1f;
                 float charge = manager != null && manager.State != null
                     ? manager.State.InstalledBatteryCharge / Mathf.Max(1f, duration) : 1f;
                 if (charge <= 0.75f)
+                {
                     hint = NeedBatteryHint;
+                    needsBatteryVoiceOver = true;
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(_respawnMessage))
@@ -115,34 +128,55 @@ namespace Lilo.MonoBehaviours
                 if (_sfx == null)
                     _sfx = Object.FindAnyObjectByType<SfxController>();
 
-                bool isLifeSubtitle = hint == "WHAT WAS THAT? WHAT IS HAPPENING?!"
+                bool isLifeSubtitle = hint == "WAIT WHAT WAS THAT? WHAT IS HAPPENING?!"
                     || hint == "I FELT IT ALL THROUGH MY SKIN OH GOD"
                     || hint == "NO NO NO I DON'T WANT TO FEEL IT AGAIN";
-                bool voiceRequested = isLifeSubtitle
-                    ? _sfx != null && _sfx.PlayLifeVoiceOverForSubtitle(hint)
-                    : hint switch
-                    {
-                        NeedAwayHint => _sfx != null && _sfx.PlayNeedAwayVoiceOver(),
-                        NeedAccessKeyHint => _sfx != null && _sfx.PlayNeedAccessKeyVoiceOver(),
-                        NeedBatteryHint => _sfx != null && _sfx.PlayBatteryRunsOutVoiceOver(),
-                        _ => true,
-                    };
-                if (voiceRequested)
+                if (isLifeSubtitle)
                 {
-                    if (hint == NeedAwayHint)
-                    {
-                        if (!_panel.activeSelf)
-                        {
-                            _text.text = hint;
-                            _panel.SetActive(true);
-                            _hideAt = Time.unscaledTime + 5f;
-                        }
-                    }
-                    _lastVoiceHint = hint;
-                    if (isLifeSubtitle)
+                    bool voiceRequested = state != null && state.IsLifeVoiceOverReady
+                        && _sfx != null && _sfx.PlayLifeVoiceOverForSubtitle(hint);
+                    if (voiceRequested)
                         GameManager.Instance?.State?.ClearPendingLifeVoiceOver();
                 }
+                else if (needsKeyVoiceOver)
+                    _sfx?.PlayNeedAccessKeyVoiceOver();
+                else if (needsBatteryVoiceOver)
+                    _sfx?.PlayBatteryRunsOutVoiceOver();
+                else if (hint == NeedAwayHint)
+                    _sfx?.PlayNeedAwayVoiceOver();
+
+                _lastVoiceHint = hint;
             }
+        }
+
+        private static string GetDoorHint(FloorId floor)
+        {
+            return floor switch
+            {
+                FloorId.Floor51 => "I HAVE THE KEY. NOW FIND THE EXIT DOOR—FAST.",
+                FloorId.Floor50 => "I HAVE THE KEY. FIND THAT EXIT DOOR BEFORE IT FINDS ME!",
+                _ => "I HAVE THE KEY... NOW WHERE IS THE EXIT DOOR? I HAVE TO GET OUT!",
+            };
+        }
+
+        private static string GetDoorProximityHint(FloorId floor, bool hasKey)
+        {
+            if (hasKey)
+            {
+                return floor switch
+                {
+                    FloorId.Floor51 => "THAT'S THE EXIT DOOR. USE THE KEY. GO!",
+                    FloorId.Floor50 => "THE EXIT DOOR—USE THE KEY, NOW!",
+                    _ => "THE EXIT DOOR! I HAVE A KEY—PLEASE, OPEN!",
+                };
+            }
+
+            return floor switch
+            {
+                FloorId.Floor51 => "LOCKED. THE KEY IS ON ONE OF THESE DESKS. GET IT!",
+                FloorId.Floor50 => "LOCKED! THE KEY'S ON ONE OF THESE DESKS. MOVE!",
+                _ => "THE EXIT DOOR IS LOCKED. I NEED THE KEY—CHECK THE DESKS!",
+            };
         }
 
         private void CreateLabel()

@@ -2,8 +2,6 @@ using System;
 using UnityEngine;
 using Lilo.Config;
 using Lilo.MonoBehaviours;
-using Lilo.MonoBehaviours.Monster;
-using Lilo.MonoBehaviours.Player;
 using Lilo.Systems.GameLoop;
 using Lilo.Systems.Hiding;
 using StarterAssets;
@@ -20,14 +18,12 @@ namespace Lilo.MonoBehaviours.Hiding
         [SerializeField] private GameConfig config;
         [SerializeField, Min(1f)] private float maxHideSeconds = 20f;
         [SerializeField, Min(0f)] private float heartbeatStartSeconds = 5f;
-        [SerializeField, Min(0f)] private float heartbeatMaxNoiseRadius = 12f;
 
         private HidingSystem _system;
         private HidingSpot _nearestSpot;
         private HidingSpot[] _allSpots = Array.Empty<HidingSpot>();
         private float _spotScanTimer;
         private HidingSpot _activeSpot;
-        private MonsterAIController _monster;
         private CharacterController _characterController;
         private ThirdPersonController _thirdPersonController;
         private bool _thirdPersonWasEnabled;
@@ -139,27 +135,11 @@ namespace Lilo.MonoBehaviours.Hiding
 
             // Return to the actual approach point, which was known to be reachable.
             var spotData = new HidingSpotData(_nearestSpot.HidePosition, transform.position);
-            var starterInput = GetComponent<StarterAssetsInputs>();
-            var movement = GetComponent<PlayerMovementController>();
-            bool rushedEntry = (starterInput != null && starterInput.sprint)
-                || (movement != null && movement.IsSprinting);
             var result = _system.TryEnter(spotData, anchorsValid: true);
             if (result.Success)
             {
                 _activeSpot = _nearestSpot;
                 _nearestSpot.SetOccupied(true);
-                if (rushedEntry)
-                {
-                    if (_monster == null)
-                        _monster = FindAnyObjectByType<MonsterAIController>();
-                    if (_monster != null)
-                    {
-                        float radius = config != null
-                            ? config.noiseBaseRadius * config.noiseSprint
-                            : 12f;
-                        _monster.EmitPulse(_activeSpot.HidePosition, radius, 1f);
-                    }
-                }
             }
             return result.Success;
         }
@@ -263,14 +243,10 @@ namespace Lilo.MonoBehaviours.Hiding
                 _heartbeatClip = CreateHeartbeatClip();
             _heartbeatSource.PlayOneShot(_heartbeatClip, Mathf.Lerp(0.25f, 0.9f, urgency) * SoundSettingsStore.Effects);
 
-            if (_monster == null)
-                _monster = FindAnyObjectByType<MonsterAIController>();
-            if (_monster != null && _activeSpot != null)
-            {
-                float radius = Mathf.Lerp(1f, heartbeatMaxNoiseRadius, urgency);
-                _monster.EmitPulse(_activeSpot.HidePosition, radius, _heartbeatCountdown,
-                    Lilo.Systems.Monster.NoiseSource.Heartbeat);
-            }
+            // Heartbeat is presentation-only while hidden. Repeated AI noise pulses
+            // continually reset Investigate at this exact position, making the
+            // monster camp the hiding spot. HidingRevealed handles detection once
+            // maxHideSeconds is reached.
         }
 
         private void SetPresentationHidden(bool hidden)

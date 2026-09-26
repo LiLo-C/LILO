@@ -65,6 +65,36 @@ namespace Lilo.Tests
         }
 
         [Test]
+        public void ChooseBalancedIndex_PrefersMiddleOfSafeSpawnBand()
+        {
+            var candidates = new[]
+            {
+                new MonsterSpawnCandidate(new Vector3(11.5f, 0f, 0f), true, false),
+                new MonsterSpawnCandidate(new Vector3(16f, 0f, 0f), true, false),
+            };
+
+            int selected = MonsterSpawnSelector.ChooseBalancedIndex(
+                candidates, Vector3.zero, System.Array.Empty<Vector3>(), 8f, 15f, 3f,
+                new System.Random(7));
+
+            Assert.AreEqual(0, selected);
+        }
+
+        [Test]
+        public void RearBlindSpot_MufflesDirectlyBehindButNotFrontOrSide()
+        {
+            Vector3 observer = Vector3.zero;
+            Vector3 forward = Vector3.forward;
+
+            Assert.IsTrue(MonsterNoise.IsInRearBlindSpot(observer, forward,
+                Vector3.back * 2f, 32f));
+            Assert.IsFalse(MonsterNoise.IsInRearBlindSpot(observer, forward,
+                Vector3.forward * 2f, 32f));
+            Assert.IsFalse(MonsterNoise.IsInRearBlindSpot(observer, forward,
+                Vector3.right * 2f, 32f));
+        }
+
+        [Test]
         public void ChooseReachableFallbackIndex_UsesReachableCandidateWhenVisibilityRejectsAll()
         {
             var candidates = new List<MonsterSpawnCandidate>

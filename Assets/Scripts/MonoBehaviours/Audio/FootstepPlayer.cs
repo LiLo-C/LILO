@@ -3,19 +3,15 @@ using UnityEngine;
 namespace Lilo.MonoBehaviours.Audio
 {
     /// <summary>
-    /// Distance-driven footstep player: every strideLength meters walked, plays
-    /// one random step clip at full 2D volume. Replaces the stock
-    /// ThirdPersonController footstep path (3D at feet, eaten by camera
-    /// distance) — keep that array empty while this is active.
+    /// Plays one step per distance-based stride. The Starter Assets animation
+    /// footsteps are disabled on the same character hierarchy to avoid doubles.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
-    public class FootstepPlayer : MonoBehaviour
+    public sealed class FootstepPlayer : MonoBehaviour
     {
         [SerializeField] private AudioClip[] stepClips = new AudioClip[0];
-        [SerializeField, Range(0f, 1f)] private float volume = 1f;
-        [Tooltip("Meters walked per step. Sprint covers more ground, steps faster.")]
-        [SerializeField] private float strideLength = 0.7f;
-        [Tooltip("Below this speed no steps play.")]
+        [SerializeField, Range(0f, 1f)] private float volume = 0.3f;
+        [SerializeField] private float strideLength = 0.85f;
         [SerializeField] private float minMoveSpeed = 0.3f;
 
         private AudioSource _source;
@@ -26,22 +22,25 @@ namespace Lilo.MonoBehaviours.Audio
         private void Awake()
         {
             _controller = GetComponent<CharacterController>();
+            foreach (var controller in GetComponentsInChildren<StarterAssets.ThirdPersonController>(true))
+                controller.FootstepAudioClips = System.Array.Empty<AudioClip>();
 
-            _source = gameObject.AddComponent<AudioSource>();
+            _source = GetComponent<AudioSource>();
+            if (_source == null) _source = gameObject.AddComponent<AudioSource>();
             _source.playOnAwake = false;
             _source.spatialBlend = 0f;
-            _source.volume = volume;
-
+            // Keep the current clip gain, but halve the AudioSource output so
+            // the resulting footstep level is 50% below the previous setup.
+            _source.volume = volume * 0.3f;
             _lastPosition = transform.position;
         }
 
         private void Update()
         {
-            Vector3 pos = transform.position;
-            float moved = Vector3.Distance(
-                new Vector3(pos.x, 0f, pos.z),
+            Vector3 position = transform.position;
+            float moved = Vector3.Distance(new Vector3(position.x, 0f, position.z),
                 new Vector3(_lastPosition.x, 0f, _lastPosition.z));
-            _lastPosition = pos;
+            _lastPosition = position;
 
             bool grounded = _controller == null || _controller.isGrounded;
             if (!grounded || moved / Mathf.Max(Time.deltaTime, 0.0001f) < minMoveSpeed)
@@ -61,12 +60,9 @@ namespace Lilo.MonoBehaviours.Audio
         private void PlayStep()
         {
             if (stepClips == null || stepClips.Length == 0) return;
-
-            var clip = stepClips[Random.Range(0, stepClips.Length)];
+            AudioClip clip = stepClips[Random.Range(0, stepClips.Length)];
             if (clip == null) return;
-
-            _source.volume = volume;
-            _source.PlayOneShot(clip);
+            _source.PlayOneShot(clip, volume);
         }
     }
 }

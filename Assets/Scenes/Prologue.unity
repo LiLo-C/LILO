@@ -709,6 +709,8 @@ MonoBehaviour:
   frames:
   - image: {fileID: 2597844086776013276, guid: 1f7282abe151b4e898ae941665cbbae3, type: 3}
     narration: Another ordinary day at the agency. Eddie keeps his head down.
+    ambienceLoop: {fileID: 8300000, guid: afbcab690c526405c87047d7686dd863, type: 3}
+    soundEffect: {fileID: 0}
     zoomFrom: 1
     zoomTo: 1.1
     zoomDuration: 8
@@ -716,6 +718,8 @@ MonoBehaviour:
     silenceBefore: 0
   - image: {fileID: 233851718628059059, guid: fe10ee364b0ac42458591cacdb8a8aaa, type: 3}
     narration: Chairs empty out one by one. His screen is still open, his list still long.
+    ambienceLoop: {fileID: 8300000, guid: afbcab690c526405c87047d7686dd863, type: 3}
+    soundEffect: {fileID: 0}
     zoomFrom: 1
     zoomTo: 1.08
     zoomDuration: 7
@@ -723,6 +727,8 @@ MonoBehaviour:
     silenceBefore: 0
   - image: {fileID: -3644646592640700851, guid: 95b1830e4b2d240b1825c5b8331ec94a, type: 3}
     narration: Papers everywhere, none of them finished. He sleeps on top of them.
+    ambienceLoop: {fileID: 8300000, guid: afbcab690c526405c87047d7686dd863, type: 3}
+    soundEffect: {fileID: 0}
     zoomFrom: 1.02
     zoomTo: 1.1
     zoomDuration: 8
@@ -730,6 +736,8 @@ MonoBehaviour:
     silenceBefore: 0
   - image: {fileID: -5951117750304132410, guid: 991884038bbc147fb94d96004837c2a4, type: 3}
     narration: He lifts his head. Every chair around him is pushed in and empty.
+    ambienceLoop: {fileID: 8300000, guid: 7f4dc84a708594b5191b82e80ee56466, type: 3}
+    soundEffect: {fileID: 8300000, guid: 04361688b63ca41bfb407bc38d586be5, type: 3}
     zoomFrom: 1.12
     zoomTo: 1
     zoomDuration: 9
@@ -737,6 +745,8 @@ MonoBehaviour:
     silenceBefore: 0
   - image: {fileID: 6983405604882635748, guid: b3396713022804d009e4576abe0362d1, type: 3}
     narration: The clock on the wall reads midnight. Nobody should still be here.
+    ambienceLoop: {fileID: 8300000, guid: 7f4dc84a708594b5191b82e80ee56466, type: 3}
+    soundEffect: {fileID: 0}
     zoomFrom: 1
     zoomTo: 1.06
     zoomDuration: 5
@@ -744,6 +754,8 @@ MonoBehaviour:
     silenceBefore: 0
   - image: {fileID: 3932627825671445155, guid: 2edc19345d2a94a63b200b8c95ab8535, type: 3}
     narration: The ceiling lights cut out. Only the windows are left, and they are grey.
+    ambienceLoop: {fileID: 8300000, guid: 7f4dc84a708594b5191b82e80ee56466, type: 3}
+    soundEffect: {fileID: 0}
     zoomFrom: 1.1
     zoomTo: 1
     zoomDuration: 9
@@ -751,6 +763,8 @@ MonoBehaviour:
     silenceBefore: 0
   - image: {fileID: -3457971734771721935, guid: f121dbfbe03d4440c80f859869733c23, type: 3}
     narration: He presses every switch on the wall. Nothing on the ceiling answers.
+    ambienceLoop: {fileID: 8300000, guid: 7f4dc84a708594b5191b82e80ee56466, type: 3}
+    soundEffect: {fileID: 8300000, guid: 26dcbe58097b14f4d964c90baf4cf284, type: 3}
     zoomFrom: 1
     zoomTo: 1.08
     zoomDuration: 6
@@ -758,6 +772,8 @@ MonoBehaviour:
     silenceBefore: 0
   - image: {fileID: -3457971734771721935, guid: 20aa1f7a7ee4748d88847005c829e2b5, type: 3}
     narration: Inside his locker, a first aid kit and one handheld lamp. He takes the lamp.
+    ambienceLoop: {fileID: 8300000, guid: 7f4dc84a708594b5191b82e80ee56466, type: 3}
+    soundEffect: {fileID: 8300000, guid: 0aef6ca7b2c6f4c848dd476c12f2ef0e, type: 3}
     zoomFrom: 1
     zoomTo: 1.12
     zoomDuration: 6

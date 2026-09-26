@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Lilo.Config;
+using UnityEngine;
 
 namespace Lilo.State
 {
@@ -29,6 +30,7 @@ namespace Lilo.State
         public bool IsLifeVoiceOverReady { get; private set; }
 
         private readonly HashSet<string> _keyInventory = new HashSet<string>();
+        private readonly Dictionary<FloorId, Vector3> _accessKeySpawnPositions = new Dictionary<FloorId, Vector3>();
         public IReadOnlyCollection<string> KeyInventory => _keyInventory;
 
         public GameState(GameConfig config)
@@ -48,6 +50,7 @@ namespace Lilo.State
             PendingLifeVoiceOver = -1;
             IsLifeVoiceOverReady = false;
             _keyInventory.Clear();
+            _accessKeySpawnPositions.Clear();
         }
 
         /// <summary>Floor restart after a death: battery/keys reset for the CURRENT floor; lives already decremented by the caller (spec 002 FR-004).</summary>
@@ -100,6 +103,16 @@ namespace Lilo.State
         public bool HasKey(string keyId) => _keyInventory.Contains(keyId);
 
         public bool RemoveKey(string keyId) => _keyInventory.Remove(keyId);
+
+        public bool TryGetAccessKeySpawnPosition(FloorId floor, out Vector3 position)
+        {
+            return _accessKeySpawnPositions.TryGetValue(floor, out position);
+        }
+
+        public void SetAccessKeySpawnPosition(FloorId floor, Vector3 position)
+        {
+            _accessKeySpawnPositions[floor] = position;
+        }
 
         /// <summary>Ending reached: run outcome recorded, everything else left as-is for the ending scene to read (spec 002 FR-004).</summary>
         public void SetOutcome(RunOutcome outcome) => Outcome = outcome;

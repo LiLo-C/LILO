@@ -45,10 +45,14 @@ extern "C" void LiloMonsterHapticsAlert(void)
 {
     if (@available(iOS 13.0, *))
     {
+        NSArray<CHHapticEventParameter *> *parameters = @[
+            [[CHHapticEventParameter alloc] initWithParameterID:CHHapticEventParameterIDHapticIntensity value:0.28f],
+            [[CHHapticEventParameter alloc] initWithParameterID:CHHapticEventParameterIDHapticSharpness value:0.3f]
+        ];
         NSMutableArray<CHHapticEvent *> *events = [NSMutableArray arrayWithCapacity:3];
         for (int index = 0; index < 3; index++)
             [events addObject:[[CHHapticEvent alloc] initWithEventType:CHHapticEventTypeHapticTransient
-                                                       parameters:@[] relativeTime:index * 0.2]];
+                                                       parameters:parameters relativeTime:index * 0.2]];
         LiloPlayPattern(events);
     }
 }
@@ -57,8 +61,12 @@ extern "C" void LiloMonsterHapticsChase(void)
 {
     if (@available(iOS 13.0, *))
     {
+        NSArray<CHHapticEventParameter *> *parameters = @[
+            [[CHHapticEventParameter alloc] initWithParameterID:CHHapticEventParameterIDHapticIntensity value:0.72f],
+            [[CHHapticEventParameter alloc] initWithParameterID:CHHapticEventParameterIDHapticSharpness value:0.45f]
+        ];
         CHHapticEvent *event = [[CHHapticEvent alloc] initWithEventType:CHHapticEventTypeHapticContinuous
-                                                       parameters:@[] relativeTime:0 duration:3.0];
+                                                       parameters:parameters relativeTime:0 duration:3.0];
         LiloPlayPattern(@[event]);
     }
 }

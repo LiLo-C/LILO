@@ -565,8 +565,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d082bbf611f543c289f0a99e53d0562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lilo.UI.GameplayHudController
-  floorText: {fileID: 6320211678241865026}
-  batteryText: {fileID: 5869561178325865489}
+  tmpFloorText: {fileID: 6320211678241865026}
+  tmpBatteryText: {fileID: 5869561178325865489}
   pauseButton: {fileID: 8528803165954890186}
   pausePanel: {fileID: 598111456670391852}
   resumeButton: {fileID: 4414177277721595007}
@@ -837,8 +837,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Battery \t\t100%"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7057b74f621a248d49f457e0c726a5a9, type: 2}
-  m_sharedMaterial: {fileID: -3541411337346346587, guid: 7057b74f621a248d49f457e0c726a5a9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 376e4e39601944944a6474f63cc0375c, type: 2}
+  m_sharedMaterial: {fileID: 7498443313503944096, guid: 376e4e39601944944a6474f63cc0375c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1094,8 +1094,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 52
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7057b74f621a248d49f457e0c726a5a9, type: 2}
-  m_sharedMaterial: {fileID: -3541411337346346587, guid: 7057b74f621a248d49f457e0c726a5a9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 376e4e39601944944a6474f63cc0375c, type: 2}
+  m_sharedMaterial: {fileID: 7498443313503944096, guid: 376e4e39601944944a6474f63cc0375c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1231,8 +1231,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: SOUND EFFECTS
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7057b74f621a248d49f457e0c726a5a9, type: 2}
-  m_sharedMaterial: {fileID: -3541411337346346587, guid: 7057b74f621a248d49f457e0c726a5a9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 376e4e39601944944a6474f63cc0375c, type: 2}
+  m_sharedMaterial: {fileID: 7498443313503944096, guid: 376e4e39601944944a6474f63cc0375c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

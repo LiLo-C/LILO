@@ -13,6 +13,8 @@ namespace Lilo.MonoBehaviours.Audio
     {
         [SerializeField] private AudioClip behindYouClip;
         [SerializeField] private AudioClip chaseBgmClip;
+        // Kept for existing scenes created before chase audio moved to its own loop.
+        [SerializeField, HideInInspector] private AudioClip horrorChaseClip;
         [SerializeField] private AudioClip batteryPickupClip;
         [SerializeField] private AudioClip playerCaughtClip;
         [SerializeField] private AudioClip keyPickupClip;
@@ -104,7 +106,8 @@ namespace Lilo.MonoBehaviours.Audio
 
         public void PlayChaseBgm()
         {
-            if (chaseBgmClip == null || _chaseBgmSource == null)
+            AudioClip clip = chaseBgmClip != null ? chaseBgmClip : horrorChaseClip;
+            if (clip == null || _chaseBgmSource == null)
                 return;
 
             if (_chaseBgmFadeRoutine != null)
@@ -113,8 +116,8 @@ namespace Lilo.MonoBehaviours.Audio
                 _chaseBgmFadeRoutine = null;
             }
 
-            if (_chaseBgmSource.clip != chaseBgmClip)
-                _chaseBgmSource.clip = chaseBgmClip;
+            if (_chaseBgmSource.clip != clip)
+                _chaseBgmSource.clip = clip;
 
             _chaseBgmSource.volume = SoundSettingsStore.Music;
             if (!_chaseBgmSource.isPlaying)
@@ -128,6 +131,10 @@ namespace Lilo.MonoBehaviours.Audio
 
             _chaseBgmFadeRoutine = StartCoroutine(FadeOutChaseBgm());
         }
+
+        public void PlayHorrorChase() => PlayChaseBgm();
+
+        public void StopHorrorChase() => StopChaseBgm();
 
         private IEnumerator FadeOutChaseBgm()
         {
@@ -170,8 +177,9 @@ namespace Lilo.MonoBehaviours.Audio
         }
         public void PlayKeyPickup()
         {
-            if (keyPickupClip != null)
-                _source.PlayOneShot(keyPickupClip, volume * SoundSettingsStore.Effects);
+            AudioClip clip = keyPickupClip != null ? keyPickupClip : batteryPickupClip;
+            if (clip != null)
+                _source.PlayOneShot(clip, volume * SoundSettingsStore.Effects);
         }
 
         public void PlayWaterDispenserPassBy()
@@ -207,7 +215,7 @@ namespace Lilo.MonoBehaviours.Audio
         {
             int livesRemaining = subtitle switch
             {
-                "WHAT WAS THAT? WHAT IS HAPPENING?!" => 2,
+                "WAIT WHAT WAS THAT? WHAT IS HAPPENING?!" => 2,
                 "I FELT IT ALL THROUGH MY SKIN OH GOD" => 1,
                 "NO NO NO I DON'T WANT TO FEEL IT AGAIN" => 0,
                 _ => -1,

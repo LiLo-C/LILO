@@ -51,10 +51,6 @@ namespace Lilo.MonoBehaviours.Monster
         [SerializeField] private SfxController sfx;
         [SerializeField] private GameplaySpeedSettings speedSettings;
 
-        [Header("Vision")]
-        [SerializeField, Min(1f)] private float visionRange = 12f;
-        [SerializeField, Range(10f, 180f)] private float visionAngle = 110f;
-
         /// <summary>
         /// Instance-level one-shot noise pulses (interact/battery, specs 005/006).
         /// Emitters call this on the scene's single MonsterAIController; until those
@@ -295,11 +291,12 @@ namespace Lilo.MonoBehaviours.Monster
                     IsVisibleFromEntry(entry, point)));
             }
 
-            int selected = MonsterSpawnSelector.ChooseValidIndex(
+            int selected = MonsterSpawnSelector.ChooseBalancedIndex(
                 candidates,
                 entry,
                 objectives,
                 config.monsterSpawnMinDistance,
+                config.monsterSpawnMaxDistance,
                 config.monsterSpawnObjectiveClearance,
                 _rng);
             if (selected < 0)
@@ -399,13 +396,20 @@ namespace Lilo.MonoBehaviours.Monster
             _hasLastPlayerPos = true;
 
             bool moving = playerSpeed > 0.05f || debugForceMoveNoise;
+            float walkSpeed = speedSettings != null ? speedSettings.playerWalkSpeed : config.walkSpeed;
+            float sprintSpeed = speedSettings != null
+                ? speedSettings.playerSprintSpeed
+                : config.walkSpeed * config.sprintMultiplier;
             bool sprinting = debugForceSprintNoise
-                || (_playerMovement != null ? _playerMovement.IsSprinting
-                    : (_starterAssetsInput != null ? _starterAssetsInput.sprint
-                        : playerSpeed > config.walkSpeed * config.sprintMultiplier * 0.9f));
+                || (_playerMovement != null && _playerMovement.IsSprinting)
+                || (_starterAssetsInput != null && _starterAssetsInput.sprint)
+                || (sprintSpeed > walkSpeed
+                    && playerSpeed >= (walkSpeed + sprintSpeed) * 0.5f);
             bool hiding = (GameManager.Instance != null && GameManager.Instance.State.IsHiding)
                 || HidingController.IsPlayerHiding;
             float moveRadius = MonsterNoise.MovementRadius(config, hiding, moving, sprinting);
+            // Sound travels by radius in every direction; facing only limits vision.
+            moveRadius *= _profile.noiseSensitivityMultiplier;
             CurrentNoiseRadius = moveRadius;
             CurrentNoiseSource = hiding
                 ? Lilo.Systems.Monster.NoiseSource.Hiding
@@ -419,8 +423,9 @@ namespace Lilo.MonoBehaviours.Monster
             float largestPulse = 0f;
             foreach (var pulse in _pulses)
             {
-                if (pulse.Radius <= largestPulse) continue;
-                largestPulse = pulse.Radius;
+                float detectingRadius = pulse.Radius * _profile.noiseSensitivityMultiplier;
+                if (detectingRadius <= largestPulse) continue;
+                largestPulse = detectingRadius;
                 if (largestPulse > CurrentNoiseRadius)
                 {
                     CurrentNoiseRadius = largestPulse;
@@ -431,7 +436,14 @@ namespace Lilo.MonoBehaviours.Monster
             if (_pulses.Count > 0)
             {
                 _pulsesBuffer.Clear();
-                foreach (var p in _pulses) _pulsesBuffer.Add(new NoisePulse { Position = p.Position, Radius = p.Radius });
+                foreach (var p in _pulses)
+                {
+                    _pulsesBuffer.Add(new NoisePulse
+                    {
+                        Position = p.Position,
+                        Radius = p.Radius * _profile.noiseSensitivityMultiplier,
+                    });
+                }
                 pulses = _pulsesBuffer;
             }
             if (ScratchMarkTrail.TryGetLatestNear(transform.position, out Vector3 scratchMark))
@@ -441,7 +453,19 @@ namespace Lilo.MonoBehaviours.Monster
                     _pulsesBuffer.Clear();
                     pulses = _pulsesBuffer;
                 }
-                pulses.Add(new NoisePulse { Position = scratchMark, Radius = 8f });
+                pulses.Add(new NoisePulse
+                {
+                    Position = scratchMark,
+                    Radius = 8f * _profile.noiseSensitivityMultiplier,
+                });
+            }
+
+            if (hiding)
+            {
+                _pulses.Clear();
+                pulses = null;
+                CurrentNoiseRadius = 0f;
+                CurrentNoiseSource = Lilo.Systems.Monster.NoiseSource.Hiding;
             }
 
             bool arrived = _hasRequestedTarget
@@ -461,8 +485,12 @@ namespace Lilo.MonoBehaviours.Monster
                 Pulses = pulses,
                 Profile = _profile,
                 WalkSpeed = config.walkSpeed,
-                PatrolSpeed = speedSettings != null ? speedSettings.monsterPatrolSpeed : 0f,
-                ChaseSpeed = speedSettings != null ? speedSettings.monsterChaseSpeed : 0f,
+                PatrolSpeed = speedSettings != null
+                    ? speedSettings.monsterPatrolSpeed * _profile.movementSpeedMultiplier
+                    : 0f,
+                ChaseSpeed = speedSettings != null
+                    ? speedSettings.monsterChaseSpeed * _profile.movementSpeedMultiplier
+                    : 0f,
                 ChaseTriggerDistance = config.chaseTriggerDistance,
                 PlayerVisible = !hiding && CanSeePlayer(playerPos,
                     _brain.State == MonsterState.Chase || _brain.State == MonsterState.Alert),
@@ -596,11 +624,11 @@ namespace Lilo.MonoBehaviours.Monster
         {
             Vector3 toPlayer = playerPosition - transform.position;
             Vector3 flatToPlayer = Vector3.ProjectOnPlane(toPlayer, Vector3.up);
-            if (flatToPlayer.sqrMagnitude > visionRange * visionRange || flatToPlayer.sqrMagnitude < 0.0001f)
+            if (flatToPlayer.sqrMagnitude > config.monsterVisionRange * config.monsterVisionRange || flatToPlayer.sqrMagnitude < 0.0001f)
                 return flatToPlayer.sqrMagnitude < 0.0001f;
 
             Vector3 flatForward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
-            if (!ignoreFieldOfView && Vector3.Angle(flatForward, flatToPlayer) > visionAngle * 0.5f)
+            if (!ignoreFieldOfView && Vector3.Angle(flatForward, flatToPlayer) > config.monsterVisionAngle * 0.5f)
                 return false;
 
             Vector3 eye = transform.position + Vector3.up * 1.4f;
@@ -642,7 +670,9 @@ namespace Lilo.MonoBehaviours.Monster
                 return;
             bool moving = _agent.velocity.magnitude > 0.15f;
             // Match the walk cycle to the multiplier applied to NavMesh movement.
-            _animator.speed = moving ? 0.5f * config.monsterSpeedMultiplier : 1f;
+            _animator.speed = moving
+                ? 0.5f * config.monsterSpeedMultiplier * _profile.movementSpeedMultiplier
+                : 1f;
             if (!moving || _animator.IsInTransition(0))
                 return;
             // The pack's walk state auto-returns to idle, so re-fire while moving.
@@ -705,7 +735,7 @@ namespace Lilo.MonoBehaviours.Monster
                 state.LoseLife();
                 state.SetRespawnMessage(state.Lives switch
                 {
-                    2 => "WHAT WAS THAT? WHAT IS HAPPENING?!",
+                    2 => "WAIT WHAT WAS THAT? WHAT IS HAPPENING?!",
                     1 => "I FELT IT ALL THROUGH MY SKIN OH GOD",
                     _ => "NO NO NO I DON'T WANT TO FEEL IT AGAIN",
                 });

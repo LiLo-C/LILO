@@ -20,6 +20,7 @@ namespace Lilo.MonoBehaviours.Audio
         private Transform _player;
         private SfxController _sfx;
         private bool _wasNear;
+        private bool _hasInitializedProximity;
 
         private void Awake()
         {
@@ -38,6 +39,17 @@ namespace Lilo.MonoBehaviours.Audio
             Vector3 nearestPoint = proximityCollider.ClosestPoint(_player.position);
             float threshold = _wasNear ? exitDistance : enterDistance;
             bool isNear = (_player.position - nearestPoint).sqrMagnitude <= threshold * threshold;
+
+            // Scene entry can place the player inside a prop's pass-by radius.
+            // Treat that initial overlap as the starting state, not as a pass-by;
+            // the sound will play after the player leaves and re-enters the radius.
+            if (!_hasInitializedProximity)
+            {
+                _wasNear = isNear;
+                _hasInitializedProximity = true;
+                return;
+            }
+
             if (isNear && !_wasNear)
             {
                 if (soundType == SoundType.WaterDispenser)

@@ -7,6 +7,8 @@ namespace Lilo.MonoBehaviours
     [DisallowMultipleComponent]
     public sealed class PlayerXRayOutline : MonoBehaviour
     {
+        public static readonly Color DefaultOutlineColor = new Color(1f, 0.86f, 0.48f, 0.95f);
+
         [SerializeField] private Color outlineColor = new Color(1f, 0.86f, 0.48f, 0.95f);
         [SerializeField, Range(0.001f, 0.03f)] private float outlineWidth = 0.006f;
         [SerializeField, Min(0.05f)] private float transitionSeconds = 0.3f;
@@ -17,10 +19,43 @@ namespace Lilo.MonoBehaviours
         private readonly float[] _probeHeights = { 0.18f, 0.48f, 0.8f, 1.12f, 1.42f, 1.72f };
         private readonly Vector2[] _probeOffsets = { Vector2.zero, new Vector2(-0.25f, 1.12f), new Vector2(0.25f, 1.12f) };
         private Material _outlineMaterial;
+        private Material _flatOutlineMaterial;
         private Material _maskMaterial;
         private UnityEngine.Camera _camera;
         private float _xrayFade;
         private float _fadeVelocity;
+        private bool _alwaysVisibleOutline;
+        private bool _outlineVisible = true;
+
+        public void ConfigureOutline(Color color, float width, bool alwaysVisible)
+        {
+            outlineColor = color;
+            outlineWidth = Mathf.Clamp(width, 0.001f, 0.03f);
+            _alwaysVisibleOutline = alwaysVisible;
+            if (_outlineMaterial == null) return;
+            _outlineMaterial.SetColor("_OutlineColor", outlineColor);
+            _outlineMaterial.SetFloat("_OutlineWidth", outlineWidth);
+            if (_flatOutlineMaterial != null)
+            {
+                _flatOutlineMaterial.SetColor("_OutlineColor", outlineColor);
+                _flatOutlineMaterial.SetFloat("_OutlineWidth", outlineWidth);
+                _flatOutlineMaterial.SetFloat("_AlphaOutlineRadius", Mathf.Clamp(outlineWidth * 384f, 1.5f, 4f));
+            }
+        }
+
+        public void SetOutlineVisible(bool visible)
+        {
+            _outlineVisible = visible;
+            if (!visible)
+            {
+                _xrayFade = 0f;
+                _fadeVelocity = 0f;
+                if (_outlineMaterial != null)
+                    _outlineMaterial.SetFloat("_XRayFade", 0f);
+                if (_flatOutlineMaterial != null)
+                    _flatOutlineMaterial.SetFloat("_XRayFade", 0f);
+            }
+        }
 
         private void Awake()
         {
@@ -55,13 +90,15 @@ namespace Lilo.MonoBehaviours
         private void LateUpdate()
         {
             if (_camera == null) _camera = UnityEngine.Camera.main;
-            float targetFade = IsOccluded() ? 1f : 0f;
+            float targetFade = _outlineVisible && (_alwaysVisibleOutline || IsOccluded()) ? 1f : 0f;
             _xrayFade = Mathf.SmoothDamp(_xrayFade, targetFade, ref _fadeVelocity,
                 Mathf.Max(0.0125f, transitionSeconds * 0.25f));
             if (Mathf.Abs(_xrayFade - targetFade) < 0.001f)
                 _xrayFade = targetFade;
             if (_outlineMaterial != null)
                 _outlineMaterial.SetFloat("_XRayFade", _xrayFade);
+            if (_flatOutlineMaterial != null)
+                _flatOutlineMaterial.SetFloat("_XRayFade", _xrayFade);
 
             foreach (var pair in _pairs)
             {
@@ -164,9 +201,77 @@ namespace Lilo.MonoBehaviours
             filter = outlineObject.AddComponent<MeshFilter>();
             filter.sharedMesh = sourceFilter.sharedMesh;
             MeshRenderer outline = outlineObject.AddComponent<MeshRenderer>();
-            outline.sharedMaterials = CreateMaterialSlots(source.sharedMaterials.Length, _outlineMaterial);
+            bool flatMesh = sourceFilter.sharedMesh.vertexCount <= 4;
+            if (flatMesh)
+            {
+                if (_flatOutlineMaterial == null)
+                {
+                    _flatOutlineMaterial = new Material(_outlineMaterial)
+                    {
+                        name = "Flat XRay Outline (Runtime)"
+                    };
+                    _flatOutlineMaterial.SetFloat("_RadialExpansion", 1f);
+                    _flatOutlineMaterial.SetFloat("_OutlineCull", (float)UnityEngine.Rendering.CullMode.Off);
+                    _flatOutlineMaterial.SetFloat("_AlphaOutlineRadius", Mathf.Clamp(outlineWidth * 384f, 1.5f, 4f));
+                    // Flat pickups need a visible edge even when their coplanar source
+                    // mesh is behind the scene depth due to floor/camera precision.
+                    _flatOutlineMaterial.SetInt("_DepthTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+                }
+                outline.sharedMaterials = CreateMaterialSlots(source.sharedMaterials.Length, _flatOutlineMaterial);
+            }
+            else
+                outline.sharedMaterials = CreateMaterialSlots(source.sharedMaterials.Length, _outlineMaterial);
+            if (flatMesh)
+                ConfigureAlphaSilhouette(source, mask, outline);
             Configure(outline, source);
             _pairs.Add((source, mask, outline));
+        }
+
+        private static void ConfigureAlphaSilhouette(MeshRenderer source, MeshRenderer mask, MeshRenderer outline)
+        {
+            Material sourceMaterial = null;
+            string textureProperty = null;
+            foreach (Material candidate in source.sharedMaterials)
+            {
+                if (candidate == null) continue;
+                if (candidate.HasProperty("_BaseMap") && candidate.GetTexture("_BaseMap") != null)
+                {
+                    sourceMaterial = candidate;
+                    textureProperty = "_BaseMap";
+                    break;
+                }
+                if (candidate.HasProperty("_MainTex") && candidate.GetTexture("_MainTex") != null)
+                {
+                    sourceMaterial = candidate;
+                    textureProperty = "_MainTex";
+                    break;
+                }
+            }
+
+            if (sourceMaterial == null) return;
+            Texture alphaTexture = sourceMaterial.GetTexture(textureProperty);
+            Vector2 scale = sourceMaterial.GetTextureScale(textureProperty);
+            Vector2 offset = sourceMaterial.GetTextureOffset(textureProperty);
+            float threshold = sourceMaterial.HasProperty("_Cutoff")
+                ? sourceMaterial.GetFloat("_Cutoff")
+                : 0.5f;
+            Vector4 textureTransform = new Vector4(scale.x, scale.y, offset.x, offset.y);
+
+            var maskProperties = new MaterialPropertyBlock();
+            mask.GetPropertyBlock(maskProperties);
+            maskProperties.SetTexture("_StencilAlphaTex", alphaTexture);
+            maskProperties.SetVector("_StencilAlphaTex_ST", textureTransform);
+            maskProperties.SetFloat("_UseAlphaMask", 1f);
+            maskProperties.SetFloat("_StencilAlphaThreshold", threshold);
+            mask.SetPropertyBlock(maskProperties);
+
+            var outlineProperties = new MaterialPropertyBlock();
+            outline.GetPropertyBlock(outlineProperties);
+            outlineProperties.SetTexture("_OutlineAlphaTex", alphaTexture);
+            outlineProperties.SetVector("_OutlineAlphaTex_ST", textureTransform);
+            outlineProperties.SetFloat("_UseAlphaOutline", 1f);
+            outlineProperties.SetFloat("_AlphaThreshold", threshold);
+            outline.SetPropertyBlock(outlineProperties);
         }
 
         private GameObject CreateOutlineObject(Transform source)
@@ -208,6 +313,7 @@ namespace Lilo.MonoBehaviours
                     Destroy(pair.mask.gameObject);
             }
             if (_outlineMaterial != null) Destroy(_outlineMaterial);
+            if (_flatOutlineMaterial != null) Destroy(_flatOutlineMaterial);
             if (_maskMaterial != null) Destroy(_maskMaterial);
         }
     }

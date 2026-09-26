@@ -334,6 +334,15 @@ namespace Lilo.Tests
         }
 
         [Test]
+        public void Floor51IsHalfSpeed_AndFloor50HearsMoreNoise()
+        {
+            var cfg = ScriptableObject.CreateInstance<GameConfig>();
+
+            Assert.AreEqual(0.5f, cfg.GetMonsterProfile(FloorId.Floor51).movementSpeedMultiplier);
+            Assert.AreEqual(1.5f, cfg.GetMonsterProfile(FloorId.Floor50).noiseSensitivityMultiplier);
+        }
+
+        [Test]
         public void HiddenPlayer_ImmuneToCatchEvenWhenWithinCatchRadius()
         {
             var state = new MonsterBrainState { State = MonsterState.Patrol };
@@ -359,6 +368,58 @@ namespace Lilo.Tests
             MonsterBrain.Step(ref state, input);
 
             Assert.AreEqual(MonsterState.Patrol, state.State);
+        }
+
+        [Test]
+        public void HidingDuringChase_AlertsBrieflyThenPatrolsWithoutFollowingHideSpot()
+        {
+            var state = new MonsterBrainState
+            {
+                State = MonsterState.Chase,
+                LastKnown = new Vector3(2f, 0f, 0f),
+            };
+            var input = BaseInput();
+            input.IsPlayerHidden = true;
+            input.PlayerPosition = new Vector3(2f, 0f, 0f);
+            input.MovementNoiseRadius = 100f;
+            input.Pulses = new List<NoisePulse>
+            {
+                new NoisePulse { Position = input.PlayerPosition, Radius = 100f },
+            };
+            input.DeltaTime = 0.5f;
+
+            var output = MonsterBrain.Step(ref state, input);
+            Assert.AreEqual(MonsterState.Alert, state.State);
+            Assert.AreEqual(0f, output.Speed);
+            Assert.IsFalse(output.CaughtThisStep);
+
+            for (int k = 0; k < 4; k++)
+                output = MonsterBrain.Step(ref state, input);
+
+            Assert.AreEqual(MonsterState.Patrol, state.State);
+            Assert.AreNotEqual(input.PlayerPosition, output.MoveTarget);
+            Assert.IsFalse(output.CaughtThisStep);
+        }
+
+        [Test]
+        public void HiddenPatrol_IgnoresNoiseUntilHidingIsRevealed()
+        {
+            var state = new MonsterBrainState { State = MonsterState.Patrol };
+            var input = BaseInput();
+            input.IsPlayerHidden = true;
+            input.PlayerPosition = new Vector3(3f, 0f, 0f);
+            input.Pulses = new List<NoisePulse>
+            {
+                new NoisePulse { Position = input.PlayerPosition, Radius = 20f },
+            };
+
+            MonsterBrain.Step(ref state, input);
+            Assert.AreEqual(MonsterState.Patrol, state.State);
+
+            input.HidingRevealed = true;
+            MonsterBrain.Step(ref state, input);
+            Assert.AreEqual(MonsterState.Chase, state.State);
+            Assert.AreEqual(input.PlayerPosition, state.Target);
         }
     }
 }

@@ -4,21 +4,30 @@ using UnityEngine.UI;
 
 namespace Lilo.UI
 {
-    /// <summary>
-    /// Logika toggle sound effect. Toggle-nya dipasang lewat Inspector
-    /// (prefab Assets/Prefabs/UI/SfxToggle), bukan dibuat dari kode.
-    /// </summary>
+    /// <summary>Connects the SFX toggle to the global audio preference.</summary>
     public sealed class SoundSettingsPanel : MonoBehaviour
     {
         [SerializeField] private Toggle sfxToggle;
+        private SwitchToggle _switchToggle;
 
         private void Awake()
         {
-            if (sfxToggle != null)
-                sfxToggle.onValueChanged.AddListener(SoundSettingsStore.SetSfxEnabled);
-            else
-                Debug.LogWarning($"[SoundSettingsPanel] {name}: sfxToggle belum diisi di Inspector.", this);
-            Refresh();
+            if (sfxToggle == null)
+            {
+                Transform child = transform.Find("SfxToggle");
+                if (child != null) sfxToggle = child.GetComponent<Toggle>();
+            }
+
+            if (sfxToggle == null)
+            {
+                Debug.LogWarning($"[SoundSettingsPanel] {name}: SFX toggle is not assigned.", this);
+                return;
+            }
+
+            sfxToggle.onValueChanged.AddListener(SetSfxEnabled);
+            sfxToggle.TryGetComponent(out _switchToggle);
+            sfxToggle.SetIsOnWithoutNotify(SoundSettingsStore.SfxEnabled);
+            _switchToggle?.Snap(SoundSettingsStore.SfxEnabled);
         }
 
         public void Refresh()
@@ -26,8 +35,9 @@ namespace Lilo.UI
             if (sfxToggle == null) return;
             bool enabled = SoundSettingsStore.SfxEnabled;
             sfxToggle.SetIsOnWithoutNotify(enabled);
-            if (sfxToggle.TryGetComponent(out SwitchToggle visual))
-                visual.Snap(enabled);
+            _switchToggle?.Snap(enabled);
         }
+
+        private static void SetSfxEnabled(bool enabled) => SoundSettingsStore.SetSfxEnabled(enabled);
     }
 }

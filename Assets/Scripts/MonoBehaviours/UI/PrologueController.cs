@@ -13,6 +13,12 @@ public class PrologueController : MonoBehaviour
         public Sprite image;
         [TextArea(2, 5)] public string narration;
 
+        [Tooltip("Looped ambience for this frame.")]
+        public AudioClip ambienceLoop;
+
+        [Tooltip("One-shot sound played when this frame appears.")]
+        public AudioClip soundEffect;
+
         [Tooltip("Skala awal. Untuk zoom in isi 1.0, untuk zoom out isi 1.1")]
         public float zoomFrom = 1.0f;
 
@@ -49,28 +55,34 @@ public class PrologueController : MonoBehaviour
 
     public float fadeDuration = 0.35f;
 
-    [Header("Stabilo narasi")]
-    [Tooltip("Blok warna di belakang tiap baris teks, seperti stabilo. Ikut memanjang per huruf.")]
-    public bool highlight = true;
-    public Color highlightColor = Color.black;
-    [Tooltip("Ruang di sekitar teks per baris: x = kiri dan kanan, y = atas dan bawah.")]
-    public Vector2 highlightPadding = new Vector2(16f, 6f);
-
     bool tapped;
     bool skipping;
     RectTransform frameRect;
-    AspectRatioFitter frameFitter;
-    Coroutine zoomRoutine;
-    RectTransform highlightLayer;
-    readonly List<Image> highlightBars = new List<Image>();
+    AudioSource _ambienceA;
+    AudioSource _ambienceB;
+    AudioSource _eventSource;
+    AudioSource _activeAmbience;
+    Coroutine _ambienceFade;
 
     void Awake()
     {
         frameRect = frameImage.GetComponent<RectTransform>();
-        frameFitter = frameImage.GetComponent<AspectRatioFitter>();
-        if (highlight) CreateHighlightLayer();
+        _ambienceA = CreateAudioSource("PrologueAmbienceA", loop: true);
+        _ambienceB = CreateAudioSource("PrologueAmbienceB", loop: true);
+        _eventSource = CreateAudioSource("PrologueEvents", loop: false);
         if (tapCatcher != null) tapCatcher.onClick.AddListener(() => tapped = true);
         if (skipButton != null) skipButton.onClick.AddListener(Skip);
+    }
+
+    AudioSource CreateAudioSource(string sourceName, bool loop)
+    {
+        var sourceObject = new GameObject(sourceName);
+        sourceObject.transform.SetParent(transform, false);
+        var source = sourceObject.AddComponent<AudioSource>();
+        source.playOnAwake = false;
+        source.spatialBlend = 0f;
+        source.loop = loop;
+        return source;
     }
 
     void Start()
@@ -93,6 +105,9 @@ public class PrologueController : MonoBehaviour
 
     IEnumerator PlayFrame(Frame f)
     {
+        // End the previous frame's event sound as soon as this frame transition starts.
+        _eventSource.Stop();
+
         // Hening sebelum frame muncul. Dipakai untuk momen lampu mati.
         if (f.silenceBefore > 0f)
         {
@@ -100,12 +115,11 @@ public class PrologueController : MonoBehaviour
             yield return new WaitForSeconds(f.silenceBefore);
         }
 
+        SetAmbience(f.ambienceLoop);
+        if (f.soundEffect != null)
+            _eventSource.PlayOneShot(f.soundEffect);
+
         frameImage.sprite = f.image;
-        // Rasio ikut gambar, supaya panel beda ukuran tidak gepeng.
-        if (frameFitter != null && f.image != null)
-            frameFitter.aspectRatio = f.image.rect.width / f.image.rect.height;
-        // Zoom frame sebelumnya dihentikan dulu supaya tidak rebutan skala.
-        if (zoomRoutine != null) StopCoroutine(zoomRoutine);
         frameRect.localScale = Vector3.one * f.zoomFrom;
         narrationText.text = f.narration;
         narrationText.maxVisibleCharacters = 0;
@@ -114,7 +128,7 @@ public class PrologueController : MonoBehaviour
         else yield return StartCoroutine(Fade(0f));
 
         // Gerakan kamera jalan sendiri di belakang, tidak menahan alur.
-        zoomRoutine = StartCoroutine(Zoom(f.zoomFrom, f.zoomTo, f.zoomDuration));
+        StartCoroutine(Zoom(f.zoomFrom, f.zoomTo, f.zoomDuration));
 
         // Teks ngetik. Tap pertama bikin teks langsung penuh.
         yield return StartCoroutine(Typewriter(f.narration));
@@ -124,77 +138,67 @@ public class PrologueController : MonoBehaviour
         while (!tapped && !skipping) yield return null;
         tapped = false;
 
+        // Keep frame-specific effects scoped to their own slide.
+        _eventSource.Stop();
         if (!skipping) yield return StartCoroutine(Fade(1f));
     }
 
-    // Stabilo pakai Image sungguhan, bukan tag <mark>. Tag <mark> TMP selalu agak tembus
-    // karena warnanya diambil dari glyph garis bawah yang tipis di atlas font.
-    void CreateHighlightLayer()
+    void SetAmbience(AudioClip clip)
     {
-        RectTransform textRect = narrationText.rectTransform;
-        var go = new GameObject("NarrationHighlight", typeof(RectTransform));
-        highlightLayer = (RectTransform)go.transform;
-        highlightLayer.SetParent(textRect.parent, false);
-        // Taruh tepat di bawah teks supaya tergambar di belakangnya.
-        highlightLayer.SetSiblingIndex(textRect.GetSiblingIndex());
-        highlightLayer.anchorMin = textRect.anchorMin;
-        highlightLayer.anchorMax = textRect.anchorMax;
-        highlightLayer.pivot = textRect.pivot;
-        highlightLayer.anchoredPosition = textRect.anchoredPosition;
-        highlightLayer.sizeDelta = textRect.sizeDelta;
-        highlightLayer.localRotation = textRect.localRotation;
-        highlightLayer.localScale = textRect.localScale;
+        if (_activeAmbience != null && _activeAmbience.clip == clip)
+            return;
+        if (_ambienceFade != null)
+            StopCoroutine(_ambienceFade);
+        _ambienceFade = StartCoroutine(CrossfadeAmbience(clip));
     }
 
-    Image HighlightBar(int index)
+    IEnumerator CrossfadeAmbience(AudioClip clip)
     {
-        while (highlightBars.Count <= index)
+        AudioSource oldSource = _activeAmbience;
+        AudioSource newSource = oldSource == _ambienceA ? _ambienceB : _ambienceA;
+        if (clip == null)
         {
-            var go = new GameObject("Bar", typeof(RectTransform), typeof(Image));
-            var bar = go.GetComponent<Image>();
-            bar.raycastTarget = false;
-            RectTransform r = bar.rectTransform;
-            r.SetParent(highlightLayer, false);
-            // Titik jangkar di pivot induk, sama dengan titik nol koordinat karakter TMP.
-            r.anchorMin = r.anchorMax = highlightLayer.pivot;
-            r.pivot = Vector2.zero;
-            highlightBars.Add(bar);
-        }
-        return highlightBars[index];
-    }
-
-    void LateUpdate()
-    {
-        if (highlightLayer == null) return;
-
-        narrationText.ForceMeshUpdate();
-        TMP_TextInfo info = narrationText.textInfo;
-        int visible = narrationText.maxVisibleCharacters;
-        int used = 0;
-
-        for (int l = 0; l < info.lineCount; l++)
-        {
-            TMP_LineInfo line = info.lineInfo[l];
-            float minX = float.MaxValue, maxX = float.MinValue;
-            for (int c = line.firstCharacterIndex; c <= line.lastCharacterIndex && c < info.characterCount; c++)
+            if (oldSource != null)
             {
-                if (c >= visible) break;
-                TMP_CharacterInfo ch = info.characterInfo[c];
-                if (!ch.isVisible) continue;
-                minX = Mathf.Min(minX, ch.bottomLeft.x);
-                maxX = Mathf.Max(maxX, ch.topRight.x);
+                float startVolume = oldSource.volume;
+                float elapsed = 0f;
+                while (elapsed < fadeDuration)
+                {
+                    elapsed += Time.deltaTime;
+                    oldSource.volume = Mathf.Lerp(startVolume, 0f, elapsed / fadeDuration);
+                    yield return null;
+                }
+                oldSource.Stop();
+                oldSource.clip = null;
+                oldSource.volume = 1f;
             }
-            if (maxX < minX) continue;
-
-            Image bar = HighlightBar(used++);
-            bar.color = highlightColor;
-            bar.rectTransform.anchoredPosition = new Vector2(minX - highlightPadding.x, line.descender - highlightPadding.y);
-            bar.rectTransform.sizeDelta = new Vector2(maxX - minX + highlightPadding.x * 2f,
-                line.ascender - line.descender + highlightPadding.y * 2f);
-            bar.enabled = true;
+            _activeAmbience = null;
+            _ambienceFade = null;
+            yield break;
         }
 
-        for (int i = used; i < highlightBars.Count; i++) highlightBars[i].enabled = false;
+        newSource.clip = clip;
+        newSource.volume = 0f;
+        newSource.Play();
+        float duration = Mathf.Max(0.01f, fadeDuration);
+        float time = 0f;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = Mathf.Clamp01(time / duration);
+            newSource.volume = t;
+            if (oldSource != null) oldSource.volume = 1f - t;
+            yield return null;
+        }
+        newSource.volume = 1f;
+        if (oldSource != null)
+        {
+            oldSource.Stop();
+            oldSource.clip = null;
+            oldSource.volume = 1f;
+        }
+        _activeAmbience = newSource;
+        _ambienceFade = null;
     }
 
     IEnumerator Typewriter(string full)
@@ -277,6 +281,9 @@ public class PrologueController : MonoBehaviour
 
     void Finish()
     {
+        _ambienceA?.Stop();
+        _ambienceB?.Stop();
+        _eventSource?.Stop();
         SceneManager.LoadScene(nextSceneName);
     }
 }

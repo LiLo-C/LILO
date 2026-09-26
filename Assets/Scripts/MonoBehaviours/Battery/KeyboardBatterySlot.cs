@@ -1,50 +1,27 @@
 using UnityEngine;
+using Lilo.MonoBehaviours;
 
 namespace Lilo.MonoBehaviours.Battery
 {
     /// <summary>
     /// Authoring component on a keyboard prop: holds at most one battery.
     /// Loaded state is chosen per floor entry by <see cref="KeyboardBatteryDirector"/>
-    /// and signalled by swapping the keyboard mesh to an emissive "loaded"
-    /// material. Assigned by LILO/Setup Keyboard Batteries.
+    /// and signalled by an outer-only X-ray outline. Assigned by LILO/Setup Keyboard Batteries.
     /// </summary>
     public class KeyboardBatterySlot : MonoBehaviour
     {
+        private static readonly Color LoadedOutlineColor = new Color(0.05f, 0.9f, 1f, 1f);
         [Tooltip("Interaction distance threshold for taking this slot's battery.")]
         [SerializeField] private float interactionRadius = 2f;
-        [SerializeField] private Material baseMaterial;
-        [SerializeField] private Material loadedMaterial;
-
-        private Renderer _renderer;
+        private PlayerXRayOutline _outline;
 
         public bool IsLoaded { get; private set; }
         public float InteractionRadius => interactionRadius;
 
         private void Awake()
         {
-            ResolveRenderer();
-            if (baseMaterial == null && _renderer != null)
-                baseMaterial = _renderer.sharedMaterial;
+            EnsureOutline();
             UpdateVisual();
-        }
-
-        /// <summary>Called by the director at floor entry; wins over Awake fallbacks.</summary>
-        public void Configure(Material baseMat, Material glowMat)
-        {
-            ResolveRenderer();
-            if (baseMat != null)
-                baseMaterial = baseMat;
-            if (glowMat != null)
-                loadedMaterial = glowMat;
-            UpdateVisual();
-        }
-
-        private void ResolveRenderer()
-        {
-            if (_renderer != null) return;
-            _renderer = GetComponent<MeshRenderer>();
-            if (_renderer == null)
-                _renderer = GetComponentInChildren<Renderer>();
         }
 
         public void SetLoaded(bool loaded)
@@ -55,11 +32,22 @@ namespace Lilo.MonoBehaviours.Battery
 
         private void UpdateVisual()
         {
-            if (_renderer == null) return;
+            EnsureOutline();
+            if (_outline != null)
+                _outline.SetOutlineVisible(IsLoaded);
+        }
 
-            Material mat = IsLoaded && loadedMaterial != null ? loadedMaterial : baseMaterial;
-            if (mat != null)
-                _renderer.sharedMaterial = mat;
+        private void EnsureOutline()
+        {
+            if (_outline == null)
+                _outline = GetComponent<PlayerXRayOutline>();
+            if (_outline == null)
+                _outline = gameObject.AddComponent<PlayerXRayOutline>();
+            if (_outline != null)
+            {
+                _outline.ConfigureOutline(LoadedOutlineColor, 0.016f, true);
+                _outline.SetOutlineVisible(IsLoaded);
+            }
         }
     }
 }

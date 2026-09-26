@@ -49,9 +49,9 @@ namespace Lilo.MonoBehaviours.Audio
             _bedSource = bedSource != null ? bedSource : GetComponent<AudioSource>();
             if (_bedSource == null)
             {
-                Debug.LogError("[Ambience] No bed AudioSource is assigned.", this);
-                enabled = false;
-                return;
+                // Older scenes create this source at runtime. Keep that setup
+                // working while newer scenes can assign it in the editor.
+                _bedSource = gameObject.AddComponent<AudioSource>();
             }
 
             _bedSource.playOnAwake = false;

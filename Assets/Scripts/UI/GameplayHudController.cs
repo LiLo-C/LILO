@@ -7,14 +7,11 @@ using UnityEngine.UI;
 
 namespace Lilo.UI
 {
-    /// <summary>
-    /// HUD gameplay dan Pause Menu. Logika saja; tata letak ada di prefab
-    /// Assets/Prefabs/UI/GameplayHud dan diatur lewat Inspector.
-    /// </summary>
+    /// <summary>Updates gameplay HUD values and controls the pause menu.</summary>
     public sealed class GameplayHudController : MonoBehaviour
     {
-        [SerializeField] private TMP_Text floorText;
-        [SerializeField] private TMP_Text batteryText;
+        [SerializeField] private TMP_Text tmpFloorText;
+        [SerializeField] private TMP_Text tmpBatteryText;
         [SerializeField] private Button pauseButton;
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private Button resumeButton;
@@ -28,6 +25,9 @@ namespace Lilo.UI
 
         private void Awake()
         {
+            DisableDebugUi();
+            if (GetComponent<ChaseScreenEffects>() == null)
+                gameObject.AddComponent<ChaseScreenEffects>();
             pauseButton?.onClick.AddListener(Pause);
             resumeButton?.onClick.AddListener(Resume);
             restartButton?.onClick.AddListener(RestartRun);
@@ -38,20 +38,36 @@ namespace Lilo.UI
 
         private void Update()
         {
-            var state = GameManager.Instance?.State;
+            var manager = GameManager.Instance;
+            var state = manager?.State;
             if (state == null) return;
 
-            if (floorText != null)
+            if (tmpFloorText != null)
             {
                 int floorNumber = state.CurrentFloor == FloorId.Floor52 ? 52 :
                     state.CurrentFloor == FloorId.Floor51 ? 51 : 50;
-                floorText.SetText("{0}", floorNumber);
+                tmpFloorText.SetText("{0}", floorNumber);
             }
-            if (batteryText != null)
+            if (tmpBatteryText != null)
             {
-                float duration = GameManager.Instance.Config != null ? GameManager.Instance.Config.batteryDuration : 1f;
-                int percent = Mathf.RoundToInt(100f * Mathf.Clamp01(state.InstalledBatteryCharge / Mathf.Max(1f, duration)));
-                batteryText.SetText("BATTERY {0}%", percent);
+                float duration = manager.Config != null ? manager.Config.batteryDuration : 1f;
+                int percent = Mathf.RoundToInt(100f * Mathf.Clamp01(
+                    state.InstalledBatteryCharge / Mathf.Max(1f, duration)));
+                tmpBatteryText.text = $"Battery\t\t{percent}%";
+            }
+        }
+
+        private void DisableDebugUi()
+        {
+            var roots = SceneManager.GetActiveScene().GetRootGameObjects();
+            foreach (var root in roots)
+            {
+                foreach (Transform child in root.GetComponentsInChildren<Transform>(true))
+                {
+                    string n = child.name.ToLowerInvariant();
+                    if (n.Contains("debug") || n.Contains("devbuild") || n == "dbg")
+                        child.gameObject.SetActive(false);
+                }
             }
         }
 
