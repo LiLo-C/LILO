@@ -624,7 +624,8 @@ namespace Lilo.MonoBehaviours.Monster
         {
             Vector3 toPlayer = playerPosition - transform.position;
             Vector3 flatToPlayer = Vector3.ProjectOnPlane(toPlayer, Vector3.up);
-            if (flatToPlayer.sqrMagnitude > config.monsterVisionRange * config.monsterVisionRange || flatToPlayer.sqrMagnitude < 0.0001f)
+            float visionRange = config.monsterVisionRange * _profile.visionRangeMultiplier;
+            if (flatToPlayer.sqrMagnitude > visionRange * visionRange || flatToPlayer.sqrMagnitude < 0.0001f)
                 return flatToPlayer.sqrMagnitude < 0.0001f;
 
             Vector3 flatForward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;

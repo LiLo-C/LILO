@@ -63,6 +63,7 @@ MonoBehaviour:
     chaseSpeed: 0.745
     movementSpeedMultiplier: 0.5
     noiseSensitivityMultiplier: 1
+    visionRangeMultiplier: 1
     investigateDuration: 4
     alertDuration: 1
     chaseHoldDuration: 3
@@ -71,8 +72,9 @@ MonoBehaviour:
     monsterActive: 1
     patrolSpeed: 0.5
     chaseSpeed: 1.49
-    movementSpeedMultiplier: 1
-    noiseSensitivityMultiplier: 1.5
+    movementSpeedMultiplier: 0.75
+    noiseSensitivityMultiplier: 1.125
+    visionRangeMultiplier: 0.75
     investigateDuration: 6
     alertDuration: 1
     chaseHoldDuration: 5
