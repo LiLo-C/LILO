@@ -36,12 +36,13 @@ public static class SetupLevel3CameraWobble
         serializedWobble.FindProperty("inverseTilt").boolValue = true;
         serializedWobble.FindProperty("tiltSensitivity").floatValue = 0.8f;
         serializedWobble.FindProperty("maximumTiltDegrees").floatValue = 9f;
-        serializedWobble.FindProperty("rollWobbleDegrees").floatValue = 15.75f;
-        serializedWobble.FindProperty("pitchWobbleDegrees").floatValue = 7.875f;
+        serializedWobble.FindProperty("rollWobbleDegrees").floatValue = 11.8125f;
+        serializedWobble.FindProperty("pitchWobbleDegrees").floatValue = 5.90625f;
+        serializedWobble.FindProperty("wobbleIntensity").floatValue = 0.75f;
         serializedWobble.ApplyModifiedPropertiesWithoutUndo();
 
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
-        Debug.Log("[Level3Camera] Applied inverse phone tilt and 5x wobble to OfficeLevel3 Main Camera.");
+        Debug.Log("[Level3Camera] Applied inverse phone tilt and reduced wobble to OfficeLevel3 Main Camera.");
     }
 }
