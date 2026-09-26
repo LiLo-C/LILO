@@ -66,8 +66,7 @@ namespace Lilo.Systems.Monster
         }
 
         /// <summary>
-        /// Picks a safe candidate inside the spawn distance band, preferring the
-        /// middle of the band so large floors do not place the monster at the far edge.
+        /// Picks randomly from safe candidates inside the spawn distance band.
         /// </summary>
         public static int ChooseBalancedIndex(
             IReadOnlyList<MonsterSpawnCandidate> candidates,
@@ -81,9 +80,7 @@ namespace Lilo.Systems.Monster
             if (candidates == null || rng == null || maximumEntryDistance < minimumEntryDistance)
                 return -1;
 
-            float preferredDistance = (minimumEntryDistance + maximumEntryDistance) * 0.5f;
-            int best = -1;
-            float bestScore = float.PositiveInfinity;
+            var validIndices = new List<int>();
             for (int i = 0; i < candidates.Count; i++)
             {
                 MonsterSpawnCandidate candidate = candidates[i];
@@ -91,19 +88,14 @@ namespace Lilo.Systems.Monster
                 if (!IsValid(candidate, playerEntry, objectives, minimumEntryDistance, objectiveClearance)
                     || distance > maximumEntryDistance)
                     continue;
-
-                float score = Mathf.Abs(distance - preferredDistance)
-                    + (float)rng.NextDouble() * 0.75f;
-                if (score >= bestScore) continue;
-                best = i;
-                bestScore = score;
+                validIndices.Add(i);
             }
-            return best;
+            return validIndices.Count == 0 ? -1 : validIndices[rng.Next(validIndices.Count)];
         }
 
         /// <summary>
-        /// Selects a reachable, reasonably distant fallback if strict candidate
-        /// validation yields no result. A compact floor can still use its farthest point.
+        /// Selects a random reachable fallback that still respects minimum player
+        /// distance, preferring candidates clear of objectives.
         /// </summary>
         public static int ChooseReachableFallbackIndex(
             IReadOnlyList<MonsterSpawnCandidate> candidates,
@@ -116,17 +108,17 @@ namespace Lilo.Systems.Monster
             if (candidates == null || rng == null)
                 return -1;
 
-            int best = -1;
-            float bestScore = float.NegativeInfinity;
-            float minimumFallbackDistance = Mathf.Max(2.5f, minimumEntryDistance * 0.5f);
-            float preferredDistance = minimumEntryDistance + Mathf.Max(2f, minimumEntryDistance * 0.4f);
+            var farReachable = new List<int>();
+            var farClear = new List<int>();
+            var farClearHidden = new List<int>();
             for (int i = 0; i < candidates.Count; i++)
             {
                 MonsterSpawnCandidate candidate = candidates[i];
                 if (!candidate.IsReachable) continue;
 
                 float entryDistance = MonsterBrain.DistXZ(candidate.Position, playerEntry);
-                if (entryDistance < minimumFallbackDistance) continue;
+                if (entryDistance < minimumEntryDistance) continue;
+                farReachable.Add(i);
 
                 float objectiveDistance = float.PositiveInfinity;
                 if (objectives != null)
@@ -136,31 +128,19 @@ namespace Lilo.Systems.Monster
                             MonsterBrain.DistXZ(candidate.Position, objectives[j]));
                 }
 
-                float score = -Mathf.Abs(entryDistance - preferredDistance)
-                    + Mathf.Min(objectiveDistance, objectiveClearance * 2f) * 1.5f;
-                if (candidate.IsVisibleFromEntry) score -= 3f;
-                score += (float)rng.NextDouble() * 0.5f;
-                if (score <= bestScore) continue;
-
-                best = i;
-                bestScore = score;
+                if (objectiveDistance >= objectiveClearance)
+                {
+                    farClear.Add(i);
+                    if (!candidate.IsVisibleFromEntry)
+                        farClearHidden.Add(i);
+                }
             }
 
-            if (best >= 0) return best;
-
-            // On a very compact floor, use the farthest reachable location even
-            // when the preferred entry distance cannot be met.
-            for (int i = 0; i < candidates.Count; i++)
-            {
-                MonsterSpawnCandidate candidate = candidates[i];
-                if (!candidate.IsReachable) continue;
-                float score = MonsterBrain.DistXZ(candidate.Position, playerEntry)
-                    + (float)rng.NextDouble() * 0.5f;
-                if (score <= bestScore) continue;
-                best = i;
-                bestScore = score;
-            }
-            return best;
+            // Never trade the minimum player distance for a successful spawn.
+            List<int> choices = farClearHidden.Count > 0 ? farClearHidden
+                : farClear.Count > 0 ? farClear
+                : farReachable;
+            return choices.Count == 0 ? -1 : choices[rng.Next(choices.Count)];
         }
     }
 }

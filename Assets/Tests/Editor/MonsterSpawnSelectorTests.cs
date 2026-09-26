@@ -65,19 +65,25 @@ namespace Lilo.Tests
         }
 
         [Test]
-        public void ChooseBalancedIndex_PrefersMiddleOfSafeSpawnBand()
+        public void ChooseBalancedIndex_RandomizesAcrossSafeSpawnBand()
         {
             var candidates = new[]
             {
-                new MonsterSpawnCandidate(new Vector3(11.5f, 0f, 0f), true, false),
-                new MonsterSpawnCandidate(new Vector3(16f, 0f, 0f), true, false),
+                new MonsterSpawnCandidate(new Vector3(9f, 0f, 0f), true, false),
+                new MonsterSpawnCandidate(new Vector3(14f, 0f, 0f), true, false),
+                new MonsterSpawnCandidate(new Vector3(19f, 0f, 0f), true, false),
             };
 
-            int selected = MonsterSpawnSelector.ChooseBalancedIndex(
-                candidates, Vector3.zero, System.Array.Empty<Vector3>(), 8f, 15f, 3f,
-                new System.Random(7));
+            var selected = new HashSet<int>();
+            for (int seed = 0; seed < 30; seed++)
+            {
+                int index = MonsterSpawnSelector.ChooseBalancedIndex(
+                    candidates, Vector3.zero, System.Array.Empty<Vector3>(), 8f, 20f, 3f,
+                    new System.Random(seed));
+                selected.Add(index);
+            }
 
-            Assert.AreEqual(0, selected);
+            CollectionAssert.AreEquivalent(new[] { 0, 1, 2 }, selected);
         }
 
         [Test]
@@ -100,7 +106,7 @@ namespace Lilo.Tests
             var candidates = new List<MonsterSpawnCandidate>
             {
                 new MonsterSpawnCandidate(new Vector3(12f, 0f, 0f), false, false),
-                new MonsterSpawnCandidate(new Vector3(10f, 0f, 0f), true, true),
+                new MonsterSpawnCandidate(new Vector3(14f, 0f, 0f), true, true),
                 new MonsterSpawnCandidate(new Vector3(1f, 0f, 0f), true, false),
             };
 
@@ -108,6 +114,21 @@ namespace Lilo.Tests
                 candidates, Vector3.zero, Objectives, 8f, 3f, new System.Random(123));
 
             Assert.AreEqual(1, selected);
+        }
+
+        [Test]
+        public void ChooseReachableFallbackIndex_NeverChoosesCloserThanMinimumDistance()
+        {
+            var candidates = new[]
+            {
+                new MonsterSpawnCandidate(new Vector3(7.9f, 0f, 0f), true, false),
+                new MonsterSpawnCandidate(new Vector3(11f, 0f, 0f), true, false),
+            };
+
+            int selected = MonsterSpawnSelector.ChooseReachableFallbackIndex(
+                candidates, Vector3.zero, System.Array.Empty<Vector3>(), 8f, 3f, new System.Random(7));
+
+            Assert.AreEqual(-1, selected);
         }
     }
 }
