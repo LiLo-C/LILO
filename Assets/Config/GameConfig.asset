@@ -49,9 +49,9 @@ MonoBehaviour:
   keyboardBatteryChargeFraction: 0.25
   accessKeySpawnMinDistance: 5
   accessKeySpawnMaxDistance: 8
-  noiseBaseRadius: 2
+  noiseBaseRadius: 3
   noiseWalk: 1
-  noiseSprint: 2.5
+  noiseSprint: 3
   noiseInteract: 2
   noiseBatterySwap: 1.5
   noiseHiding: 0

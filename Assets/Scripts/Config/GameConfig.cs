@@ -84,13 +84,13 @@ namespace Lilo.Config
 
         [Header("17.3 Noise")]
         [Tooltip("Maximum walk noise radius is the base radius times noiseWalk.")]
-        public float noiseBaseRadius = 2.0f;
+        public float noiseBaseRadius = 3.0f;
         public float noiseWalk = 1.0f;
-        public float noiseSprint = 2.5f;
+        public float noiseSprint = 3.0f;
         public float noiseInteract = 2.0f;
         public float noiseBatterySwap = 1.5f;
         public float noiseHiding = 0f;
-        [Tooltip("Half-angle of the rear cone where movement and pickup noises are muffled.")]
+        [Tooltip("Legacy setting. Current monster hearing uses noise radius in every direction.")]
         [Range(0f, 80f)] public float monsterHearingRearBlindSpotAngle = 32f;
 
         [Header("17.4 Monster (per floor)")]

@@ -108,7 +108,7 @@ namespace Lilo.MonoBehaviours.Interaction
                         state.AdvanceToFloor(nextFloor);
                     if (state != null && requiresKey)
                         state.RemoveKey(requiredKeyId);
-                    if (state != null && nextSceneName == "GoodEnding")
+                    if (state != null && (nextSceneName == "GoodEnding" || nextSceneName == "Epilogue"))
                         state.SetOutcome(RunOutcome.GoodEnding);
                     Debug.Log($"[ExitDoor] Player escaped — loading {nextSceneName}.");
                     Lilo.MonoBehaviours.Input.MobileControlsBootstrap.PrepareForSceneReload();

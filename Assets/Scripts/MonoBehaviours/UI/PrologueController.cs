@@ -13,6 +13,12 @@ public class PrologueController : MonoBehaviour
         public Sprite image;
         [TextArea(2, 5)] public string narration;
 
+        [Tooltip("Looped ambience for this frame.")]
+        public AudioClip ambienceLoop;
+
+        [Tooltip("One-shot sound played when this frame appears.")]
+        public AudioClip soundEffect;
+
         [Tooltip("Skala awal. Untuk zoom in isi 1.0, untuk zoom out isi 1.1")]
         public float zoomFrom = 1.0f;
 
@@ -52,12 +58,31 @@ public class PrologueController : MonoBehaviour
     bool tapped;
     bool skipping;
     RectTransform frameRect;
+    AudioSource _ambienceA;
+    AudioSource _ambienceB;
+    AudioSource _eventSource;
+    AudioSource _activeAmbience;
+    Coroutine _ambienceFade;
 
     void Awake()
     {
         frameRect = frameImage.GetComponent<RectTransform>();
+        _ambienceA = CreateAudioSource("PrologueAmbienceA", loop: true);
+        _ambienceB = CreateAudioSource("PrologueAmbienceB", loop: true);
+        _eventSource = CreateAudioSource("PrologueEvents", loop: false);
         if (tapCatcher != null) tapCatcher.onClick.AddListener(() => tapped = true);
         if (skipButton != null) skipButton.onClick.AddListener(Skip);
+    }
+
+    AudioSource CreateAudioSource(string sourceName, bool loop)
+    {
+        var sourceObject = new GameObject(sourceName);
+        sourceObject.transform.SetParent(transform, false);
+        var source = sourceObject.AddComponent<AudioSource>();
+        source.playOnAwake = false;
+        source.spatialBlend = 0f;
+        source.loop = loop;
+        return source;
     }
 
     void Start()
@@ -80,12 +105,19 @@ public class PrologueController : MonoBehaviour
 
     IEnumerator PlayFrame(Frame f)
     {
+        // End the previous frame's event sound as soon as this frame transition starts.
+        _eventSource.Stop();
+
         // Hening sebelum frame muncul. Dipakai untuk momen lampu mati.
         if (f.silenceBefore > 0f)
         {
             narrationText.text = "";
             yield return new WaitForSeconds(f.silenceBefore);
         }
+
+        SetAmbience(f.ambienceLoop);
+        if (f.soundEffect != null)
+            _eventSource.PlayOneShot(f.soundEffect);
 
         frameImage.sprite = f.image;
         frameRect.localScale = Vector3.one * f.zoomFrom;
@@ -106,7 +138,67 @@ public class PrologueController : MonoBehaviour
         while (!tapped && !skipping) yield return null;
         tapped = false;
 
+        // Keep frame-specific effects scoped to their own slide.
+        _eventSource.Stop();
         if (!skipping) yield return StartCoroutine(Fade(1f));
+    }
+
+    void SetAmbience(AudioClip clip)
+    {
+        if (_activeAmbience != null && _activeAmbience.clip == clip)
+            return;
+        if (_ambienceFade != null)
+            StopCoroutine(_ambienceFade);
+        _ambienceFade = StartCoroutine(CrossfadeAmbience(clip));
+    }
+
+    IEnumerator CrossfadeAmbience(AudioClip clip)
+    {
+        AudioSource oldSource = _activeAmbience;
+        AudioSource newSource = oldSource == _ambienceA ? _ambienceB : _ambienceA;
+        if (clip == null)
+        {
+            if (oldSource != null)
+            {
+                float startVolume = oldSource.volume;
+                float elapsed = 0f;
+                while (elapsed < fadeDuration)
+                {
+                    elapsed += Time.deltaTime;
+                    oldSource.volume = Mathf.Lerp(startVolume, 0f, elapsed / fadeDuration);
+                    yield return null;
+                }
+                oldSource.Stop();
+                oldSource.clip = null;
+                oldSource.volume = 1f;
+            }
+            _activeAmbience = null;
+            _ambienceFade = null;
+            yield break;
+        }
+
+        newSource.clip = clip;
+        newSource.volume = 0f;
+        newSource.Play();
+        float duration = Mathf.Max(0.01f, fadeDuration);
+        float time = 0f;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = Mathf.Clamp01(time / duration);
+            newSource.volume = t;
+            if (oldSource != null) oldSource.volume = 1f - t;
+            yield return null;
+        }
+        newSource.volume = 1f;
+        if (oldSource != null)
+        {
+            oldSource.Stop();
+            oldSource.clip = null;
+            oldSource.volume = 1f;
+        }
+        _activeAmbience = newSource;
+        _ambienceFade = null;
     }
 
     IEnumerator Typewriter(string full)
@@ -189,6 +281,9 @@ public class PrologueController : MonoBehaviour
 
     void Finish()
     {
+        _ambienceA?.Stop();
+        _ambienceB?.Stop();
+        _eventSource?.Stop();
         SceneManager.LoadScene(nextSceneName);
     }
 }

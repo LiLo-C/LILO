@@ -25,6 +25,8 @@ namespace Lilo.Systems.Monster
         public Vector3 SearchPoint;
         public float SearchRetargetTimer;
         public bool CatchFired;
+        public bool WasPlayerHidden;
+        public bool HiddenAlert;
     }
 
     public struct MonsterBrainInput
@@ -103,14 +105,74 @@ namespace Lilo.Systems.Monster
             float patrolSpeed = i.PatrolSpeed > 0f ? i.PatrolSpeed : i.Profile.patrolSpeed * i.WalkSpeed;
             float chaseSpeed = i.ChaseSpeed > 0f ? i.ChaseSpeed : i.Profile.chaseSpeed * i.WalkSpeed;
 
+            bool justHid = i.IsPlayerHidden && !s.WasPlayerHidden;
+            s.WasPlayerHidden = i.IsPlayerHidden;
+
             // A sustained heartbeat exposes the hiding place after the time limit.
             // The monster knows the desk position even when sight is blocked.
             if (i.HidingRevealed && s.State != MonsterState.Catch)
             {
+                s.HiddenAlert = false;
                 s.State = MonsterState.Chase;
                 s.Target = i.PlayerPosition;
                 s.LastKnown = i.PlayerPosition;
                 s.Timer = 0f;
+            }
+            else if (i.IsPlayerHidden)
+            {
+                // Hiding breaks the current pursuit. Pause in Alert briefly, then
+                // resume patrol without walking to the hidden player's position.
+                if (s.State == MonsterState.Catch)
+                    return new MonsterBrainOutput
+                    {
+                        MoveTarget = i.MonsterPosition,
+                        Speed = 0f,
+                        StateBeforeCatch = MonsterState.Catch,
+                    };
+
+                if (justHid && s.State != MonsterState.Patrol)
+                {
+                    s.State = MonsterState.Alert;
+                    s.Target = s.LastKnown;
+                    s.Timer = 0f;
+                    s.HiddenAlert = true;
+                }
+
+                if (s.HiddenAlert)
+                {
+                    if (!justHid) s.Timer += i.DeltaTime;
+                    float alertDuration = i.Profile.alertDuration > 0f
+                        ? i.Profile.alertDuration : DefaultAlertDuration;
+                    if (s.Timer >= alertDuration)
+                    {
+                        s.HiddenAlert = false;
+                        ReturnToPatrol(ref s, i);
+                    }
+                }
+                else if (s.State == MonsterState.Patrol)
+                {
+                    if (HasWaypoints(i))
+                    {
+                        if (i.ArrivedAtTarget)
+                            s.WaypointIndex = (s.WaypointIndex + 1) % i.Waypoints.Length;
+                        s.Target = i.Waypoints[s.WaypointIndex % i.Waypoints.Length];
+                    }
+                    else
+                    {
+                        s.Target = i.MonsterPosition;
+                    }
+                }
+
+                return new MonsterBrainOutput
+                {
+                    MoveTarget = s.Target,
+                    Speed = s.State == MonsterState.Alert ? 0f : patrolSpeed,
+                    StateBeforeCatch = s.State,
+                };
+            }
+            else
+            {
+                s.HiddenAlert = false;
             }
 
             switch (s.State)

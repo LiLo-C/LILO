@@ -10,7 +10,7 @@ namespace Lilo.MonoBehaviours.Audio
     public sealed class FootstepPlayer : MonoBehaviour
     {
         [SerializeField] private AudioClip[] stepClips = new AudioClip[0];
-        [SerializeField, Range(0f, 1f)] private float volume = 0.7f;
+        [SerializeField, Range(0f, 1f)] private float volume = 0.3f;
         [SerializeField] private float strideLength = 0.85f;
         [SerializeField] private float minMoveSpeed = 0.3f;
 
@@ -31,7 +31,7 @@ namespace Lilo.MonoBehaviours.Audio
             _source.spatialBlend = 0f;
             // Keep the current clip gain, but halve the AudioSource output so
             // the resulting footstep level is 50% below the previous setup.
-            _source.volume = volume * 0.5f;
+            _source.volume = volume * 0.3f;
             _lastPosition = transform.position;
         }
 

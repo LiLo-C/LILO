@@ -396,17 +396,19 @@ namespace Lilo.MonoBehaviours.Monster
             _hasLastPlayerPos = true;
 
             bool moving = playerSpeed > 0.05f || debugForceMoveNoise;
+            float walkSpeed = speedSettings != null ? speedSettings.playerWalkSpeed : config.walkSpeed;
+            float sprintSpeed = speedSettings != null
+                ? speedSettings.playerSprintSpeed
+                : config.walkSpeed * config.sprintMultiplier;
             bool sprinting = debugForceSprintNoise
-                || (_playerMovement != null ? _playerMovement.IsSprinting
-                    : (_starterAssetsInput != null ? _starterAssetsInput.sprint
-                        : playerSpeed > config.walkSpeed * config.sprintMultiplier * 0.9f));
+                || (_playerMovement != null && _playerMovement.IsSprinting)
+                || (_starterAssetsInput != null && _starterAssetsInput.sprint)
+                || (sprintSpeed > walkSpeed
+                    && playerSpeed >= (walkSpeed + sprintSpeed) * 0.5f);
             bool hiding = (GameManager.Instance != null && GameManager.Instance.State.IsHiding)
                 || HidingController.IsPlayerHiding;
             float moveRadius = MonsterNoise.MovementRadius(config, hiding, moving, sprinting);
-            if (moveRadius > 0f && MonsterNoise.IsInRearBlindSpot(
-                    transform.position, transform.forward, playerPos,
-                    config.monsterHearingRearBlindSpotAngle))
-                moveRadius = 0f;
+            // Sound travels by radius in every direction; facing only limits vision.
             moveRadius *= _profile.noiseSensitivityMultiplier;
             CurrentNoiseRadius = moveRadius;
             CurrentNoiseSource = hiding
@@ -421,9 +423,6 @@ namespace Lilo.MonoBehaviours.Monster
             float largestPulse = 0f;
             foreach (var pulse in _pulses)
             {
-                if (MonsterNoise.IsInRearBlindSpot(transform.position, transform.forward,
-                        pulse.Position, config.monsterHearingRearBlindSpotAngle))
-                    continue;
                 float detectingRadius = pulse.Radius * _profile.noiseSensitivityMultiplier;
                 if (detectingRadius <= largestPulse) continue;
                 largestPulse = detectingRadius;
@@ -439,9 +438,6 @@ namespace Lilo.MonoBehaviours.Monster
                 _pulsesBuffer.Clear();
                 foreach (var p in _pulses)
                 {
-                    if (MonsterNoise.IsInRearBlindSpot(transform.position, transform.forward,
-                            p.Position, config.monsterHearingRearBlindSpotAngle))
-                        continue;
                     _pulsesBuffer.Add(new NoisePulse
                     {
                         Position = p.Position,
@@ -452,20 +448,24 @@ namespace Lilo.MonoBehaviours.Monster
             }
             if (ScratchMarkTrail.TryGetLatestNear(transform.position, out Vector3 scratchMark))
             {
-                if (!MonsterNoise.IsInRearBlindSpot(transform.position, transform.forward,
-                        scratchMark, config.monsterHearingRearBlindSpotAngle))
+                if (pulses == null)
                 {
-                    if (pulses == null)
-                    {
-                        _pulsesBuffer.Clear();
-                        pulses = _pulsesBuffer;
-                    }
-                    pulses.Add(new NoisePulse
-                    {
-                        Position = scratchMark,
-                        Radius = 8f * _profile.noiseSensitivityMultiplier,
-                    });
+                    _pulsesBuffer.Clear();
+                    pulses = _pulsesBuffer;
                 }
+                pulses.Add(new NoisePulse
+                {
+                    Position = scratchMark,
+                    Radius = 8f * _profile.noiseSensitivityMultiplier,
+                });
+            }
+
+            if (hiding)
+            {
+                _pulses.Clear();
+                pulses = null;
+                CurrentNoiseRadius = 0f;
+                CurrentNoiseSource = Lilo.Systems.Monster.NoiseSource.Hiding;
             }
 
             bool arrived = _hasRequestedTarget
@@ -748,7 +748,7 @@ namespace Lilo.MonoBehaviours.Monster
             yield return PlayDeathCinematic();
 
             string respawnScene = state != null && state.Lives <= 0
-                ? "BadEnding"
+                ? "EpilogueBad"
                 : ResolveRespawnScene(state);
             Debug.Log($"[Monster] Respawning on {respawnScene} for floor {state?.CurrentFloor.ToString() ?? "active scene"}.");
             state?.MarkLifeVoiceOverReady();
