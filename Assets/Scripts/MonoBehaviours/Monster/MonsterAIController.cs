@@ -136,9 +136,15 @@ namespace Lilo.MonoBehaviours.Monster
             }
             if (speedSettings == null)
                 speedSettings = FindAnyObjectByType<GameplaySpeedSettings>();
-            FloorId activeFloor = GameManager.Instance != null
-                ? GameManager.Instance.State.CurrentFloor
-                : floorProfile;
+            // The loaded floor is authoritative, including direct scene playtests
+            // and additive loads before persistent state has caught up.
+            FloorId activeFloor = gameObject.scene.name switch
+            {
+                "OfficeLevel1" => FloorId.Floor52,
+                "OfficeLevel2" => FloorId.Floor51,
+                "OfficeLevel3" => FloorId.Floor50,
+                _ => GameManager.Instance != null ? GameManager.Instance.State.CurrentFloor : floorProfile,
+            };
             _profile = cfg.GetMonsterProfile(activeFloor);
             if (!_profile.monsterActive)
             {
@@ -165,7 +171,9 @@ namespace Lilo.MonoBehaviours.Monster
 
             _agent = GetComponent<NavMeshAgent>();
             _movementPath = new NavMeshPath();
-            _agent.radius = 0.5f;
+            _agent.radius = NavMesh.GetSettingsByID(_agent.agentTypeID).agentRadius;
+            var bodyCollider = GetComponent<CapsuleCollider>();
+            if (bodyCollider != null) bodyCollider.radius = _agent.radius;
             _agent.height = 2f;
             _agent.baseOffset = 0f;
             _agent.stoppingDistance = 0.3f;
@@ -229,6 +237,9 @@ namespace Lilo.MonoBehaviours.Monster
             // an older wall layout, letting the agent path straight through it.
             // Build from the same colliders that stop the player on this floor.
             surface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
+            // Coarse voxels can close the maze's narrow but traversable passages.
+            surface.overrideVoxelSize = true;
+            surface.voxelSize = 0.05f;
             surface.BuildNavMesh();
             if (surface.navMeshData != null
                 && NavMesh.SamplePosition(player.position, out _, 1.5f, NavMesh.AllAreas))
@@ -376,10 +387,8 @@ namespace Lilo.MonoBehaviours.Monster
 
             rawPoints.Sort((a, b) => MonsterBrain.DistXZ(b, entry).CompareTo(MonsterBrain.DistXZ(a, entry)));
 
-            Vector3 farthestClearHidden = default;
             Vector3 farthestClear = default;
             Vector3 farthestReachable = default;
-            float clearHiddenDistance = -1f;
             float clearDistance = -1f;
             float reachableDistance = -1f;
             float minimumDistance = config.monsterSpawnMinDistance;
@@ -388,8 +397,7 @@ namespace Lilo.MonoBehaviours.Monster
             {
                 // Sampling can move a point by at most two meters, so once the
                 // remaining sorted points cannot beat the current best, stop.
-                float bestQualifiedDistance = clearHiddenDistance >= 0f ? clearHiddenDistance
-                    : clearDistance >= 0f ? clearDistance
+                float bestQualifiedDistance = clearDistance >= 0f ? clearDistance
                     : reachableDistance;
                 if (bestQualifiedDistance >= 0f
                     && MonsterBrain.DistXZ(rawPoint, entry) < bestQualifiedDistance - 2f)
@@ -425,16 +433,11 @@ namespace Lilo.MonoBehaviours.Monster
                     farthestClear = point;
                     clearDistance = distance;
                 }
-
-                if (!IsVisibleFromEntry(entry, point) && distance > clearHiddenDistance)
-                {
-                    farthestClearHidden = point;
-                    clearHiddenDistance = distance;
-                }
             }
 
-            Vector3 selected = clearHiddenDistance >= 0f ? farthestClearHidden
-                : clearDistance >= 0f ? farthestClear
+            // Distance takes priority over camera visibility on Level 3. Choosing
+            // a nearer hidden point would violate this floor's far-spawn rule.
+            Vector3 selected = clearDistance >= 0f ? farthestClear
                 : farthestReachable;
             if (reachableDistance < 0f)
             {

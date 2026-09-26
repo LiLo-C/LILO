@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.AI;
 using Lilo.Config;
 using Lilo.MonoBehaviours;
 using Lilo.MonoBehaviours.Monster;
@@ -117,9 +118,17 @@ namespace Lilo.MonoBehaviours.Interaction
                     new Vector3(1.6f, 2.2f, 0.14f));
             }
 
-            Shader shader = Shader.Find("Universal Render Pipeline/Unlit")
-                ?? Shader.Find("Unlit/Color")
-                ?? Shader.Find("Sprites/Default");
+            // Some placeholders extend below the walkable floor. Only frame the
+            // part above that surface so the reveal doesn't draw buried bars.
+            if (NavMesh.SamplePosition(transform.position, out NavMeshHit floor, 2f, NavMesh.AllAreas)
+                && floor.position.y + 0.02f < bounds.max.y)
+            {
+                Vector3 minimum = bounds.min;
+                minimum.y = Mathf.Max(minimum.y, floor.position.y + 0.02f);
+                bounds.SetMinMax(minimum, bounds.max);
+            }
+
+            Shader shader = Shader.Find("LILO/ExitDoorHighlight");
             if (shader == null)
             {
                 Debug.LogError("[ExitDoor] Could not find a shader for the visible exit frame.", this);
@@ -129,12 +138,12 @@ namespace Lilo.MonoBehaviours.Interaction
             _exitFrameMaterial = new Material(shader) { name = "Exit Door Frame (Runtime)" };
             if (_exitFrameMaterial.HasProperty(BaseColorId)) _exitFrameMaterial.SetColor(BaseColorId, ExitFrameColor);
             if (_exitFrameMaterial.HasProperty(ColorId)) _exitFrameMaterial.SetColor(ColorId, ExitFrameColor);
-            // Use a bright opaque unlit material so the exit stays readable in
-            // Level 2's very dark lighting and isn't sorted behind the doorway.
-            _exitFrameMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
+            // Level 2 has a wall between the camera and the exit. Render just the
+            // frame above the scene depth so that wall can't hide the objective.
             // Keep the bars in an identity-transform root. Parenting them to a
             // scaled placeholder stretches the frame away from the actual door.
             _exitFrameRoot = new GameObject("Exit Door Highlight");
+            SceneManager.MoveGameObjectToScene(_exitFrameRoot, gameObject.scene);
 
             Vector3 min = bounds.min;
             Vector3 max = bounds.max;
