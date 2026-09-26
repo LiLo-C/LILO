@@ -293,7 +293,7 @@ namespace Lilo.Editor
             stepClips.arraySize = clips.Count;
             for (int i = 0; i < clips.Count; i++)
                 stepClips.GetArrayElementAtIndex(i).objectReferenceValue = clips[i];
-            serialized.FindProperty("volume").floatValue = 1f;
+            serialized.FindProperty("volume").floatValue = 0.8f;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             footstepPlayer.enabled = true;
             EditorUtility.SetDirty(footstepPlayer);
