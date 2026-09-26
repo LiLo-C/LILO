@@ -39,14 +39,14 @@ public static class SetupGameLoopScenes
         CloneOfficeLevel("OfficeLevel3");
         EnsureGameplayScene("OfficeLevel1", FloorId.Floor52, "OfficeLevel2", FloorId.Floor51);
         EnsureGameplayScene("OfficeLevel2", FloorId.Floor51, "OfficeLevel3", FloorId.Floor50);
-        EnsureGameplayScene("OfficeLevel3", FloorId.Floor50, "GoodEnding", FloorId.Floor50);
+        EnsureGameplayScene("OfficeLevel3", FloorId.Floor50, "Epilogue", FloorId.Floor50);
         SetOfficeOrthographicCameras();
         ApplyOfficeTraversalAndSpeedTuning();
         UpdateBuildSettings();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         ValidateThreeFloorGameFlow();
-        Debug.Log("[GameLoopSetup] OfficeLevel1 → OfficeLevel2 → OfficeLevel3 → GoodEnding, with shared HUD and no jump.");
+        Debug.Log("[GameLoopSetup] OfficeLevel1 → OfficeLevel2 → OfficeLevel3 → Epilogue, with shared HUD and no jump.");
     }
 
     [MenuItem("LILO/Set Office Orthographic Cameras")]
@@ -125,7 +125,7 @@ public static class SetupGameLoopScenes
     {
         string[] scenes = { "OfficeLevel1", "OfficeLevel2", "OfficeLevel3" };
         FloorId[] floors = { FloorId.Floor52, FloorId.Floor51, FloorId.Floor50 };
-        string[] destinations = { "OfficeLevel2", "OfficeLevel3", "GoodEnding" };
+        string[] destinations = { "OfficeLevel2", "OfficeLevel3", "Epilogue" };
 
         for (int index = 0; index < scenes.Length; index++)
         {
@@ -337,6 +337,8 @@ public static class SetupGameLoopScenes
             SceneRoot + "OfficeLevel1.unity",
             SceneRoot + "OfficeLevel2.unity",
             SceneRoot + "OfficeLevel3.unity",
+            SceneRoot + "Epilogue.unity",
+            SceneRoot + "EpilogueBad.unity",
             SceneRoot + "GoodEnding.unity",
             SceneRoot + "BadEnding.unity",
         };
