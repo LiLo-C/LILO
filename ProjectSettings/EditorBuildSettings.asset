@@ -29,6 +29,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Prologue.unity
     guid: 3333bddece0ed4b1bbf915c3fc21af7c
+  - enabled: 1
+    path: Assets/Scenes/Epilogue.unity
+    guid: 67ddab0ca21b4edc928aafbe704b7607
+  - enabled: 1
+    path: Assets/Scenes/EpilogueBad.unity
+    guid: 809fda7797924cbf8584840ee21cf43a
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

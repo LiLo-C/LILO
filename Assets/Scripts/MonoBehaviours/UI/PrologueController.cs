@@ -49,13 +49,26 @@ public class PrologueController : MonoBehaviour
 
     public float fadeDuration = 0.35f;
 
+    [Header("Stabilo narasi")]
+    [Tooltip("Blok warna di belakang tiap baris teks, seperti stabilo. Ikut memanjang per huruf.")]
+    public bool highlight = true;
+    public Color highlightColor = Color.black;
+    [Tooltip("Ruang di sekitar teks per baris: x = kiri dan kanan, y = atas dan bawah.")]
+    public Vector2 highlightPadding = new Vector2(16f, 6f);
+
     bool tapped;
     bool skipping;
     RectTransform frameRect;
+    AspectRatioFitter frameFitter;
+    Coroutine zoomRoutine;
+    RectTransform highlightLayer;
+    readonly List<Image> highlightBars = new List<Image>();
 
     void Awake()
     {
         frameRect = frameImage.GetComponent<RectTransform>();
+        frameFitter = frameImage.GetComponent<AspectRatioFitter>();
+        if (highlight) CreateHighlightLayer();
         if (tapCatcher != null) tapCatcher.onClick.AddListener(() => tapped = true);
         if (skipButton != null) skipButton.onClick.AddListener(Skip);
     }
@@ -88,6 +101,11 @@ public class PrologueController : MonoBehaviour
         }
 
         frameImage.sprite = f.image;
+        // Rasio ikut gambar, supaya panel beda ukuran tidak gepeng.
+        if (frameFitter != null && f.image != null)
+            frameFitter.aspectRatio = f.image.rect.width / f.image.rect.height;
+        // Zoom frame sebelumnya dihentikan dulu supaya tidak rebutan skala.
+        if (zoomRoutine != null) StopCoroutine(zoomRoutine);
         frameRect.localScale = Vector3.one * f.zoomFrom;
         narrationText.text = f.narration;
         narrationText.maxVisibleCharacters = 0;
@@ -96,7 +114,7 @@ public class PrologueController : MonoBehaviour
         else yield return StartCoroutine(Fade(0f));
 
         // Gerakan kamera jalan sendiri di belakang, tidak menahan alur.
-        StartCoroutine(Zoom(f.zoomFrom, f.zoomTo, f.zoomDuration));
+        zoomRoutine = StartCoroutine(Zoom(f.zoomFrom, f.zoomTo, f.zoomDuration));
 
         // Teks ngetik. Tap pertama bikin teks langsung penuh.
         yield return StartCoroutine(Typewriter(f.narration));
@@ -107,6 +125,76 @@ public class PrologueController : MonoBehaviour
         tapped = false;
 
         if (!skipping) yield return StartCoroutine(Fade(1f));
+    }
+
+    // Stabilo pakai Image sungguhan, bukan tag <mark>. Tag <mark> TMP selalu agak tembus
+    // karena warnanya diambil dari glyph garis bawah yang tipis di atlas font.
+    void CreateHighlightLayer()
+    {
+        RectTransform textRect = narrationText.rectTransform;
+        var go = new GameObject("NarrationHighlight", typeof(RectTransform));
+        highlightLayer = (RectTransform)go.transform;
+        highlightLayer.SetParent(textRect.parent, false);
+        // Taruh tepat di bawah teks supaya tergambar di belakangnya.
+        highlightLayer.SetSiblingIndex(textRect.GetSiblingIndex());
+        highlightLayer.anchorMin = textRect.anchorMin;
+        highlightLayer.anchorMax = textRect.anchorMax;
+        highlightLayer.pivot = textRect.pivot;
+        highlightLayer.anchoredPosition = textRect.anchoredPosition;
+        highlightLayer.sizeDelta = textRect.sizeDelta;
+        highlightLayer.localRotation = textRect.localRotation;
+        highlightLayer.localScale = textRect.localScale;
+    }
+
+    Image HighlightBar(int index)
+    {
+        while (highlightBars.Count <= index)
+        {
+            var go = new GameObject("Bar", typeof(RectTransform), typeof(Image));
+            var bar = go.GetComponent<Image>();
+            bar.raycastTarget = false;
+            RectTransform r = bar.rectTransform;
+            r.SetParent(highlightLayer, false);
+            // Titik jangkar di pivot induk, sama dengan titik nol koordinat karakter TMP.
+            r.anchorMin = r.anchorMax = highlightLayer.pivot;
+            r.pivot = Vector2.zero;
+            highlightBars.Add(bar);
+        }
+        return highlightBars[index];
+    }
+
+    void LateUpdate()
+    {
+        if (highlightLayer == null) return;
+
+        narrationText.ForceMeshUpdate();
+        TMP_TextInfo info = narrationText.textInfo;
+        int visible = narrationText.maxVisibleCharacters;
+        int used = 0;
+
+        for (int l = 0; l < info.lineCount; l++)
+        {
+            TMP_LineInfo line = info.lineInfo[l];
+            float minX = float.MaxValue, maxX = float.MinValue;
+            for (int c = line.firstCharacterIndex; c <= line.lastCharacterIndex && c < info.characterCount; c++)
+            {
+                if (c >= visible) break;
+                TMP_CharacterInfo ch = info.characterInfo[c];
+                if (!ch.isVisible) continue;
+                minX = Mathf.Min(minX, ch.bottomLeft.x);
+                maxX = Mathf.Max(maxX, ch.topRight.x);
+            }
+            if (maxX < minX) continue;
+
+            Image bar = HighlightBar(used++);
+            bar.color = highlightColor;
+            bar.rectTransform.anchoredPosition = new Vector2(minX - highlightPadding.x, line.descender - highlightPadding.y);
+            bar.rectTransform.sizeDelta = new Vector2(maxX - minX + highlightPadding.x * 2f,
+                line.ascender - line.descender + highlightPadding.y * 2f);
+            bar.enabled = true;
+        }
+
+        for (int i = used; i < highlightBars.Count; i++) highlightBars[i].enabled = false;
     }
 
     IEnumerator Typewriter(string full)

@@ -718,7 +718,7 @@ namespace Lilo.MonoBehaviours.Monster
             yield return PlayDeathCinematic();
 
             string respawnScene = state != null && state.Lives <= 0
-                ? "BadEnding"
+                ? "EpilogueBad"
                 : ResolveRespawnScene(state);
             Debug.Log($"[Monster] Respawning on {respawnScene} for floor {state?.CurrentFloor.ToString() ?? "active scene"}.");
             state?.MarkLifeVoiceOverReady();
