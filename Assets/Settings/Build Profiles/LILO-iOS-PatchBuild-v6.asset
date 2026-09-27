@@ -33,7 +33,7 @@ MonoBehaviour:
     - rid: 5678846188202492029
       type: {class: iOSPlatformSettings, ns: UnityEditor.iOS, asm: UnityEditor.iOS.Extensions}
       data:
-        m_Development: 1
+        m_Development: 0
         m_ConnectProfiler: 1
         m_BuildWithDeepProfilingSupport: 0
         m_BuildWithCodeCoverage: 0
