@@ -44,7 +44,8 @@ namespace Lilo.MonoBehaviours.Interaction
             Vector3 spawnPosition;
             if (!manager.State.TryGetAccessKeySpawnPosition(floor, out spawnPosition))
             {
-                if (!TryFindAuthoredTableSpawn(manager.Config, playerObject.transform, out spawnPosition, out string tableName))
+                if (!TryFindAuthoredTableSpawn(manager.Config, playerObject.transform,
+                        floor == FloorId.Floor50, out spawnPosition, out string tableName))
                 {
                     if (TryFindSafeFallback(manager.Config, playerObject.transform, out spawnPosition))
                     {
@@ -133,7 +134,8 @@ namespace Lilo.MonoBehaviours.Interaction
         }
 
         private static bool TryFindAuthoredTableSpawn(
-            GameConfig config, Transform player, out Vector3 keyPosition, out string tableName)
+            GameConfig config, Transform player, bool allowAnyDistance,
+            out Vector3 keyPosition, out string tableName)
         {
             keyPosition = default;
             tableName = string.Empty;
@@ -161,7 +163,7 @@ namespace Lilo.MonoBehaviours.Interaction
                     continue;
 
                 float distance = PlanarDistance(player.position, candidate);
-                if (distance < minDistance || distance > maxDistance)
+                if (!allowAnyDistance && (distance < minDistance || distance > maxDistance))
                     continue;
 
                 if (!NavMesh.SamplePosition(candidate, out NavMeshHit approach,

@@ -29,13 +29,16 @@ public static class AccessKeySpawnTableAuthoring
                 new AuthoredDesk("Cubicles/Cubicle-1 (1)/desk", new Vector3(-11.00f, 1.86f, 10.15f)),
                 new AuthoredDesk("Cubicles/Cubicle-1 (12)/desk", new Vector3(-13.80f, 1.86f, 6.18f)),
             },
-            ["OfficeLevel3"] = new[]
-            {
-                // This is the one reachable authored desk surface within the
-                // floor's existing 5–8 m spawn-distance band.
-                new AuthoredDesk("DeskSideRight", new Vector3(2.30f, 2.12f, -2.48f)),
-            },
+            ["OfficeLevel3"] = System.Array.Empty<AuthoredDesk>(),
         };
+
+    private static readonly Vector3[] OfficeLevel3KeySpawnPositions =
+    {
+        new Vector3(5.29f, 0.6126f, -0.3f),
+        new Vector3(-7.05f, 0.6126f, -5.56f),
+        new Vector3(-4.23f, 0.6126f, 7.35f),
+        new Vector3(7.31f, 0.6126f, 3.95f),
+    };
 
     private readonly struct AuthoredDesk
     {
@@ -47,6 +50,26 @@ public static class AccessKeySpawnTableAuthoring
             Path = path;
             SurfacePoint = surfacePoint;
         }
+    }
+
+    [MenuItem("LILO/Mark Level 3 Key Spawn Points")]
+    public static void MarkOfficeLevel3SpawnPoints()
+    {
+        Scene activeScene = SceneManager.GetActiveScene();
+        Scene scene = SceneManager.GetSceneByName("OfficeLevel3");
+        bool openedScene = !scene.IsValid() || !scene.isLoaded;
+        if (openedScene)
+            scene = EditorSceneManager.OpenScene("Assets/Scenes/OfficeLevel3.unity", OpenSceneMode.Additive);
+
+        AuthorOfficeLevel3SpawnPoints(scene, OfficeLevel3KeySpawnPositions);
+        EditorSceneManager.SaveScene(scene);
+
+        if (openedScene)
+            EditorSceneManager.CloseScene(scene, false);
+        if (activeScene.IsValid() && activeScene.isLoaded)
+            SceneManager.SetActiveScene(activeScene);
+
+        Debug.Log("[AccessKeyAuthoring] Saved four explicit Level 3 key spawn points.");
     }
 
     [MenuItem("LILO/Mark Approved Key Spawn Tables")]
@@ -66,6 +89,13 @@ public static class AccessKeySpawnTableAuthoring
             }
 
             if (!ApprovedDesks.TryGetValue(sceneName, out AuthoredDesk[] desks)) continue;
+            if (sceneName == "OfficeLevel3")
+            {
+                markedCount += AuthorOfficeLevel3SpawnPoints(scene, OfficeLevel3KeySpawnPositions);
+                EditorSceneManager.SaveScene(scene);
+                continue;
+            }
+
             bool sceneChanged = false;
             var approvedPaths = new System.Collections.Generic.HashSet<string>();
             foreach (AuthoredDesk approved in desks) approvedPaths.Add(approved.Path);
@@ -122,6 +152,36 @@ public static class AccessKeySpawnTableAuthoring
         Debug.Log($"[AccessKeyAuthoring] Saved {markedCount} explicit key spawn table markers across {GameplayScenes.Length} levels.");
     }
 
+    private static int AuthorOfficeLevel3SpawnPoints(Scene scene, Vector3[] positions)
+    {
+        foreach (AccessKeySpawnTable existing in FindSceneComponents<AccessKeySpawnTable>(scene))
+        {
+            Transform oldSurface = existing.transform.Find("AccessKeySpawnSurface");
+            if (oldSurface != null) Undo.DestroyObjectImmediate(oldSurface.gameObject);
+            Undo.DestroyObjectImmediate(existing);
+        }
+
+        for (int i = 0; i < positions.Length; i++)
+        {
+            var markerObject = new GameObject($"AccessKeySpawnPoint_{i + 1}");
+            Undo.RegisterCreatedObjectUndo(markerObject, "Create Level 3 access key spawn point");
+            SceneManager.MoveGameObjectToScene(markerObject, scene);
+
+            var surfaceObject = new GameObject("AccessKeySpawnSurface");
+            Undo.RegisterCreatedObjectUndo(surfaceObject, "Create Level 3 access key spawn surface");
+            surfaceObject.transform.SetParent(markerObject.transform, false);
+            surfaceObject.transform.position = positions[i] - Vector3.up * 0.12f;
+
+            AccessKeySpawnTable marker = Undo.AddComponent<AccessKeySpawnTable>(markerObject);
+            marker.Configure(surfaceObject.transform, 0.12f);
+            EditorUtility.SetDirty(marker);
+            EditorUtility.SetDirty(surfaceObject.transform);
+            Debug.Log($"[AccessKeyAuthoring] Level 3 key spawn {i + 1}: {positions[i]}.");
+        }
+
+        return positions.Length;
+    }
+
     [MenuItem("LILO/Validate Key Spawn Tables")]
     public static void ValidateMarkedTables()
     {
@@ -167,8 +227,9 @@ public static class AccessKeySpawnTableAuthoring
                 bool valid = table != null && player != null && hasPlayerNav
                     && table.isActiveAndEnabled && table.TryGetKeyPosition(out keyPosition);
                 float distance = valid ? PlanarDistance(player.position, keyPosition) : -1f;
-                bool validDistance = valid && distance >= config.accessKeySpawnMinDistance
-                    && distance <= config.accessKeySpawnMaxDistance;
+                bool validDistance = valid && (sceneName == "OfficeLevel3"
+                    || (distance >= config.accessKeySpawnMinDistance
+                        && distance <= config.accessKeySpawnMaxDistance));
                 bool validApproach = false;
                 if (validDistance
                     && NavMesh.SamplePosition(keyPosition, out NavMeshHit approach,
