@@ -50,6 +50,8 @@ namespace Lilo.MonoBehaviours.Audio
         private float _lastWaterDispenserPlayTime = float.NegativeInfinity;
         private float _lastToiletFlushPlayTime = float.NegativeInfinity;
 
+        public bool IsVoiceOverPlaying => _voiceSource != null && _voiceSource.isPlaying;
+
         private void Awake()
         {
             if (_source == null)
@@ -248,29 +250,27 @@ namespace Lilo.MonoBehaviours.Audio
             return PlayVoiceOver(needAwayVoiceOverClip);
         }
 
+        public void StopVoiceOver()
+        {
+            if (_voiceSource != null && _voiceSource.isPlaying)
+                _voiceSource.Stop();
+        }
+
         public bool PlaySubtitleVoiceOver(string subtitle)
         {
             string normalizedSubtitle = NormalizeSubtitle(subtitle);
             AudioClip clip = normalizedSubtitle switch
             {
+                "INEEDTOFINDTHEACCESSKEYFIRST" => needAccessKeyVoiceOverClip,
+                "INEEDTOFINDSOMEMOREBATTERY" => batteryRunsOutVoiceOverClip,
+                "INEEDTOFINDAWAYTOGETOUT" => needAwayVoiceOverClip,
                 "CANIEXITTHROUGHMARKETINGOFFICEONTHERIGHT" => marketingOfficeExitVoiceOverClip,
                 "FOUNDTHEEXITDOOR" => foundExitVoiceOverClip,
-                "IFOUNDTHEEXITDOORICANGETOUT" => foundExitVoiceOverClip,
-                "THATSTHEEXITDOORUSETHEKEYGO" => foundExitVoiceOverClip,
-                "THEEXITDOORUSETHEKEYNOW" => foundExitVoiceOverClip,
-                "THEEXITDOORIHAVEAKEYPLEASEOPEN" => foundExitVoiceOverClip,
                 "IHAVETHEKEYNOWFINDTHEEXITDOOR" => keyFoundFloor51VoiceOverClip,
-                "IHAVETHEKEYNOWFINDTHEEXITDOORFAST" => keyFoundFloor51VoiceOverClip,
                 "IHAVETHEKEYNEEDTOFINDTHATEXITDOORBEFOREITFINDSME" => keyFoundFloor50VoiceOverClip,
-                "IHAVETHEKEYFINDTHATEXITDOORBEFOREITFINDSME" => keyFoundFloor50VoiceOverClip,
                 "LOCKEDTHEKEYMUSTBEONONEOFTHOSEDESKS" => lockedKeyFloor51VoiceOverClip,
-                "LOCKEDTHEKEYISONONEOFTHOSEDESKS" => lockedKeyFloor51VoiceOverClip,
-                "LOCKEDTHEKEYISONONEOFTHESEDESKSGETIT" => lockedKeyFloor51VoiceOverClip,
                 "LOCKEDTHEKEYSMUSTBEONONEOFTHOSEDESKS" => lockedKeyFloor50VoiceOverClip,
-                "LOCKEDTHEKEYSONONEOFTHOSEDESKS" => lockedKeyFloor50VoiceOverClip,
-                "LOCKEDTHEKEYSONONEOFTHESEDESKSMOVE" => lockedKeyFloor50VoiceOverClip,
                 "NOWWHEREISTHEEXITDOOR" => whereIsExitVoiceOverClip,
-                "IHAVETHEKEYNOWWHEREISTHEEXITDOORIHAVETOGETOUT" => whereIsExitVoiceOverClip,
                 "WAITWASITONTHERIGHTONTHELEFTICANTREMEMBER" => exitDirectionUnclearVoiceOverClip,
                 _ => null,
             };
@@ -310,8 +310,10 @@ namespace Lilo.MonoBehaviours.Audio
             if (effectsVolume <= 0f || !_voiceSource.enabled)
                 return false;
 
+            // Voice lines carry their own captions, so never let two VO clips overlap.
+            _voiceSource.Stop();
             _voiceSource.PlayOneShot(clip, volume * effectsVolume);
-            return true;
+            return _voiceSource.isPlaying;
         }
 
         private AudioClip GetGeneratedBatteryPickupClip()
