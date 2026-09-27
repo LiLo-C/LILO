@@ -19,11 +19,6 @@ namespace Lilo.MonoBehaviours.Interaction
         private static readonly Color ExitFrameColor = new Color(0.12f, 1f, 0.32f, 1f);
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly int ColorId = Shader.PropertyToID("_Color");
-        private static readonly (int a, int b)[] BoxEdges =
-        {
-            (0, 1), (0, 2), (0, 4), (1, 3), (1, 5), (2, 3),
-            (2, 6), (3, 7), (4, 5), (4, 6), (5, 7), (6, 7),
-        };
 
         [SerializeField] private float interactRadius = 2f;
         [Tooltip("Optional next scene. If empty, this dev slice records a GoodEnding and stays in-scene.")]
@@ -38,6 +33,7 @@ namespace Lilo.MonoBehaviours.Interaction
         private bool _blockedMessageShown;
         private Material _exitFrameMaterial;
         private GameObject _exitFrameRoot;
+        private LineRenderer _exitFrameRenderer;
 
         public float InteractionRadius => interactRadius;
         public bool RequiresAccessKey
@@ -60,12 +56,22 @@ namespace Lilo.MonoBehaviours.Interaction
 
         private void Awake()
         {
+            DisableLegacyDoorHighlights();
             PlayerXRayOutline outline = GetComponent<PlayerXRayOutline>();
             if (outline == null)
                 outline = gameObject.AddComponent<PlayerXRayOutline>();
             outline.ConfigureOutline(ExitOutlineColor, 0.012f, true);
+            outline.EnablePickupPulse();
             outline.SetOutlineVisible(true);
             CreateVisibleDoorFrame();
+        }
+
+        private void DisableLegacyDoorHighlights()
+        {
+            Transform oldFrame = transform.Find("ExitGreenHighlight");
+            if (oldFrame != null) oldFrame.gameObject.SetActive(false);
+            Transform oldGlow = transform.Find("ExitGreenGlow");
+            if (oldGlow != null) oldGlow.gameObject.SetActive(false);
         }
 
         private void CreateVisibleDoorFrame()
@@ -138,42 +144,42 @@ namespace Lilo.MonoBehaviours.Interaction
             _exitFrameMaterial = new Material(shader) { name = "Exit Door Frame (Runtime)" };
             if (_exitFrameMaterial.HasProperty(BaseColorId)) _exitFrameMaterial.SetColor(BaseColorId, ExitFrameColor);
             if (_exitFrameMaterial.HasProperty(ColorId)) _exitFrameMaterial.SetColor(ColorId, ExitFrameColor);
-            // Level 2 has a wall between the camera and the exit. Render just the
-            // frame above the scene depth so that wall can't hide the objective.
-            // Keep the bars in an identity-transform root. Parenting them to a
-            // scaled placeholder stretches the frame away from the actual door.
+            // Level 2 has a wall between the camera and the exit. Keep the frame
+            // visible above scene depth, but draw it as one clean line instead of
+            // overlapping twelve opaque cube edges.
             _exitFrameRoot = new GameObject("Exit Door Highlight");
             SceneManager.MoveGameObjectToScene(_exitFrameRoot, gameObject.scene);
+            _exitFrameRoot.AddComponent<LineRenderer>();
+            _exitFrameRenderer = _exitFrameRoot.GetComponent<LineRenderer>();
+            _exitFrameRenderer.useWorldSpace = true;
+            _exitFrameRenderer.loop = true;
+            _exitFrameRenderer.positionCount = 4;
+            _exitFrameRenderer.widthMultiplier = 0.035f;
+            _exitFrameRenderer.numCornerVertices = 2;
+            _exitFrameRenderer.numCapVertices = 2;
+            _exitFrameRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            _exitFrameRenderer.receiveShadows = false;
+            _exitFrameRenderer.sharedMaterial = _exitFrameMaterial;
 
             Vector3 min = bounds.min;
             Vector3 max = bounds.max;
-            Vector3[] corners =
+            if (bounds.size.x >= bounds.size.z)
             {
-                new Vector3(min.x, min.y, min.z), new Vector3(max.x, min.y, min.z),
-                new Vector3(min.x, max.y, min.z), new Vector3(max.x, max.y, min.z),
-                new Vector3(min.x, min.y, max.z), new Vector3(max.x, min.y, max.z),
-                new Vector3(min.x, max.y, max.z), new Vector3(max.x, max.y, max.z),
-            };
-
-            for (int i = 0; i < BoxEdges.Length; i++)
+                float z = bounds.center.z;
+                _exitFrameRenderer.SetPositions(new[]
+                {
+                    new Vector3(min.x, min.y, z), new Vector3(min.x, max.y, z),
+                    new Vector3(max.x, max.y, z), new Vector3(max.x, min.y, z),
+                });
+            }
+            else
             {
-                Vector3 start = corners[BoxEdges[i].a];
-                Vector3 end = corners[BoxEdges[i].b];
-                Vector3 delta = end - start;
-                if (delta.sqrMagnitude < 0.0001f) continue;
-
-                GameObject edgeObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                edgeObject.name = $"Exit Highlight Edge {i + 1}";
-                edgeObject.transform.SetParent(_exitFrameRoot.transform, false);
-                edgeObject.transform.position = (start + end) * 0.5f;
-                edgeObject.transform.rotation = Quaternion.LookRotation(delta.normalized);
-                edgeObject.transform.localScale = new Vector3(0.045f, 0.045f, delta.magnitude);
-                Collider edgeCollider = edgeObject.GetComponent<Collider>();
-                if (edgeCollider != null) Destroy(edgeCollider);
-                Renderer edgeRenderer = edgeObject.GetComponent<Renderer>();
-                edgeRenderer.sharedMaterial = _exitFrameMaterial;
-                edgeRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                edgeRenderer.receiveShadows = false;
+                float x = bounds.center.x;
+                _exitFrameRenderer.SetPositions(new[]
+                {
+                    new Vector3(x, min.y, min.z), new Vector3(x, max.y, min.z),
+                    new Vector3(x, max.y, max.z), new Vector3(x, min.y, max.z),
+                });
             }
         }
 
@@ -202,6 +208,14 @@ namespace Lilo.MonoBehaviours.Interaction
 
         private void Update()
         {
+            if (_exitFrameMaterial != null)
+            {
+                Color color = ExitFrameColor;
+                color.a *= PlayerXRayOutline.PickupPulseOpacity(Time.time);
+                if (_exitFrameMaterial.HasProperty(BaseColorId)) _exitFrameMaterial.SetColor(BaseColorId, color);
+                if (_exitFrameMaterial.HasProperty(ColorId)) _exitFrameMaterial.SetColor(ColorId, color);
+            }
+
             if (_player == null || _triggered) return;
 
             // Exit areas live on the floor, while the character root is elevated by

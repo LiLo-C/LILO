@@ -641,7 +641,7 @@ namespace Lilo.MonoBehaviours.Monster
                 MonsterHaptics.OnStateChanged(_brain.State);
                 if (_brain.State == MonsterState.Chase && sfx != null)
                 {
-                    sfx.PlayBehindYou(transform.position);
+                    sfx.PlayScreech(transform.position);
                     sfx.PlayChaseBgm();
                 }
                 else

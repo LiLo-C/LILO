@@ -15,7 +15,7 @@ namespace Lilo.Editor
     public static class SetupSfx
     {
         private const string DevTestScenePath = "Assets/Scenes/DevTest_Movement.unity";
-        private const string BehindYouPath = "Assets/Sfx/behind-you.mp3";
+        private const string ScreechPath = "Assets/Sfx/screech.mp3";
         private const string BatteryPickupPath = "Assets/Sfx/pickup-battery-sfx.wav";
         private const string AmbienceBedPath = "Assets/Sfx/ambience/ambience_sfx.wav";
         private const string PlayerCaughtPath = "Assets/Sfx/player-caught.mp3";
@@ -66,10 +66,10 @@ namespace Lilo.Editor
         public static void Run()
         {
             // 1. Load clips.
-            var behindYou = AssetDatabase.LoadAssetAtPath<AudioClip>(BehindYouPath);
-            if (behindYou == null)
+            var screech = AssetDatabase.LoadAssetAtPath<AudioClip>(ScreechPath);
+            if (screech == null)
             {
-                Debug.LogError($"[SfxSetup] Clip not found at {BehindYouPath}");
+                Debug.LogError($"[SfxSetup] Clip not found at {ScreechPath}");
                 return;
             }
             var chaseBgm = AssetDatabase.LoadAssetAtPath<AudioClip>(ChaseBgmPath);
@@ -123,7 +123,7 @@ namespace Lilo.Editor
 
             // 3. Assign clips via SerializedObject.
             var so = new SerializedObject(sfx);
-            so.FindProperty("behindYouClip").objectReferenceValue = behindYou;
+            so.FindProperty("screechClip").objectReferenceValue = screech;
             so.FindProperty("playerCaughtClip").objectReferenceValue = playerCaught;
             if (chaseBgm != null)
                 so.FindProperty("chaseBgmClip").objectReferenceValue = chaseBgm;

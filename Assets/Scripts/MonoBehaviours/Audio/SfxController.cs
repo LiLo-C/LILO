@@ -11,7 +11,7 @@ namespace Lilo.MonoBehaviours.Audio
     /// </summary>
     public class SfxController : MonoBehaviour
     {
-        [SerializeField] private AudioClip behindYouClip;
+        [SerializeField] private AudioClip screechClip;
         [SerializeField] private AudioClip chaseBgmClip;
         // Kept for existing scenes created before chase audio moved to its own loop.
         [SerializeField, HideInInspector] private AudioClip horrorChaseClip;
@@ -44,7 +44,7 @@ namespace Lilo.MonoBehaviours.Audio
         private AudioSource _chaseBgmSource;
         private Coroutine _chaseBgmFadeRoutine;
         private AudioSource _voiceSource;
-        private AudioSource _behindYouSpatialSource;
+        private AudioSource _screechSpatialSource;
         private Transform _monsterAudioTransform;
         private AudioClip _generatedBatteryPickupClip;
         private float _lastWaterDispenserPlayTime = float.NegativeInfinity;
@@ -78,9 +78,9 @@ namespace Lilo.MonoBehaviours.Audio
             _chaseBgmSource.minDistance = Mathf.Max(monsterAudioMinDistance, 15f);
             _chaseBgmSource.maxDistance = Mathf.Max(_chaseBgmSource.minDistance, 60f);
 
-            _behindYouSpatialSource = monsterAudioObject.AddComponent<AudioSource>();
-            ConfigureMonsterAudioSource(_behindYouSpatialSource);
-            _behindYouSpatialSource.loop = false;
+            _screechSpatialSource = monsterAudioObject.AddComponent<AudioSource>();
+            ConfigureMonsterAudioSource(_screechSpatialSource);
+            _screechSpatialSource.loop = false;
         }
 
         private void ConfigureMonsterAudioSource(AudioSource source)
@@ -93,24 +93,24 @@ namespace Lilo.MonoBehaviours.Audio
             source.dopplerLevel = 0f;
         }
 
-        public void PlayBehindYou()
+        public void PlayScreech()
         {
             var monster = Object.FindAnyObjectByType<MonsterAIController>();
             if (monster != null)
             {
-                PlayBehindYou(monster.transform.position);
+                PlayScreech(monster.transform.position);
                 return;
             }
 
-            if (behindYouClip != null)
-                _source.PlayOneShot(behindYouClip, volume * SoundSettingsStore.Effects);
+            if (screechClip != null)
+                _source.PlayOneShot(screechClip, volume * SoundSettingsStore.Effects);
         }
 
-        public void PlayBehindYou(Vector3 monsterPosition)
+        public void PlayScreech(Vector3 monsterPosition)
         {
             SetMonsterAudioPosition(monsterPosition);
-            if (behindYouClip != null && _behindYouSpatialSource != null)
-                _behindYouSpatialSource.PlayOneShot(behindYouClip, volume * SoundSettingsStore.Effects);
+            if (screechClip != null && _screechSpatialSource != null)
+                _screechSpatialSource.PlayOneShot(screechClip, volume * SoundSettingsStore.Effects);
         }
 
         public void PlayChaseBgm()

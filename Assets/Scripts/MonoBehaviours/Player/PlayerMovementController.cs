@@ -47,7 +47,7 @@ namespace Lilo.MonoBehaviours.Player
             if (!_hasMoved && delta.sqrMagnitude > 0.0001f)
             {
                 _hasMoved = true;
-                if (sfx != null) sfx.PlayBehindYou();
+                if (sfx != null) sfx.PlayScreech(transform.position);
             }
         }
     }
