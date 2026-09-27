@@ -37,6 +37,7 @@ namespace Lilo.MonoBehaviours.Audio
 
         [SerializeField, Min(0.05f)] private float chaseBgmFadeOutSeconds = 1.5f;
         [SerializeField, Range(0f, 1f)] private float volume = 0.8f;
+        [SerializeField, Min(0f)] private float screechVolumeMultiplier = 4f;
         [SerializeField, Min(0.1f)] private float monsterAudioMinDistance = 1.5f;
         [SerializeField, Min(1f)] private float monsterAudioMaxDistance = 24f;
 
@@ -62,6 +63,7 @@ namespace Lilo.MonoBehaviours.Audio
             if (_voiceSource == null)
                 _voiceSource = gameObject.AddComponent<AudioSource>();
             _voiceSource.playOnAwake = false;
+            _voiceSource.pitch = 1f;
             _voiceSource.spatialBlend = 0f;
             _voiceSource.priority = 32;
 
@@ -105,14 +107,15 @@ namespace Lilo.MonoBehaviours.Audio
             }
 
             if (screechClip != null)
-                _source.PlayOneShot(screechClip, volume * SoundSettingsStore.Effects);
+                _source.PlayOneShot(screechClip, volume * screechVolumeMultiplier * SoundSettingsStore.Effects);
         }
 
         public void PlayScreech(Vector3 monsterPosition)
         {
             SetMonsterAudioPosition(monsterPosition);
             if (screechClip != null && _screechSpatialSource != null)
-                _screechSpatialSource.PlayOneShot(screechClip, volume * SoundSettingsStore.Effects);
+                _screechSpatialSource.PlayOneShot(screechClip,
+                    volume * screechVolumeMultiplier * SoundSettingsStore.Effects);
         }
 
         public void PlayChaseBgm()
@@ -296,6 +299,7 @@ namespace Lilo.MonoBehaviours.Audio
             {
                 _voiceSource = gameObject.AddComponent<AudioSource>();
                 _voiceSource.playOnAwake = false;
+                _voiceSource.pitch = 1f;
                 _voiceSource.spatialBlend = 0f;
                 _voiceSource.priority = 32;
             }
