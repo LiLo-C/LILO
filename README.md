@@ -27,3 +27,4 @@ Eileen Anindya - UI and Illustrator
 Fathia Alfajr - Art and Illustrator
 Raditya Aydin - Sound Engineer
 Salwa Adhani - Level Design Developer
+(and 67 Pull Requests later LOL)
