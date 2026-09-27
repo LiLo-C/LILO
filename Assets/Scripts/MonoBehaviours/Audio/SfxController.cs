@@ -11,7 +11,7 @@ namespace Lilo.MonoBehaviours.Audio
     /// </summary>
     public class SfxController : MonoBehaviour
     {
-        [SerializeField] private AudioClip behindYouClip;
+        [SerializeField] private AudioClip screechClip;
         [SerializeField] private AudioClip chaseBgmClip;
         // Kept for existing scenes created before chase audio moved to its own loop.
         [SerializeField, HideInInspector] private AudioClip horrorChaseClip;
@@ -44,11 +44,13 @@ namespace Lilo.MonoBehaviours.Audio
         private AudioSource _chaseBgmSource;
         private Coroutine _chaseBgmFadeRoutine;
         private AudioSource _voiceSource;
-        private AudioSource _behindYouSpatialSource;
+        private AudioSource _screechSpatialSource;
         private Transform _monsterAudioTransform;
         private AudioClip _generatedBatteryPickupClip;
         private float _lastWaterDispenserPlayTime = float.NegativeInfinity;
         private float _lastToiletFlushPlayTime = float.NegativeInfinity;
+
+        public bool IsVoiceOverPlaying => _voiceSource != null && _voiceSource.isPlaying;
 
         private void Awake()
         {
@@ -78,9 +80,9 @@ namespace Lilo.MonoBehaviours.Audio
             _chaseBgmSource.minDistance = Mathf.Max(monsterAudioMinDistance, 15f);
             _chaseBgmSource.maxDistance = Mathf.Max(_chaseBgmSource.minDistance, 60f);
 
-            _behindYouSpatialSource = monsterAudioObject.AddComponent<AudioSource>();
-            ConfigureMonsterAudioSource(_behindYouSpatialSource);
-            _behindYouSpatialSource.loop = false;
+            _screechSpatialSource = monsterAudioObject.AddComponent<AudioSource>();
+            ConfigureMonsterAudioSource(_screechSpatialSource);
+            _screechSpatialSource.loop = false;
         }
 
         private void ConfigureMonsterAudioSource(AudioSource source)
@@ -93,24 +95,24 @@ namespace Lilo.MonoBehaviours.Audio
             source.dopplerLevel = 0f;
         }
 
-        public void PlayBehindYou()
+        public void PlayScreech()
         {
             var monster = Object.FindAnyObjectByType<MonsterAIController>();
             if (monster != null)
             {
-                PlayBehindYou(monster.transform.position);
+                PlayScreech(monster.transform.position);
                 return;
             }
 
-            if (behindYouClip != null)
-                _source.PlayOneShot(behindYouClip, volume * SoundSettingsStore.Effects);
+            if (screechClip != null)
+                _source.PlayOneShot(screechClip, volume * SoundSettingsStore.Effects);
         }
 
-        public void PlayBehindYou(Vector3 monsterPosition)
+        public void PlayScreech(Vector3 monsterPosition)
         {
             SetMonsterAudioPosition(monsterPosition);
-            if (behindYouClip != null && _behindYouSpatialSource != null)
-                _behindYouSpatialSource.PlayOneShot(behindYouClip, volume * SoundSettingsStore.Effects);
+            if (screechClip != null && _screechSpatialSource != null)
+                _screechSpatialSource.PlayOneShot(screechClip, volume * SoundSettingsStore.Effects);
         }
 
         public void PlayChaseBgm()
@@ -253,24 +255,16 @@ namespace Lilo.MonoBehaviours.Audio
             string normalizedSubtitle = NormalizeSubtitle(subtitle);
             AudioClip clip = normalizedSubtitle switch
             {
+                "INEEDTOFINDTHEACCESSKEYFIRST" => needAccessKeyVoiceOverClip,
+                "INEEDTOFINDSOMEMOREBATTERY" => batteryRunsOutVoiceOverClip,
+                "INEEDTOFINDAWAYTOGETOUT" => needAwayVoiceOverClip,
                 "CANIEXITTHROUGHMARKETINGOFFICEONTHERIGHT" => marketingOfficeExitVoiceOverClip,
                 "FOUNDTHEEXITDOOR" => foundExitVoiceOverClip,
-                "IFOUNDTHEEXITDOORICANGETOUT" => foundExitVoiceOverClip,
-                "THATSTHEEXITDOORUSETHEKEYGO" => foundExitVoiceOverClip,
-                "THEEXITDOORUSETHEKEYNOW" => foundExitVoiceOverClip,
-                "THEEXITDOORIHAVEAKEYPLEASEOPEN" => foundExitVoiceOverClip,
                 "IHAVETHEKEYNOWFINDTHEEXITDOOR" => keyFoundFloor51VoiceOverClip,
-                "IHAVETHEKEYNOWFINDTHEEXITDOORFAST" => keyFoundFloor51VoiceOverClip,
                 "IHAVETHEKEYNEEDTOFINDTHATEXITDOORBEFOREITFINDSME" => keyFoundFloor50VoiceOverClip,
-                "IHAVETHEKEYFINDTHATEXITDOORBEFOREITFINDSME" => keyFoundFloor50VoiceOverClip,
                 "LOCKEDTHEKEYMUSTBEONONEOFTHOSEDESKS" => lockedKeyFloor51VoiceOverClip,
-                "LOCKEDTHEKEYISONONEOFTHOSEDESKS" => lockedKeyFloor51VoiceOverClip,
-                "LOCKEDTHEKEYISONONEOFTHESEDESKSGETIT" => lockedKeyFloor51VoiceOverClip,
                 "LOCKEDTHEKEYSMUSTBEONONEOFTHOSEDESKS" => lockedKeyFloor50VoiceOverClip,
-                "LOCKEDTHEKEYSONONEOFTHOSEDESKS" => lockedKeyFloor50VoiceOverClip,
-                "LOCKEDTHEKEYSONONEOFTHESEDESKSMOVE" => lockedKeyFloor50VoiceOverClip,
                 "NOWWHEREISTHEEXITDOOR" => whereIsExitVoiceOverClip,
-                "IHAVETHEKEYNOWWHEREISTHEEXITDOORIHAVETOGETOUT" => whereIsExitVoiceOverClip,
                 "WAITWASITONTHERIGHTONTHELEFTICANTREMEMBER" => exitDirectionUnclearVoiceOverClip,
                 _ => null,
             };
@@ -295,7 +289,7 @@ namespace Lilo.MonoBehaviours.Audio
 
         private bool PlayVoiceOver(AudioClip clip)
         {
-            if (clip == null || !isActiveAndEnabled || !gameObject.activeInHierarchy)
+            if (clip == null || IsVoiceOverPlaying || !isActiveAndEnabled || !gameObject.activeInHierarchy)
                 return false;
 
             if (_voiceSource == null)
@@ -311,7 +305,7 @@ namespace Lilo.MonoBehaviours.Audio
                 return false;
 
             _voiceSource.PlayOneShot(clip, volume * effectsVolume);
-            return true;
+            return _voiceSource.isPlaying;
         }
 
         private AudioClip GetGeneratedBatteryPickupClip()

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Lilo.Config;
 using Lilo.MonoBehaviours.Audio;
 using Lilo.MonoBehaviours.Interaction;
@@ -19,11 +20,12 @@ namespace Lilo.MonoBehaviours
         private int _lastHeight;
         private float _lastScale = -1f;
         private string _lastHint;
-        private float _hideAt;
+        private readonly Queue<string> _pendingVoiceHints = new Queue<string>();
+        private readonly HashSet<string> _queuedVoiceHints = new HashSet<string>();
+        private string _activeVoiceHint;
         private string _respawnMessage;
         private float _respawnMessageUntil;
         private SfxController _sfx;
-        private string _lastVoiceHint;
         private bool _doorLocationHintShown;
 
         private const string NeedAwayHint = "I need to find a way to get out";
@@ -59,8 +61,6 @@ namespace Lilo.MonoBehaviours
             bool hasKey = state != null && state.HasKey(keyId);
             bool requiresKey = GameManager.Instance?.Config != null
                 && GameManager.Instance.Config.GetLockedDoorCount(floor) > 0;
-            bool needsKeyVoiceOver = requiresKey && !hasKey;
-            bool needsBatteryVoiceOver = false;
             string hint = requiresKey
                 ? hasKey ? GetDoorHint(floor) : NeedAccessKeyHint
                 : NeedAwayHint;
@@ -88,7 +88,7 @@ namespace Lilo.MonoBehaviours
                 if (nearbyExit != null && nearbyExit.RequiresAccessKey)
                     hint = hasKey ? GetDoorProximityHint(floor, true) : NeedAccessKeyHint;
                 else
-                    hint = "I FOUND THE EXIT DOOR. I CAN GET OUT!";
+                    hint = "I Found the exit doot. I can get out!";
             }
             else if (!requiresKey)
             {
@@ -99,7 +99,6 @@ namespace Lilo.MonoBehaviours
                 if (charge <= 0.75f)
                 {
                     hint = NeedBatteryHint;
-                    needsBatteryVoiceOver = true;
                 }
             }
 
@@ -126,43 +125,54 @@ namespace Lilo.MonoBehaviours
             if (hint != _lastHint)
             {
                 _lastHint = hint;
-                _text.text = hint;
-                _panel.SetActive(true);
-                _hideAt = Time.unscaledTime + 5f;
-
+                if (!string.IsNullOrWhiteSpace(hint)
+                    && hint != _activeVoiceHint
+                    && _queuedVoiceHints.Add(hint))
+                    _pendingVoiceHints.Enqueue(hint);
             }
-            else if (_panel.activeSelf && Time.unscaledTime >= _hideAt)
+
+            if (_sfx == null)
+                _sfx = Object.FindAnyObjectByType<SfxController>();
+
+            if (_sfx != null && !_sfx.IsVoiceOverPlaying)
             {
+                _activeVoiceHint = null;
+                _text.text = string.Empty;
                 _panel.SetActive(false);
-            }
 
-            if (hint != _lastVoiceHint)
-            {
-                if (_sfx == null)
-                    _sfx = Object.FindAnyObjectByType<SfxController>();
-
-                bool isLifeSubtitle = hint == "WAIT WHAT WAS THAT? WHAT IS HAPPENING?!"
-                    || hint == "I FELT IT ALL THROUGH MY SKIN OH GOD"
-                    || hint == "NO NO NO I DON'T WANT TO FEEL IT AGAIN";
-                if (isLifeSubtitle)
+                while (_pendingVoiceHints.Count > 0)
                 {
-                    bool voiceRequested = state != null && state.IsLifeVoiceOverReady
-                        && _sfx != null && _sfx.PlayLifeVoiceOverForSubtitle(hint);
-                    if (voiceRequested)
-                        GameManager.Instance?.State?.ClearPendingLifeVoiceOver();
-                }
-                else
-                {
-                    bool subtitleVoiceRequested = _sfx != null && _sfx.PlaySubtitleVoiceOver(hint);
-                    if (!subtitleVoiceRequested && needsKeyVoiceOver)
-                        _sfx?.PlayNeedAccessKeyVoiceOver();
-                    else if (!subtitleVoiceRequested && needsBatteryVoiceOver)
-                        _sfx?.PlayBatteryRunsOutVoiceOver();
-                    else if (!subtitleVoiceRequested && hint == NeedAwayHint)
-                        _sfx?.PlayNeedAwayVoiceOver();
-                }
+                    string nextHint = _pendingVoiceHints.Dequeue();
+                    _queuedVoiceHints.Remove(nextHint);
 
-                _lastVoiceHint = hint;
+                    bool isLifeSubtitle = nextHint == "WAIT WHAT WAS THAT? WHAT IS HAPPENING?!"
+                        || nextHint == "I FELT IT ALL THROUGH MY SKIN OH GOD"
+                        || nextHint == "NO NO NO I DON'T WANT TO FEEL IT AGAIN";
+                    bool voiceRequested;
+                    if (isLifeSubtitle)
+                    {
+                        if (state != null && !state.IsLifeVoiceOverReady)
+                        {
+                            _queuedVoiceHints.Add(nextHint);
+                            _pendingVoiceHints.Enqueue(nextHint);
+                            break;
+                        }
+
+                        voiceRequested = state != null && _sfx.PlayLifeVoiceOverForSubtitle(nextHint);
+                        if (voiceRequested)
+                            GameManager.Instance?.State?.ClearPendingLifeVoiceOver();
+                    }
+                    else
+                        voiceRequested = _sfx.PlaySubtitleVoiceOver(nextHint);
+
+                    if (!voiceRequested)
+                        continue;
+
+                    _activeVoiceHint = nextHint;
+                    _text.text = nextHint;
+                    _panel.SetActive(true);
+                    break;
+                }
             }
         }
 
@@ -170,9 +180,9 @@ namespace Lilo.MonoBehaviours
         {
             return floor switch
             {
-                FloorId.Floor51 => "I HAVE THE KEY. NOW FIND THE EXIT DOOR—FAST.",
-                FloorId.Floor50 => "I HAVE THE KEY. FIND THAT EXIT DOOR BEFORE IT FINDS ME!",
-                _ => "I HAVE THE KEY... NOW WHERE IS THE EXIT DOOR? I HAVE TO GET OUT!",
+                FloorId.Floor51 => "I Found the exit door. I can get out!",
+                FloorId.Floor50 => "I Found the exit door. I can get out!",
+                _ => "I Found the exit door. I can get out!",
             };
         }
 
@@ -189,20 +199,13 @@ namespace Lilo.MonoBehaviours
         private static string GetDoorProximityHint(FloorId floor, bool hasKey)
         {
             if (hasKey)
-            {
-                return floor switch
-                {
-                    FloorId.Floor51 => "THAT'S THE EXIT DOOR. USE THE KEY. GO!",
-                    FloorId.Floor50 => "THE EXIT DOOR—USE THE KEY, NOW!",
-                    _ => "THE EXIT DOOR! I HAVE A KEY—PLEASE, OPEN!",
-                };
-            }
+                return "Found the exit door.";
 
             return floor switch
             {
-                FloorId.Floor51 => "LOCKED. THE KEY IS ON ONE OF THESE DESKS. GET IT!",
-                FloorId.Floor50 => "LOCKED! THE KEY'S ON ONE OF THESE DESKS. MOVE!",
-                _ => "THE EXIT DOOR IS LOCKED. I NEED THE KEY—CHECK THE DESKS!",
+                FloorId.Floor51 => "Locked. The key must be on one of those desks!",
+                FloorId.Floor50 => "Locked. The key must be on one of those desks!",
+                _ => "The exit door is locked. I need the key—check the desks!",
             };
         }
 

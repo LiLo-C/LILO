@@ -24,6 +24,8 @@ namespace Lilo.MonoBehaviours
         private UnityEngine.Camera _camera;
         private float _xrayFade;
         private float _fadeVelocity;
+        private float _nextOcclusionCheckTime;
+        private bool _isOccluded;
         private bool _alwaysVisibleOutline;
         private bool _outlineVisible = true;
         private bool _pickupPulse;
@@ -117,7 +119,16 @@ namespace Lilo.MonoBehaviours
         private void LateUpdate()
         {
             if (_camera == null) _camera = UnityEngine.Camera.main;
-            float targetFade = _outlineVisible && (_alwaysVisibleOutline || IsOccluded()) ? 1f : 0f;
+            if (!_alwaysVisibleOutline && Time.unscaledTime >= _nextOcclusionCheckTime)
+            {
+                // Occlusion can be sampled less often than rendering. The fade still
+                // updates every frame, while this avoids several physics queries per
+                // frame for the player outline.
+                _isOccluded = IsOccluded();
+                _nextOcclusionCheckTime = Time.unscaledTime + 0.08f;
+            }
+
+            float targetFade = _outlineVisible && (_alwaysVisibleOutline || _isOccluded) ? 1f : 0f;
             if (_pickupPulse)
                 targetFade *= PickupPulseOpacity(Time.time);
             _xrayFade = Mathf.SmoothDamp(_xrayFade, targetFade, ref _fadeVelocity,
@@ -135,19 +146,7 @@ namespace Lilo.MonoBehaviours
                 bool sourceVisible = pair.source.enabled && pair.source.gameObject.activeInHierarchy;
                 pair.mask.enabled = sourceVisible && _outlineVisible;
                 pair.outline.enabled = sourceVisible && _outlineVisible && _xrayFade > 0.001f;
-                Transform source = pair.source.transform;
-                SyncTransform(pair.mask.transform, source);
-                SyncTransform(pair.outline.transform, source);
             }
-        }
-
-        private static void SyncTransform(Transform destination, Transform source)
-        {
-            // The clone belongs to its source, inherits its transform exactly,
-            // and is automatically hidden with the source GameObject.
-            destination.localPosition = Vector3.zero;
-            destination.localRotation = Quaternion.identity;
-            destination.localScale = Vector3.one;
         }
 
         private void OnDisable()

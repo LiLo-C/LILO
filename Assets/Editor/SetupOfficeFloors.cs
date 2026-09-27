@@ -126,7 +126,7 @@ public static class SetupOfficeFloors
         if (obstacle != null)
             obstacle.enabled = false;
 
-        ConfigureExitHighlight(exit, active);
+        ConfigureExitHighlight(exit);
 
         var interaction = exit.GetComponent<ExitDoorInteraction>();
         if (interaction != null)
@@ -142,58 +142,15 @@ public static class SetupOfficeFloors
         exit.SetActive(active);
     }
 
-    private static void ConfigureExitHighlight(GameObject exit, bool active)
+    private static void ConfigureExitHighlight(GameObject exit)
     {
         Transform highlightRoot = exit.transform.Find("ExitGreenHighlight");
-        if (highlightRoot == null)
-        {
-            highlightRoot = new GameObject("ExitGreenHighlight").transform;
-            highlightRoot.SetParent(exit.transform, false);
-
-            CreateHighlightBar(highlightRoot, "North", new Vector3(0f, -0.5f, 0.517f), new Vector3(1.067f, 0.5f, 0.04f));
-            CreateHighlightBar(highlightRoot, "South", new Vector3(0f, -0.5f, -0.517f), new Vector3(1.067f, 0.5f, 0.04f));
-            CreateHighlightBar(highlightRoot, "East", new Vector3(0.517f, -0.5f, 0f), new Vector3(0.04f, 0.5f, 1.067f));
-            CreateHighlightBar(highlightRoot, "West", new Vector3(-0.517f, -0.5f, 0f), new Vector3(0.04f, 0.5f, 1.067f));
-        }
-
-        highlightRoot.gameObject.SetActive(active);
+        if (highlightRoot != null)
+            highlightRoot.gameObject.SetActive(false);
 
         Transform glowTransform = exit.transform.Find("ExitGreenGlow");
-        if (glowTransform == null)
-        {
-            glowTransform = new GameObject("ExitGreenGlow").transform;
-            glowTransform.SetParent(exit.transform, false);
-            glowTransform.localPosition = new Vector3(0f, 5f, 0f);
-            var light = glowTransform.gameObject.AddComponent<Light>();
-            light.type = LightType.Point;
-            light.color = new Color(0.05f, 1f, 0.18f);
-            light.intensity = 8f;
-            light.range = 5f;
-            light.shadows = LightShadows.None;
-        }
-
-        glowTransform.gameObject.SetActive(active);
-    }
-
-    private static void CreateHighlightBar(Transform parent, string name, Vector3 localPosition, Vector3 localScale)
-    {
-        GameObject bar = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        bar.name = name;
-        bar.transform.SetParent(parent, false);
-        bar.transform.localPosition = localPosition;
-        bar.transform.localScale = localScale;
-
-        var collider = bar.GetComponent<Collider>();
-        if (collider != null)
-            Object.DestroyImmediate(collider);
-
-        var renderer = bar.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            renderer.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(ExitMaterialPath);
-            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            renderer.receiveShadows = false;
-        }
+        if (glowTransform != null)
+            glowTransform.gameObject.SetActive(false);
     }
 
     private static void ConfigureManager(Scene scene, FloorId startingFloor)

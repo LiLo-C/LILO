@@ -73,8 +73,6 @@ namespace Lilo.MonoBehaviours.Input
                 canvasObject = CreateCanvas();
             if (canvasObject.GetComponent<GameplayGuidanceHud>() == null)
                 canvasObject.AddComponent<GameplayGuidanceHud>();
-            if (canvasObject.GetComponent<GameplayMinimap>() == null)
-                canvasObject.AddComponent<GameplayMinimap>();
 
             if (!Application.isEditor && !Application.isMobilePlatform)
                 return;
