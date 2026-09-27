@@ -8,9 +8,8 @@ using UnityEngine.UI;
 namespace Lilo.UI
 {
     /// <summary>
-    /// Main menu logic only. Semua tata letak diatur lewat Inspector,
-    /// bukan lewat kode. Versi lama menimpa posisi, ukuran, dan
-    /// Canvas Scaler tiap frame lewat Update().
+    /// Main menu logic only. The scene owns the main menu layout;
+    /// SoundCreditsView owns its separate audio acknowledgements page.
     /// </summary>
     public sealed class MainMenuController : MonoBehaviour
     {
@@ -123,7 +122,15 @@ namespace Lilo.UI
         public void OpenCredits()
         {
             CloseOverlay();
-            if (creditsPanel != null) creditsPanel.SetActive(true);
+            if (creditsPanel == null) return;
+
+            // The sound acknowledgements are built once, then reset to the team page
+            // whenever the player opens Credits again.
+            SoundCreditsView soundCredits = creditsPanel.GetComponent<SoundCreditsView>();
+            if (soundCredits == null)
+                soundCredits = creditsPanel.AddComponent<SoundCreditsView>();
+            soundCredits.ShowTeamCredits();
+            creditsPanel.SetActive(true);
         }
 
         public void CloseOverlay()
