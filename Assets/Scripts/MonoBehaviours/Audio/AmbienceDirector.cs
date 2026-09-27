@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Lilo.State;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Lilo.MonoBehaviours.Audio
 {
@@ -33,6 +35,7 @@ namespace Lilo.MonoBehaviours.Audio
         private Transform _player;
         private bool _started;
         private bool _warnedMissingRoomTone;
+        private bool _runAudioStopped;
 
         private static AmbienceDirector _instance;
 
@@ -72,8 +75,40 @@ namespace Lilo.MonoBehaviours.Audio
             _timer = Random.Range(minGapSeconds, maxGapSeconds);
         }
 
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (scene.name == "MainMenu" || IsEndingScene(scene.name))
+                StopRunAudio();
+        }
+
         private void Update()
         {
+            var state = GameManager.Instance?.State;
+            string sceneName = SceneManager.GetActiveScene().name;
+            if ((state != null && state.Outcome != RunOutcome.InProgress)
+                || sceneName == "MainMenu" || IsEndingScene(sceneName))
+            {
+                StopRunAudio();
+                return;
+            }
+
+            if (_runAudioStopped)
+            {
+                _runAudioStopped = false;
+                RefillBag();
+                _timer = Random.Range(minGapSeconds, maxGapSeconds);
+            }
+
             // Ambience belongs to the run, not the menu: start only after the
             // player has spawned. Re-resolves after floor restarts, since the
             // director outlives scenes but the player does not.
@@ -118,6 +153,21 @@ namespace Lilo.MonoBehaviours.Audio
 
             _stingSource.volume = stingVolume;
             _stingSource.PlayOneShot(clip);
+        }
+
+        private void StopRunAudio()
+        {
+            if (_runAudioStopped) return;
+            _bedSource?.Stop();
+            _stingSource?.Stop();
+            _player = null;
+            _runAudioStopped = true;
+        }
+
+        private static bool IsEndingScene(string sceneName)
+        {
+            return sceneName == "GoodEnding" || sceneName == "BadEnding"
+                || sceneName == "Epilogue" || sceneName == "EpilogueBad";
         }
 
         private void RefillBag()
