@@ -22,6 +22,7 @@ namespace Lilo.MonoBehaviours.Hiding
         private HidingSystem _system;
         private HidingSpot _nearestSpot;
         private HidingSpot[] _allSpots = Array.Empty<HidingSpot>();
+        private readonly RaycastHit[] _approachHits = new RaycastHit[16];
         private float _spotScanTimer;
         private HidingSpot _activeSpot;
         private CharacterController _characterController;
@@ -131,7 +132,11 @@ namespace Lilo.MonoBehaviours.Hiding
 
         public bool TryEnterNearest()
         {
-            if (!CanHide || _nearestSpot == null) return false;
+            if (!CanHide || _nearestSpot == null || !HasClearApproach(_nearestSpot))
+            {
+                _nearestSpot = null;
+                return false;
+            }
 
             // Return to the actual approach point, which was known to be reachable.
             var spotData = new HidingSpotData(_nearestSpot.HidePosition, transform.position);
@@ -211,7 +216,7 @@ namespace Lilo.MonoBehaviours.Hiding
 
                 Vector3 delta = pos - spot.transform.position;
                 float dist = new Vector2(delta.x, delta.z).magnitude;
-                if (dist <= spot.InteractionRadius && dist < bestDistance)
+                if (dist <= spot.InteractionRadius && dist < bestDistance && HasClearApproach(spot))
                 {
                     bestDistance = dist;
                     bestSpot = spot;
@@ -219,6 +224,36 @@ namespace Lilo.MonoBehaviours.Hiding
             }
 
             _nearestSpot = bestSpot;
+        }
+
+        private bool HasClearApproach(HidingSpot spot)
+        {
+            if (spot == null) return false;
+
+            // Check toward the intended approach/exit anchor, not the hiding point
+            // under the desk. A wall or partition between the player and that
+            // anchor must keep the spot unavailable even when the player is close
+            // enough in world space.
+            CharacterController body = _characterController;
+            Vector3 origin = body != null
+                ? transform.TransformPoint(body.center + Vector3.up * (body.height * 0.1f))
+                : transform.position + Vector3.up * 1.1f;
+            Vector3 target = spot.ExitPosition + Vector3.up * 1.1f;
+            Vector3 offset = target - origin;
+            float distance = offset.magnitude;
+            if (distance <= 0.05f) return true;
+
+            int hitCount = Physics.RaycastNonAlloc(origin, offset / distance, _approachHits, distance,
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < hitCount; i++)
+            {
+                Transform hitTransform = _approachHits[i].collider.transform;
+                if (hitTransform == transform || hitTransform.IsChildOf(transform))
+                    continue;
+                return false;
+            }
+
+            return true;
         }
 
         private void UpdateHeartbeat(float deltaTime)
