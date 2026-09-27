@@ -346,5 +346,61 @@ namespace Lilo.Editor
                 : returnScenePath, OpenSceneMode.Single);
             Debug.Log($"[SfxSetup] Assigned player-caught.mp3 in {assigned} office floor scene(s).");
         }
+
+        [MenuItem("LILO/Assign Screech Audio To All Scenes")]
+        public static void AssignScreechAudioToAllScenes()
+        {
+            var screech = AssetDatabase.LoadAssetAtPath<AudioClip>(ScreechPath);
+            if (screech == null)
+            {
+                Debug.LogError($"[SfxSetup] Clip not found at {ScreechPath}");
+                return;
+            }
+
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                return;
+
+            string returnScenePath = EditorSceneManager.GetActiveScene().path;
+            int assigned = 0;
+            int withoutController = 0;
+            foreach (string guid in AssetDatabase.FindAssets("t:Scene", new[] { "Assets/Scenes" }))
+            {
+                string scenePath = AssetDatabase.GUIDToAssetPath(guid);
+                var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+                SfxController[] controllers = Object.FindObjectsByType<SfxController>(
+                    FindObjectsInactive.Include, FindObjectsSortMode.None);
+                if (controllers.Length == 0)
+                {
+                    withoutController++;
+                    continue;
+                }
+
+                bool sceneChanged = false;
+                foreach (SfxController controller in controllers)
+                {
+                    var serialized = new SerializedObject(controller);
+                    var screechProperty = serialized.FindProperty("screechClip");
+                    if (screechProperty.objectReferenceValue == screech)
+                        continue;
+
+                    screechProperty.objectReferenceValue = screech;
+                    serialized.ApplyModifiedPropertiesWithoutUndo();
+                    EditorUtility.SetDirty(controller);
+                    sceneChanged = true;
+                    assigned++;
+                }
+
+                if (sceneChanged)
+                {
+                    EditorSceneManager.MarkSceneDirty(scene);
+                    EditorSceneManager.SaveScene(scene);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(returnScenePath))
+                EditorSceneManager.OpenScene(returnScenePath, OpenSceneMode.Single);
+            Debug.Log($"[SfxSetup] Assigned screech.mp3 to {assigned} SfxController(s); "
+                + $"{withoutController} scene(s) had no SfxController.");
+        }
     }
 }
