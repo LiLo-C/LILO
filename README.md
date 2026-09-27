@@ -18,7 +18,7 @@ Use the on-screen joystick to move. Use the context action button when it appear
 
 ## TestFlight
 
-[https://testflight.apple.com/join/c1VXxcaA](TestFlight Link)
+[TestFlight Link](https://testflight.apple.com/join/c1VXxcaA)
 
 ## Made By
 Arieska Kharzani - Art and Illustrator
