@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Lilo.Config;
 using Lilo.MonoBehaviours.Audio;
 using Lilo.MonoBehaviours.Interaction;
@@ -19,6 +20,9 @@ namespace Lilo.MonoBehaviours
         private int _lastHeight;
         private float _lastScale = -1f;
         private string _lastHint;
+        private readonly Queue<string> _pendingVoiceHints = new Queue<string>();
+        private readonly HashSet<string> _queuedVoiceHints = new HashSet<string>();
+        private string _activeVoiceHint;
         private string _respawnMessage;
         private float _respawnMessageUntil;
         private SfxController _sfx;
@@ -121,39 +125,54 @@ namespace Lilo.MonoBehaviours
             if (hint != _lastHint)
             {
                 _lastHint = hint;
-                if (_sfx == null)
-                    _sfx = Object.FindAnyObjectByType<SfxController>();
-
-                bool isLifeSubtitle = hint == "WAIT WHAT WAS THAT? WHAT IS HAPPENING?!"
-                    || hint == "I FELT IT ALL THROUGH MY SKIN OH GOD"
-                    || hint == "NO NO NO I DON'T WANT TO FEEL IT AGAIN";
-                bool voiceRequested = false;
-                if (isLifeSubtitle)
-                {
-                    voiceRequested = state != null && state.IsLifeVoiceOverReady
-                        && _sfx != null && _sfx.PlayLifeVoiceOverForSubtitle(hint);
-                    if (voiceRequested)
-                        GameManager.Instance?.State?.ClearPendingLifeVoiceOver();
-                }
-                else if (_sfx != null)
-                    voiceRequested = _sfx.PlaySubtitleVoiceOver(hint);
-
-                if (voiceRequested)
-                {
-                    _text.text = hint;
-                    _panel.SetActive(true);
-                }
-                else
-                {
-                    _sfx?.StopVoiceOver();
-                    _text.text = string.Empty;
-                    _panel.SetActive(false);
-                }
+                if (!string.IsNullOrWhiteSpace(hint)
+                    && hint != _activeVoiceHint
+                    && _queuedVoiceHints.Add(hint))
+                    _pendingVoiceHints.Enqueue(hint);
             }
-            else if (_panel.activeSelf && (_sfx == null || !_sfx.IsVoiceOverPlaying))
+
+            if (_sfx == null)
+                _sfx = Object.FindAnyObjectByType<SfxController>();
+
+            if (_sfx != null && !_sfx.IsVoiceOverPlaying)
             {
+                _activeVoiceHint = null;
                 _text.text = string.Empty;
                 _panel.SetActive(false);
+
+                while (_pendingVoiceHints.Count > 0)
+                {
+                    string nextHint = _pendingVoiceHints.Dequeue();
+                    _queuedVoiceHints.Remove(nextHint);
+
+                    bool isLifeSubtitle = nextHint == "WAIT WHAT WAS THAT? WHAT IS HAPPENING?!"
+                        || nextHint == "I FELT IT ALL THROUGH MY SKIN OH GOD"
+                        || nextHint == "NO NO NO I DON'T WANT TO FEEL IT AGAIN";
+                    bool voiceRequested;
+                    if (isLifeSubtitle)
+                    {
+                        if (state != null && !state.IsLifeVoiceOverReady)
+                        {
+                            _queuedVoiceHints.Add(nextHint);
+                            _pendingVoiceHints.Enqueue(nextHint);
+                            break;
+                        }
+
+                        voiceRequested = state != null && _sfx.PlayLifeVoiceOverForSubtitle(nextHint);
+                        if (voiceRequested)
+                            GameManager.Instance?.State?.ClearPendingLifeVoiceOver();
+                    }
+                    else
+                        voiceRequested = _sfx.PlaySubtitleVoiceOver(nextHint);
+
+                    if (!voiceRequested)
+                        continue;
+
+                    _activeVoiceHint = nextHint;
+                    _text.text = nextHint;
+                    _panel.SetActive(true);
+                    break;
+                }
             }
         }
 

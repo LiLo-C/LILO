@@ -250,12 +250,6 @@ namespace Lilo.MonoBehaviours.Audio
             return PlayVoiceOver(needAwayVoiceOverClip);
         }
 
-        public void StopVoiceOver()
-        {
-            if (_voiceSource != null && _voiceSource.isPlaying)
-                _voiceSource.Stop();
-        }
-
         public bool PlaySubtitleVoiceOver(string subtitle)
         {
             string normalizedSubtitle = NormalizeSubtitle(subtitle);
@@ -295,7 +289,7 @@ namespace Lilo.MonoBehaviours.Audio
 
         private bool PlayVoiceOver(AudioClip clip)
         {
-            if (clip == null || !isActiveAndEnabled || !gameObject.activeInHierarchy)
+            if (clip == null || IsVoiceOverPlaying || !isActiveAndEnabled || !gameObject.activeInHierarchy)
                 return false;
 
             if (_voiceSource == null)
@@ -310,8 +304,6 @@ namespace Lilo.MonoBehaviours.Audio
             if (effectsVolume <= 0f || !_voiceSource.enabled)
                 return false;
 
-            // Voice lines carry their own captions, so never let two VO clips overlap.
-            _voiceSource.Stop();
             _voiceSource.PlayOneShot(clip, volume * effectsVolume);
             return _voiceSource.isPlaying;
         }
